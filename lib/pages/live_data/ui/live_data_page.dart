@@ -35,7 +35,13 @@ class LiveDataPage extends StatelessWidget {
       builder: (context, state, cubit) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(state.isConnecting ? 'Connecting...' : 'Connected! :D'),
+            title: Text(
+              state.isLocalMode
+                  ? 'Local mode'
+                  : state.isConnecting
+                      ? 'Connecting...'
+                      : 'Connected! :D',
+            ),
             actions: [
               // IconButton(
               //     onPressed: cubit.sendVinCommand,
@@ -66,6 +72,15 @@ class LiveDataPage extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
                       child: Text(state.fuelSystemStatus.description),
+                    ),
+                  ),
+                  Text('Used fuel: ${cubit.fuelUsedFromFuelLvl} L'),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Center(
+                      child: Text(state.isTemperatureAvaliable
+                          ? 'Indoor temp: ${state.temperature.toStringAsFixed(1)} °C'
+                          : 'Brak czujnika temperatury'),
                     ),
                   ),
                   // SupportedPidsTile(checker: state.pidsChecker),

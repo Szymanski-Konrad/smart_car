@@ -19,13 +19,15 @@ abstract class VisibleObdCommand extends ObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    super.performCalculations(data);
-    if (result > previousResult) {
-      trending = Trending.up;
-    } else if (result == previousResult) {
-      trending = Trending.constant;
-    } else {
-      trending = Trending.down;
+    if (data.isNotEmpty) {
+      super.performCalculations(data);
+      if (result > previousResult) {
+        trending = Trending.up;
+      } else if (result == previousResult) {
+        trending = Trending.constant;
+      } else {
+        trending = Trending.down;
+      }
     }
   }
 

@@ -36,8 +36,10 @@ class FuelSystemStatusCommand extends ObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    result = data[0];
-    super.performCalculations(data);
+    if (data.isNotEmpty) {
+      result = data[0];
+      super.performCalculations(data);
+    }
   }
 
   FuelSystemStatus get status {

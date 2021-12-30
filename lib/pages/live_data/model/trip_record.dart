@@ -20,6 +20,7 @@ class TripRecord with _$TripRecord {
     @Default(-1.0) double gpsSpeed,
     @Default(0.0) double gpsDistance,
     @Default(-1) int currentSpeed,
+    @Default(0.0) double averageSpeed,
     @Default(-1.0) double range,
     @Default(55.0) double tankSize,
     @Default(0) int tripSeconds,
@@ -40,8 +41,13 @@ extension TripRecordExtension on TripRecord {
     return copyWith(startFuelLvl: initial, currentFuelLvl: value);
   }
 
-  TripRecord updateDistance(double value) {
-    return copyWith(distance: distance + value);
+  TripRecord updateDistance(double value, int speed) {
+    final currDistance = distance + value;
+    return copyWith(
+      distance: currDistance,
+      averageSpeed: currDistance / (tripSeconds / 3600),
+      currentSpeed: speed,
+    );
   }
 
   TripRecord updateEngineLoad(double value) {
@@ -57,7 +63,7 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateUsedFuel(
-      double value, int speed, FuelSystemStatus fuelStatus) {
+      double value, num speed, FuelSystemStatus fuelStatus) {
     if (speed > 0) {
       if (fuelStatus == FuelSystemStatus.fuelCut) {
         return copyWith(savedFuel: savedFuel + value);
@@ -69,7 +75,7 @@ extension TripRecordExtension on TripRecord {
     }
   }
 
-  TripRecord updateSeconds(int speed) {
+  TripRecord updateSeconds(num speed) {
     if (speed > 0) {
       return copyWith(tripSeconds: tripSeconds + 1);
     } else {
@@ -80,19 +86,19 @@ extension TripRecordExtension on TripRecord {
   TripRecord updateRapidAcceleration({required bool isPositive}) {
     final secondsSinceEpoch = DateTime.now().secondsSinceEpoch;
     if (isPositive) {
-      print(
-          'Since last acceleration: ${secondsSinceEpoch - lastAccelerationTime}');
-      if (secondsSinceEpoch - Constants.minTimeBetweenRapidSpeedChange >
-          lastAccelerationTime) {
+      final duration =
+          Duration(seconds: secondsSinceEpoch - lastAccelerationTime);
+      if (secondsSinceEpoch - lastAccelerationTime >
+          Constants.minTimeBetweenRapidSpeedChange) {
         return copyWith(
           rapidAccelerations: rapidAccelerations + 1,
           lastAccelerationTime: secondsSinceEpoch,
         );
       }
     } else {
-      print('Since last braking: ${secondsSinceEpoch - lastBreakingTime}');
-      if (secondsSinceEpoch - Constants.minTimeBetweenRapidSpeedChange >
-          lastBreakingTime) {
+      final duration = Duration(seconds: secondsSinceEpoch - lastBreakingTime);
+      if (secondsSinceEpoch - lastBreakingTime >
+          Constants.minTimeBetweenRapidSpeedChange) {
         return copyWith(
           rapidBreakings: rapidBreakings + 1,
           lastBreakingTime: secondsSinceEpoch,
@@ -145,7 +151,7 @@ extension TripRecordExtension on TripRecord {
         value: distance,
         title: 'Distance',
         unit: 'km',
-        digits: 2,
+        digits: 1,
       );
   InfoTileData get instFuelDetails => InfoTileData(
         value: instFuelConsumption,
@@ -202,10 +208,10 @@ extension TripRecordExtension on TripRecord {
         unit: '',
       );
   InfoTileData get avgSpeedDetails => InfoTileData(
-        value: distance / (tripSeconds / 3600),
+        value: averageSpeed,
         title: 'Avg. speed',
         unit: 'km/h',
-        digits: 2,
+        digits: 1,
       );
   InfoTileData get rapidAccelerationsDetails => InfoTileData(
         value: rapidAccelerations,

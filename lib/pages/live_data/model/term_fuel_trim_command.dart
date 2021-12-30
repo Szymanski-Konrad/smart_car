@@ -9,8 +9,10 @@ abstract class TermFuelTrim extends VisibleObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    result = (100 * data[0] / 128) - 100;
-    super.performCalculations(data);
+    if (data.isNotEmpty) {
+      result = (100 * data[0] / 128) - 100;
+      super.performCalculations(data);
+    }
   }
 
   @override

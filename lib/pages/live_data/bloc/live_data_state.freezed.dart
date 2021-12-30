@@ -33,6 +33,8 @@ class _$LiveDataStateTearOff {
       String vin = '',
       FuelSystemStatus fuelSystemStatus = FuelSystemStatus.motorOff,
       String userAccelerometer = '',
+      double temperature = 0.0,
+      bool isTemperatureAvaliable = false,
       List<String> errors = const []}) {
     return _LiveDataState(
       isRunning: isRunning,
@@ -50,6 +52,8 @@ class _$LiveDataStateTearOff {
       vin: vin,
       fuelSystemStatus: fuelSystemStatus,
       userAccelerometer: userAccelerometer,
+      temperature: temperature,
+      isTemperatureAvaliable: isTemperatureAvaliable,
       errors: errors,
     );
   }
@@ -76,7 +80,10 @@ mixin _$LiveDataState {
   String get vin => throw _privateConstructorUsedError;
   FuelSystemStatus get fuelSystemStatus =>
       throw _privateConstructorUsedError; // Sensors
-  String get userAccelerometer => throw _privateConstructorUsedError; // Errors
+  String get userAccelerometer => throw _privateConstructorUsedError;
+  double get temperature => throw _privateConstructorUsedError;
+  bool get isTemperatureAvaliable =>
+      throw _privateConstructorUsedError; // Errors
   List<String> get errors => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -105,6 +112,8 @@ abstract class $LiveDataStateCopyWith<$Res> {
       String vin,
       FuelSystemStatus fuelSystemStatus,
       String userAccelerometer,
+      double temperature,
+      bool isTemperatureAvaliable,
       List<String> errors});
 
   $TripRecordCopyWith<$Res> get tripRecord;
@@ -137,6 +146,8 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? vin = freezed,
     Object? fuelSystemStatus = freezed,
     Object? userAccelerometer = freezed,
+    Object? temperature = freezed,
+    Object? isTemperatureAvaliable = freezed,
     Object? errors = freezed,
   }) {
     return _then(_value.copyWith(
@@ -200,6 +211,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
               as String,
+      temperature: temperature == freezed
+          ? _value.temperature
+          : temperature // ignore: cast_nullable_to_non_nullable
+              as double,
+      isTemperatureAvaliable: isTemperatureAvaliable == freezed
+          ? _value.isTemperatureAvaliable
+          : isTemperatureAvaliable // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -245,6 +264,8 @@ abstract class _$LiveDataStateCopyWith<$Res>
       String vin,
       FuelSystemStatus fuelSystemStatus,
       String userAccelerometer,
+      double temperature,
+      bool isTemperatureAvaliable,
       List<String> errors});
 
   @override
@@ -281,6 +302,8 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? vin = freezed,
     Object? fuelSystemStatus = freezed,
     Object? userAccelerometer = freezed,
+    Object? temperature = freezed,
+    Object? isTemperatureAvaliable = freezed,
     Object? errors = freezed,
   }) {
     return _then(_LiveDataState(
@@ -344,6 +367,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
               as String,
+      temperature: temperature == freezed
+          ? _value.temperature
+          : temperature // ignore: cast_nullable_to_non_nullable
+              as double,
+      isTemperatureAvaliable: isTemperatureAvaliable == freezed
+          ? _value.isTemperatureAvaliable
+          : isTemperatureAvaliable // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -371,6 +402,8 @@ class _$_LiveDataState implements _LiveDataState {
       this.vin = '',
       this.fuelSystemStatus = FuelSystemStatus.motorOff,
       this.userAccelerometer = '',
+      this.temperature = 0.0,
+      this.isTemperatureAvaliable = false,
       this.errors = const []});
 
   @JsonKey(defaultValue: false)
@@ -414,13 +447,19 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey(defaultValue: '')
   @override // Sensors
   final String userAccelerometer;
+  @JsonKey(defaultValue: 0.0)
+  @override
+  final double temperature;
+  @JsonKey(defaultValue: false)
+  @override
+  final bool isTemperatureAvaliable;
   @JsonKey(defaultValue: const [])
   @override // Errors
   final List<String> errors;
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, maxAcceleration: $maxAcceleration, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, maxAcceleration: $maxAcceleration, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -457,6 +496,10 @@ class _$_LiveDataState implements _LiveDataState {
                 other.fuelSystemStatus == fuelSystemStatus) &&
             (identical(other.userAccelerometer, userAccelerometer) ||
                 other.userAccelerometer == userAccelerometer) &&
+            (identical(other.temperature, temperature) ||
+                other.temperature == temperature) &&
+            (identical(other.isTemperatureAvaliable, isTemperatureAvaliable) ||
+                other.isTemperatureAvaliable == isTemperatureAvaliable) &&
             const DeepCollectionEquality().equals(other.errors, errors));
   }
 
@@ -478,6 +521,8 @@ class _$_LiveDataState implements _LiveDataState {
       vin,
       fuelSystemStatus,
       userAccelerometer,
+      temperature,
+      isTemperatureAvaliable,
       const DeepCollectionEquality().hash(errors));
 
   @JsonKey(ignore: true)
@@ -503,6 +548,8 @@ abstract class _LiveDataState implements LiveDataState {
       String vin,
       FuelSystemStatus fuelSystemStatus,
       String userAccelerometer,
+      double temperature,
+      bool isTemperatureAvaliable,
       List<String> errors}) = _$_LiveDataState;
 
   @override // Live data
@@ -535,6 +582,10 @@ abstract class _LiveDataState implements LiveDataState {
   FuelSystemStatus get fuelSystemStatus;
   @override // Sensors
   String get userAccelerometer;
+  @override
+  double get temperature;
+  @override
+  bool get isTemperatureAvaliable;
   @override // Errors
   List<String> get errors;
   @override

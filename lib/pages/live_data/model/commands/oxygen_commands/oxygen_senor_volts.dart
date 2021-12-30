@@ -19,10 +19,12 @@ abstract class OxygenSensorVolts extends VisibleObdCommand
 
   @override
   void performCalculations(List<int> data) {
-    A = data[0] / 200;
-    B = (100 * data[1] / 128) - 100;
-    result = A;
-    super.performCalculations(data);
+    if (data.isNotEmpty) {
+      A = data[0] / 200;
+      B = (100 * data[1] / 128) - 100;
+      result = A;
+      super.performCalculations(data);
+    }
   }
 
   @override

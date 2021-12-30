@@ -32,6 +32,8 @@ class LiveDataState with _$LiveDataState {
 
     // Sensors
     @Default('') String userAccelerometer,
+    @Default(0.0) double temperature,
+    @Default(false) bool isTemperatureAvaliable,
 
     // Errors
     @Default([]) List<String> errors,
@@ -48,6 +50,27 @@ class LiveDataState with _$LiveDataState {
 }
 
 extension LiveDataStateExtension on LiveDataState {
+  LiveDataState clear() {
+    return LiveDataState(
+      tripStart: DateTime.now(),
+      tripRecord: TripRecord(),
+      pidsChecker: PidsChecker(),
+      supportedPids: supportedPids,
+      isTemperatureAvaliable: isTemperatureAvaliable,
+    );
+  }
+
+  LiveDataState localMode() {
+    return LiveDataState(
+      tripStart: DateTime.now(),
+      tripRecord: TripRecord(),
+      pidsChecker: PidsChecker(),
+      supportedPids: supportedPids,
+      isTemperatureAvaliable: isTemperatureAvaliable,
+      isLocalMode: true,
+    );
+  }
+
   LiveDataState updateSupportedPidsPart(String value) {
     String code = value.substring(value.length - 2);
     switch (code) {

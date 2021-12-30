@@ -14,9 +14,11 @@ class SpeedCommand extends VisibleObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    previousResult = result;
-    result = data[0].toInt();
-    super.performCalculations(data);
+    if (data.isNotEmpty) {
+      previousResult = result;
+      result = data[0];
+      super.performCalculations(data);
+    }
   }
 
   @override

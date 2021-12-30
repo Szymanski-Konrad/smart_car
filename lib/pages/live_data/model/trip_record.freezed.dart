@@ -29,6 +29,7 @@ class _$TripRecordTearOff {
       double gpsSpeed = -1.0,
       double gpsDistance = 0.0,
       int currentSpeed = -1,
+      double averageSpeed = 0.0,
       double range = -1.0,
       double tankSize = 55.0,
       int tripSeconds = 0,
@@ -50,6 +51,7 @@ class _$TripRecordTearOff {
       gpsSpeed: gpsSpeed,
       gpsDistance: gpsDistance,
       currentSpeed: currentSpeed,
+      averageSpeed: averageSpeed,
       range: range,
       tankSize: tankSize,
       tripSeconds: tripSeconds,
@@ -79,6 +81,7 @@ mixin _$TripRecord {
   double get gpsSpeed => throw _privateConstructorUsedError;
   double get gpsDistance => throw _privateConstructorUsedError;
   int get currentSpeed => throw _privateConstructorUsedError;
+  double get averageSpeed => throw _privateConstructorUsedError;
   double get range => throw _privateConstructorUsedError;
   double get tankSize => throw _privateConstructorUsedError;
   int get tripSeconds => throw _privateConstructorUsedError;
@@ -112,6 +115,7 @@ abstract class $TripRecordCopyWith<$Res> {
       double gpsSpeed,
       double gpsDistance,
       int currentSpeed,
+      double averageSpeed,
       double range,
       double tankSize,
       int tripSeconds,
@@ -144,6 +148,7 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? gpsSpeed = freezed,
     Object? gpsDistance = freezed,
     Object? currentSpeed = freezed,
+    Object? averageSpeed = freezed,
     Object? range = freezed,
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
@@ -199,6 +204,10 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.currentSpeed
           : currentSpeed // ignore: cast_nullable_to_non_nullable
               as int,
+      averageSpeed: averageSpeed == freezed
+          ? _value.averageSpeed
+          : averageSpeed // ignore: cast_nullable_to_non_nullable
+              as double,
       range: range == freezed
           ? _value.range
           : range // ignore: cast_nullable_to_non_nullable
@@ -257,6 +266,7 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double gpsSpeed,
       double gpsDistance,
       int currentSpeed,
+      double averageSpeed,
       double range,
       double tankSize,
       int tripSeconds,
@@ -291,6 +301,7 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? gpsSpeed = freezed,
     Object? gpsDistance = freezed,
     Object? currentSpeed = freezed,
+    Object? averageSpeed = freezed,
     Object? range = freezed,
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
@@ -346,6 +357,10 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.currentSpeed
           : currentSpeed // ignore: cast_nullable_to_non_nullable
               as int,
+      averageSpeed: averageSpeed == freezed
+          ? _value.averageSpeed
+          : averageSpeed // ignore: cast_nullable_to_non_nullable
+              as double,
       range: range == freezed
           ? _value.range
           : range // ignore: cast_nullable_to_non_nullable
@@ -401,6 +416,7 @@ class _$_TripRecord implements _TripRecord {
       this.gpsSpeed = -1.0,
       this.gpsDistance = 0.0,
       this.currentSpeed = -1,
+      this.averageSpeed = 0.0,
       this.range = -1.0,
       this.tankSize = 55.0,
       this.tripSeconds = 0,
@@ -444,6 +460,9 @@ class _$_TripRecord implements _TripRecord {
   @JsonKey(defaultValue: -1)
   @override
   final int currentSpeed;
+  @JsonKey(defaultValue: 0.0)
+  @override
+  final double averageSpeed;
   @JsonKey(defaultValue: -1.0)
   @override
   final double range;
@@ -474,7 +493,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -504,6 +523,8 @@ class _$_TripRecord implements _TripRecord {
                 other.gpsDistance == gpsDistance) &&
             (identical(other.currentSpeed, currentSpeed) ||
                 other.currentSpeed == currentSpeed) &&
+            (identical(other.averageSpeed, averageSpeed) ||
+                other.averageSpeed == averageSpeed) &&
             (identical(other.range, range) || other.range == range) &&
             (identical(other.tankSize, tankSize) ||
                 other.tankSize == tankSize) &&
@@ -537,6 +558,7 @@ class _$_TripRecord implements _TripRecord {
         gpsSpeed,
         gpsDistance,
         currentSpeed,
+        averageSpeed,
         range,
         tankSize,
         tripSeconds,
@@ -567,6 +589,7 @@ abstract class _TripRecord implements TripRecord {
       double gpsSpeed,
       double gpsDistance,
       int currentSpeed,
+      double averageSpeed,
       double range,
       double tankSize,
       int tripSeconds,
@@ -599,6 +622,8 @@ abstract class _TripRecord implements TripRecord {
   double get gpsDistance;
   @override
   int get currentSpeed;
+  @override
+  double get averageSpeed;
   @override
   double get range;
   @override

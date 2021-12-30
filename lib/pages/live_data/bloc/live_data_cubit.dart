@@ -4,11 +4,12 @@ import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:environment_sensors/environment_sensors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:smart_car/app/example/trips/long_trip.dart';
+import 'package:smart_car/app/example/trips/short_trip.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -23,7 +24,6 @@ import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
-import 'package:smart_car/pages/live_data/model/oil_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
@@ -103,9 +103,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isRunning: true));
 
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      emit(state.copyWith(
-        tripRecord: state.tripRecord.copyWith(tripSeconds: timer.tick),
-      ));
+      final speed = commands.whereType<SpeedCommand>().first.result;
+      emit(state.copyWith(tripRecord: state.tripRecord.updateSeconds(speed)));
 
       if (timer.tick % 600 == 0) saveCommands();
     });
@@ -151,20 +150,13 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> _runTest() async {
-    final testCommands = longTrip.map(TestCommand.fromJson);
+    final testCommands = shortTrip.map(TestCommand.fromJson);
 
-    emit(LiveDataState.init());
-    emit(state.copyWith(isLocalMode: true));
+    emit(state.localMode());
 
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final speed = commands.whereType<SpeedCommand>().first.result;
-      if (speed.isFinite) {
-        emit(state.copyWith(
-            tripRecord: state.tripRecord.updateSeconds(speed.toInt())));
-      }
-      emit(state.copyWith(
-        tripRecord: state.tripRecord.copyWith(tripSeconds: timer.tick),
-      ));
+      emit(state.copyWith(tripRecord: state.tripRecord.updateSeconds(speed)));
     });
 
     for (final testCommand in testCommands) {
@@ -176,15 +168,15 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _runTest();
   }
 
-  void init() {
+  void init() async {
     commands.addAll([
+      RpmCommand(),
+      SpeedCommand(),
+      MafCommand(),
       EngineCoolantCommand(),
       EngineLoadCommand(),
       FuelLevelCommand(),
       IntakeAirTempCommand(),
-      MafCommand(),
-      SpeedCommand(),
-      RpmCommand(),
       // OilTempCommand(),
       ThrottlePositionCommand(),
       FuelSystemStatusCommand(),
@@ -204,10 +196,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     //       userAccelerometer: '\n${event.x}\n${event.y}\n${event.z}'));
     // });
 
-    positionSub = Geolocator.getPositionStream(
-      intervalDuration: const Duration(milliseconds: 500),
-    ).listen(onGpsPositionChange);
-
     if (device.address == 'AA:AA') {
       _runTest();
     } else {
@@ -226,6 +214,22 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         print(error);
       });
     }
+
+    final environmentSensors = EnvironmentSensors();
+
+    final isTemperatureAvailable = await environmentSensors
+        .getSensorAvailable(SensorType.AmbientTemperature);
+    emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
+    if (isTemperatureAvailable) {
+      environmentSensors.temperature.listen((event) {
+        print(event);
+        emit(state.copyWith(temperature: event));
+      });
+    }
+
+    positionSub = Geolocator.getPositionStream(
+      intervalDuration: const Duration(milliseconds: 500),
+    ).listen(onGpsPositionChange);
   }
 
   void sendVinCommand() {
@@ -254,6 +258,16 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       }
       await _sendCommand(_command);
     }
+  }
+
+  double get fuelUsedFromFuelLvl {
+    final fuelCommand = commands.whereType<FuelLevelCommand>().first;
+    final max = fuelCommand.maxValue;
+    final current = fuelCommand.result;
+    if (max.isFinite && current.isFinite) {
+      return ((max - current).toDouble() / 100) * 55;
+    }
+    return 0;
   }
 
   Future<void> _sendCommand(String command) async {
@@ -295,15 +309,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     return !result.isError;
   }
 
-  ObdCommand get _currentCommand => commands[_commandIndex];
-
   DateTime lastReciveCommandTime = DateTime.now();
 
   void _onDataReceived(Uint8List data) {
     try {
       String dataString = String.fromCharCodes(data);
       if (dataString.trim().isEmpty) {
-        // logToFile('Data is empty: $data');
         return;
       }
 
@@ -335,8 +346,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         lastReciveCommandTime = now;
 
         // Create test commands
-        final testCommand = TestCommand('01 ${splitted[1]}', difference, data);
-        testCommands.add(testCommand);
+        if (!state.isLocalMode) {
+          final testCommand =
+              TestCommand('01 ${splitted[1]}', difference, data);
+          testCommands.add(testCommand);
+        }
 
         if (pid != PID.unknown) {
           final dataIndex = commands.lastIndexWhere(
@@ -359,16 +373,34 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               }
               break;
             case PID.fuelLevel:
-              emit(state.copyWith(
-                tripRecord:
-                    tripRecord.updateFuelLvl(_currentCommand.result.toDouble()),
-              ));
+              if (command is FuelLevelCommand) {
+                emit(state.copyWith(
+                  tripRecord:
+                      tripRecord.updateFuelLvl(command.result.toDouble()),
+                ));
+              }
               break;
             case PID.maf:
               if (command is MafCommand) {
+                final stft1 =
+                    commands.whereType<ShortTermFuelTrimBank1>().first.result;
+                final ltft1 =
+                    commands.whereType<LongTermFuelTrimBank1>().first.result;
+                final stft2 =
+                    commands.whereType<ShortTermFuelTrimBank2>().first.result;
+                final ltft2 =
+                    commands.whereType<LongTermFuelTrimBank2>().first.result;
+
+                final shortFuelTrim = 1.0 + (stft1 + stft2).toDouble() / 100;
+                final longFuelTrim = 1.0 + (ltft1 + ltft2).toDouble() / 100;
+
                 final usedFuel = command.fuelUsed;
                 final instFuelConsumption = command.fuel100km(
-                    tripRecord.currentSpeed.toInt(), tripRecord.engineLoad);
+                  tripRecord.currentSpeed.toInt(),
+                  tripRecord.engineLoad,
+                  shortFuelTrim,
+                  longFuelTrim,
+                );
                 final avgFuelConsumption =
                     100 * tripRecord.usedFuel / tripRecord.distance;
                 final speed = commands.whereType<SpeedCommand>().first.result;
@@ -376,8 +408,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                     commands.whereType<FuelSystemStatusCommand>().first.status;
                 emit(state.copyWith(
                   tripRecord: tripRecord
-                      .updateUsedFuel(usedFuel(tripRecord.engineLoad),
-                          speed.toInt(), fuelStatus)
+                      .updateUsedFuel(
+                          usedFuel(tripRecord.engineLoad), speed, fuelStatus)
                       .copyWith(
                         instFuelConsumption: instFuelConsumption,
                         averageFuelConsumption: avgFuelConsumption,
@@ -397,10 +429,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                 final maxAcceleration =
                     max(acceleration, state.maxAcceleration);
                 emit(state.copyWith(
-                  tripRecord: tripRecord.copyWith(
-                    distance: tripRecord.distance + distance,
-                    currentSpeed: command.result.toInt(),
-                  ),
+                  tripRecord: tripRecord.updateDistance(
+                      distance, command.result.toInt()),
                   maxAcceleration: maxAcceleration,
                   acceleration: acceleration,
                 ));

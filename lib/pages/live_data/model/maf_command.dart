@@ -12,9 +12,11 @@ class MafCommand extends VisibleObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    previousResult = result;
-    result = (256 * data[0] + data[1]) / 100;
-    super.performCalculations(data);
+    if (data.length >= 2) {
+      previousResult = result;
+      result = (256 * data[0] + data[1]) / 100;
+      super.performCalculations(data);
+    }
   }
 
   @override
@@ -29,16 +31,17 @@ class MafCommand extends VisibleObdCommand {
   double fuelFlow(double load,
       {double fuelDensity = 740, double airFuelRatio = 14.7}) {
     if (result > 0) {
-      return 10 * (load / 100 * result * 3600) / (fuelDensity * airFuelRatio);
+      // return 10 * (load / 100 * result * 3600) / (fuelDensity * airFuelRatio);
+      return (result * 3600) / (fuelDensity * airFuelRatio);
     }
     return 0;
   }
 
   /// Calculate fuel consumption per 100 km
   /// [speed] - current speed of vehicle
-  double fuel100km(int speed, double load) {
+  double fuel100km(int speed, double load, double longTerm, double shortTerm) {
     if (speed > 0) {
-      return (fuelFlow(load) / speed) * 100;
+      return (fuelFlow(load) * longTerm * shortTerm / speed) * 100;
     }
     return 0;
   }

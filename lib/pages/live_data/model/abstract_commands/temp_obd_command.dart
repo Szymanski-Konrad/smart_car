@@ -17,8 +17,10 @@ abstract class TempObdCommand extends VisibleObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    previousResult = result;
-    result = data[0] - 40;
-    super.performCalculations(data);
+    if (data.isNotEmpty) {
+      previousResult = result;
+      result = data[0] - 40;
+      super.performCalculations(data);
+    }
   }
 }
