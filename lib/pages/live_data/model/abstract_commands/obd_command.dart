@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/utils/list_extension.dart';
 
 abstract class ObdCommand {
@@ -48,11 +49,14 @@ abstract class ObdCommand {
   }
 
   /// Called when ELM send back [data] from command, then do
-  void commandBack(List<int> data) {
+  void commandBack(List<int> data, bool isLocalMode) {
     final now = DateTime.now();
     final lastTime = lastReciveTime;
     if (lastTime != null) {
       differenceMiliseconds = now.difference(lastTime).inMilliseconds.abs();
+    }
+    if (isLocalMode) {
+      differenceMiliseconds *= Constants.liveModeSpeedUp;
     }
     lastReciveTime = now;
     responseTime = now.difference(sendTime).inMilliseconds.abs();

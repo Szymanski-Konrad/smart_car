@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class CommandedAirFuelRatioCommand extends VisibleObdCommand {
-  CommandedAirFuelRatioCommand() : super('01 44', prio: 1);
+  CommandedAirFuelRatioCommand() : super('01 44', prio: 0);
 
   @override
   String get description => 'Commanded Air Fuel Ratio command';

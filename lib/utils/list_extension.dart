@@ -1,6 +1,7 @@
+import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/utils/trending.dart';
 
-extension ListExtension<T> on List<double> {
+extension DoubleListExtension<T> on List<double> {
   void addWithMax(double value, int max) {
     if (length >= max) {
       removeAt(0);
@@ -16,5 +17,13 @@ extension ListExtension<T> on List<double> {
     if (diff.abs() <= range) return Trending.constant;
     if (diff > 0) return Trending.up;
     return Trending.down;
+  }
+}
+
+extension ListExtension<T> on List<T> {
+  E? safeFirst<E>() {
+    final results = whereType<E>();
+    if (results.isEmpty) return null;
+    return results.first;
   }
 }

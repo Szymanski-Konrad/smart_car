@@ -5,24 +5,21 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:smart_car/app/example/trips/short_trip.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
-import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
-import 'package:smart_car/pages/live_data/model/engine_coolant_command.dart';
 import 'package:smart_car/pages/live_data/model/engine_load_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
-import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
 import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
@@ -31,6 +28,7 @@ import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:sendgrid_mailer/sendgrid_mailer.dart';
+import 'package:smart_car/utils/list_extension.dart';
 
 class LiveDataCubit extends Cubit<LiveDataState> {
   LiveDataCubit({required this.device}) : super(LiveDataState.init()) {
@@ -43,7 +41,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   // list of commands to send
   List<ObdCommand> commands = [];
   Queue<String> specialCommands = Queue();
-  Queue<String> commandsQueue = Queue();
+  Queue<String> pidsQueue = Queue<String>();
 
   final BluetoothDevice device;
   int _commandIndex = 0;
@@ -103,8 +101,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isRunning: true));
 
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final speed = commands.whereType<SpeedCommand>().first.result;
-      emit(state.copyWith(tripRecord: state.tripRecord.updateSeconds(speed)));
+      final speed = commands.safeFirst<SpeedCommand>()?.result;
+      emit(state.copyWith(
+          tripRecord: state.tripRecord.updateSeconds(speed ?? 0)));
 
       if (timer.tick % 600 == 0) saveCommands();
     });
@@ -150,17 +149,25 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> _runTest() async {
-    final testCommands = shortTrip.map(TestCommand.fromJson);
-
+    print('test runned');
+    final json = await rootBundle.loadString('assets/json/very_long.json');
+    final decoded = jsonDecode(json);
+    final testCommands =
+        decoded.map((e) => TestCommand.fromJson(e as Map<String, dynamic>));
     emit(state.localMode());
 
-    _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final speed = commands.whereType<SpeedCommand>().first.result;
-      emit(state.copyWith(tripRecord: state.tripRecord.updateSeconds(speed)));
-    });
+    _everySecondTimer = Timer.periodic(
+      const Duration(milliseconds: 1000 ~/ Constants.liveModeSpeedUp),
+      (timer) {
+        final speed = commands.safeFirst<SpeedCommand>()?.result;
+        emit(state.copyWith(
+            tripRecord: state.tripRecord.updateSeconds(speed ?? 0)));
+      },
+    );
 
     for (final testCommand in testCommands) {
-      await Future.delayed(Duration(milliseconds: testCommand.responseTime));
+      await Future.delayed(Duration(
+          milliseconds: testCommand.responseTime ~/ Constants.liveModeSpeedUp));
       _onDataReceived(testCommand.data);
     }
 
@@ -168,29 +175,20 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _runTest();
   }
 
-  void init() async {
-    commands.addAll([
-      RpmCommand(),
-      SpeedCommand(),
-      MafCommand(),
-      EngineCoolantCommand(),
-      EngineLoadCommand(),
-      FuelLevelCommand(),
-      IntakeAirTempCommand(),
-      // OilTempCommand(),
-      ThrottlePositionCommand(),
-      FuelSystemStatusCommand(),
-      OxygenSensorVolts1(),
-      OxygenSensorVolts2(),
-      OxygenSensorVolts5(),
-      OxygenSensorVolts6(),
-      CommandedAirFuelRatioCommand(),
-      ShortTermFuelTrimBank1(),
-      LongTermFuelTrimBank1(),
-      ShortTermFuelTrimBank2(),
-      LongTermFuelTrimBank2(),
-    ]);
+  void addCommand(String command) {
+    final pid = PIDExtension.code(command.substring(command.length - 2));
+    final obdCommand = pid.command;
+    if (obdCommand == null) {
+      print('Unsupported PID: $command');
+      return;
+    }
 
+    // if (!commands.(obdCommand)) {
+    commands.add(obdCommand);
+    // }
+  }
+
+  void init() async {
     // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
     //   emit(state.copyWith(
     //       userAccelerometer: '\n${event.x}\n${event.y}\n${event.z}'));
@@ -240,8 +238,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     specialCommands.add('0900');
   }
 
-  Queue<String> pidsQueue = Queue<String>();
-
   Future<void> _sendNextCommand() async {
     if (pidsQueue.isNotEmpty) {
       final command = pidsQueue.removeFirst();
@@ -261,7 +257,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   double get fuelUsedFromFuelLvl {
-    final fuelCommand = commands.whereType<FuelLevelCommand>().first;
+    final fuelCommand = commands.safeFirst<FuelLevelCommand>();
+    if (fuelCommand == null) return 0;
     final max = fuelCommand.maxValue;
     final current = fuelCommand.result;
     if (max.isFinite && current.isFinite) {
@@ -356,9 +353,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           final dataIndex = commands.lastIndexWhere(
               (element) => element.command.split(' ').last == splitted[1]);
 
-          commands[dataIndex].commandBack(converted);
+          commands[dataIndex].commandBack(converted, state.isLocalMode);
 
-          var tripRecord = state.tripRecord;
+          final tripRecord = state.tripRecord;
           final command = commands[dataIndex];
 
           switch (pid) {
@@ -383,36 +380,44 @@ class LiveDataCubit extends Cubit<LiveDataState> {
             case PID.maf:
               if (command is MafCommand) {
                 final stft1 =
-                    commands.whereType<ShortTermFuelTrimBank1>().first.result;
+                    commands.safeFirst<ShortTermFuelTrimBank1>()?.result;
                 final ltft1 =
-                    commands.whereType<LongTermFuelTrimBank1>().first.result;
+                    commands.safeFirst<LongTermFuelTrimBank1>()?.result;
                 final stft2 =
-                    commands.whereType<ShortTermFuelTrimBank2>().first.result;
+                    commands.safeFirst<ShortTermFuelTrimBank2>()?.result;
                 final ltft2 =
-                    commands.whereType<LongTermFuelTrimBank2>().first.result;
+                    commands.safeFirst<LongTermFuelTrimBank2>()?.result;
+                final airFuelRatio =
+                    commands.safeFirst<CommandedAirFuelRatioCommand>()?.result;
 
-                final shortFuelTrim = 1.0 + (stft1 + stft2).toDouble() / 100;
-                final longFuelTrim = 1.0 + (ltft1 + ltft2).toDouble() / 100;
+                final shortFuelTrim =
+                    1.0 + (stft1 ?? 0.0 + (stft2 ?? 0.0)).toDouble();
+                final longFuelTrim =
+                    1.0 + (ltft1 ?? 0.0 + (ltft2 ?? 0.0)).toDouble();
 
                 final usedFuel = command.fuelUsed;
                 final instFuelConsumption = command.fuel100km(
-                  tripRecord.currentSpeed.toInt(),
+                  tripRecord.currentSpeed,
                   tripRecord.engineLoad,
                   shortFuelTrim,
                   longFuelTrim,
+                  (airFuelRatio ?? 1.0) * 14.7,
                 );
                 final avgFuelConsumption =
                     100 * tripRecord.usedFuel / tripRecord.distance;
-                final speed = commands.whereType<SpeedCommand>().first.result;
+                final speed = commands.safeFirst<SpeedCommand>()?.result;
                 final fuelStatus =
-                    commands.whereType<FuelSystemStatusCommand>().first.status;
+                    commands.safeFirst<FuelSystemStatusCommand>()?.status;
+                final kmPerL = command.kmPerL(tripRecord.currentSpeed);
+
                 emit(state.copyWith(
                   tripRecord: tripRecord
-                      .updateUsedFuel(
-                          usedFuel(tripRecord.engineLoad), speed, fuelStatus)
+                      .updateUsedFuel(usedFuel(tripRecord.engineLoad),
+                          speed ?? 0, fuelStatus ?? FuelSystemStatus.motorOff)
                       .copyWith(
                         instFuelConsumption: instFuelConsumption,
                         averageFuelConsumption: avgFuelConsumption,
+                        kmPerL: kmPerL,
                       )
                       .updateRange(),
                 ));
@@ -422,18 +427,18 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               if (command is SpeedCommand) {
                 final distance = command.distanceTraveled;
                 final acceleration = command.acceleration();
-                if (acceleration.abs() > Constants.rapidSpeedChange) {
-                  tripRecord = tripRecord.updateRapidAcceleration(
-                      isPositive: acceleration > 0);
-                }
-                final maxAcceleration =
-                    max(acceleration, state.maxAcceleration);
                 emit(state.copyWith(
-                  tripRecord: tripRecord.updateDistance(
-                      distance, command.result.toInt()),
-                  maxAcceleration: maxAcceleration,
+                  tripRecord: tripRecord
+                      .updateDistance(distance, command.result.toInt())
+                      .updateRapidAcceleration(acceleration: acceleration),
                   acceleration: acceleration,
                 ));
+              }
+              break;
+            case PID.throttlePosition:
+              if (command is ThrottlePositionCommand) {
+                final position = command.result.toDouble();
+                emit(state.copyWith(throttlePressed: position > 20));
               }
               break;
             default:
@@ -452,6 +457,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
             emit(state.updateSupportedPidsPart(special));
           }
           final currentPids = List<String>.from(state.supportedPids);
+          for (var pid in pids) {
+            if (!currentPids.contains(pid)) addCommand(pid);
+          }
           currentPids.addAll(pids);
           emit(state
               .updateReadedPidsPart('01' + splitted[1])

@@ -23,6 +23,7 @@ class _$TripRecordTearOff {
       double distance = 0.0,
       double instFuelConsumption = -1.0,
       double averageFuelConsumption = -1.0,
+      double kmPerL = 0.0,
       double usedFuel = 0.0,
       double idleUsedFuel = 0.0,
       double savedFuel = 0.0,
@@ -45,6 +46,7 @@ class _$TripRecordTearOff {
       distance: distance,
       instFuelConsumption: instFuelConsumption,
       averageFuelConsumption: averageFuelConsumption,
+      kmPerL: kmPerL,
       usedFuel: usedFuel,
       idleUsedFuel: idleUsedFuel,
       savedFuel: savedFuel,
@@ -75,6 +77,7 @@ mixin _$TripRecord {
   double get distance => throw _privateConstructorUsedError;
   double get instFuelConsumption => throw _privateConstructorUsedError;
   double get averageFuelConsumption => throw _privateConstructorUsedError;
+  double get kmPerL => throw _privateConstructorUsedError;
   double get usedFuel => throw _privateConstructorUsedError;
   double get idleUsedFuel => throw _privateConstructorUsedError;
   double get savedFuel => throw _privateConstructorUsedError;
@@ -109,6 +112,7 @@ abstract class $TripRecordCopyWith<$Res> {
       double distance,
       double instFuelConsumption,
       double averageFuelConsumption,
+      double kmPerL,
       double usedFuel,
       double idleUsedFuel,
       double savedFuel,
@@ -142,6 +146,7 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? distance = freezed,
     Object? instFuelConsumption = freezed,
     Object? averageFuelConsumption = freezed,
+    Object? kmPerL = freezed,
     Object? usedFuel = freezed,
     Object? idleUsedFuel = freezed,
     Object? savedFuel = freezed,
@@ -179,6 +184,10 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
       averageFuelConsumption: averageFuelConsumption == freezed
           ? _value.averageFuelConsumption
           : averageFuelConsumption // ignore: cast_nullable_to_non_nullable
+              as double,
+      kmPerL: kmPerL == freezed
+          ? _value.kmPerL
+          : kmPerL // ignore: cast_nullable_to_non_nullable
               as double,
       usedFuel: usedFuel == freezed
           ? _value.usedFuel
@@ -260,6 +269,7 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double distance,
       double instFuelConsumption,
       double averageFuelConsumption,
+      double kmPerL,
       double usedFuel,
       double idleUsedFuel,
       double savedFuel,
@@ -295,6 +305,7 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? distance = freezed,
     Object? instFuelConsumption = freezed,
     Object? averageFuelConsumption = freezed,
+    Object? kmPerL = freezed,
     Object? usedFuel = freezed,
     Object? idleUsedFuel = freezed,
     Object? savedFuel = freezed,
@@ -332,6 +343,10 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
       averageFuelConsumption: averageFuelConsumption == freezed
           ? _value.averageFuelConsumption
           : averageFuelConsumption // ignore: cast_nullable_to_non_nullable
+              as double,
+      kmPerL: kmPerL == freezed
+          ? _value.kmPerL
+          : kmPerL // ignore: cast_nullable_to_non_nullable
               as double,
       usedFuel: usedFuel == freezed
           ? _value.usedFuel
@@ -410,6 +425,7 @@ class _$_TripRecord implements _TripRecord {
       this.distance = 0.0,
       this.instFuelConsumption = -1.0,
       this.averageFuelConsumption = -1.0,
+      this.kmPerL = 0.0,
       this.usedFuel = 0.0,
       this.idleUsedFuel = 0.0,
       this.savedFuel = 0.0,
@@ -442,6 +458,9 @@ class _$_TripRecord implements _TripRecord {
   @JsonKey(defaultValue: -1.0)
   @override
   final double averageFuelConsumption;
+  @JsonKey(defaultValue: 0.0)
+  @override
+  final double kmPerL;
   @JsonKey(defaultValue: 0.0)
   @override
   final double usedFuel;
@@ -493,7 +512,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -511,6 +530,7 @@ class _$_TripRecord implements _TripRecord {
                 other.instFuelConsumption == instFuelConsumption) &&
             (identical(other.averageFuelConsumption, averageFuelConsumption) ||
                 other.averageFuelConsumption == averageFuelConsumption) &&
+            (identical(other.kmPerL, kmPerL) || other.kmPerL == kmPerL) &&
             (identical(other.usedFuel, usedFuel) ||
                 other.usedFuel == usedFuel) &&
             (identical(other.idleUsedFuel, idleUsedFuel) ||
@@ -552,6 +572,7 @@ class _$_TripRecord implements _TripRecord {
         distance,
         instFuelConsumption,
         averageFuelConsumption,
+        kmPerL,
         usedFuel,
         idleUsedFuel,
         savedFuel,
@@ -583,6 +604,7 @@ abstract class _TripRecord implements TripRecord {
       double distance,
       double instFuelConsumption,
       double averageFuelConsumption,
+      double kmPerL,
       double usedFuel,
       double idleUsedFuel,
       double savedFuel,
@@ -610,6 +632,8 @@ abstract class _TripRecord implements TripRecord {
   double get instFuelConsumption;
   @override
   double get averageFuelConsumption;
+  @override
+  double get kmPerL;
   @override
   double get usedFuel;
   @override

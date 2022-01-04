@@ -1,5 +1,20 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
+import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
+import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
+import 'package:smart_car/pages/live_data/model/engine_coolant_command.dart';
+import 'package:smart_car/pages/live_data/model/engine_load_command.dart';
+import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
+import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
+import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
+import 'package:smart_car/pages/live_data/model/maf_command.dart';
+import 'package:smart_car/pages/live_data/model/oil_temp_command.dart';
+import 'package:smart_car/pages/live_data/model/rpm_command.dart';
+import 'package:smart_car/pages/live_data/model/speed_command.dart';
+import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
+import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
+
 abstract class Pids {
   // Unsupported pids
   static const String fuelPressure = '0A';
@@ -180,6 +195,51 @@ extension PIDExtension on PID {
         return PID.fuelSystemStatus;
       default:
         return PID.unknown;
+    }
+  }
+
+  ObdCommand? get command {
+    switch (this) {
+      case PID.engineCoolant:
+        return EngineCoolantCommand();
+      case PID.engineLoad:
+        return EngineLoadCommand();
+      case PID.fuelLevel:
+        return FuelLevelCommand();
+      case PID.intakeAirTemp:
+        return IntakeAirTempCommand();
+      case PID.maf:
+        return MafCommand();
+      case PID.oilTemp:
+        return OilTempCommand();
+      case PID.rpm:
+        return RpmCommand();
+      case PID.speed:
+        return SpeedCommand();
+      case PID.throttlePosition:
+        return ThrottlePositionCommand();
+      case PID.fuelSystemStatus:
+        return FuelSystemStatusCommand();
+      case PID.commandedAirFuelRatio:
+        return CommandedAirFuelRatioCommand();
+      case PID.oxygenSensor1A:
+        return OxygenSensorVolts1();
+      case PID.oxygenSensor2A:
+        return OxygenSensorVolts2();
+      case PID.oxygenSensor5A:
+        return OxygenSensorVolts5();
+      case PID.oxygenSensor6A:
+        return OxygenSensorVolts6();
+      case PID.STFTB1:
+        return ShortTermFuelTrimBank1();
+      case PID.LTFTB1:
+        return LongTermFuelTrimBank1();
+      case PID.STFTB2:
+        return ShortTermFuelTrimBank2();
+      case PID.LTFTB2:
+        return LongTermFuelTrimBank2();
+      case PID.unknown:
+        return null;
     }
   }
 }

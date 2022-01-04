@@ -6,12 +6,9 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_tile.dart';
-import 'package:smart_car/pages/live_data/ui/supported_pids_tile.dart';
-import 'package:smart_car/pages/live_data/ui/trip_tile.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/ui/fuel_stats_tile.dart';
-import 'package:smart_car/utils/ui/info_tile.dart';
 
 class LiveDataPage extends StatelessWidget {
   const LiveDataPage({Key? key, required this.device}) : super(key: key);
@@ -74,7 +71,22 @@ class LiveDataPage extends StatelessWidget {
                       child: Text(state.fuelSystemStatus.description),
                     ),
                   ),
-                  Text('Used fuel: ${cubit.fuelUsedFromFuelLvl} L'),
+                  Text(
+                      'Used fuel: ${cubit.fuelUsedFromFuelLvl.toStringAsFixed(3)} L'),
+                  Text(
+                      'FC: ${(100 * cubit.fuelUsedFromFuelLvl / state.tripRecord.distance).toStringAsFixed(3)} l/100km'),
+
+                  Text('Pedal pressed: ${state.throttlePressed}'),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FuelStatsTile(records: state.tripRecord.fuelSection),
+                      const SizedBox.square(dimension: 8.0),
+                      FuelStatsTile(records: state.tripRecord.tripSection),
+                      const SizedBox.square(dimension: 8.0),
+                      FuelStatsTile(records: state.tripRecord.timeSection),
+                    ],
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Center(
@@ -88,16 +100,7 @@ class LiveDataPage extends StatelessWidget {
                       .whereType<VisibleObdCommand>()
                       .map((command) => LiveDataTile(command: command))
                       .toList(),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FuelStatsTile(records: state.tripRecord.fuelSection),
-                      const SizedBox.square(dimension: 8.0),
-                      FuelStatsTile(records: state.tripRecord.tripSection),
-                      const SizedBox.square(dimension: 8.0),
-                      FuelStatsTile(records: state.tripRecord.timeSection),
-                    ],
-                  ),
+
                   // ...state.tripRecord.tripDetails
                   //     .map((details) => TripTile(details: details)),
                   const SizedBox(height: 20.0),

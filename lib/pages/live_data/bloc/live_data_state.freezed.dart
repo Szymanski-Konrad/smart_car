@@ -25,7 +25,9 @@ class _$LiveDataStateTearOff {
       Position? lastPosition,
       bool isLocalMode = false,
       double acceleration = 0,
-      double maxAcceleration = 0,
+      bool throttlePressed = false,
+      double maf2 = 0.0,
+      double maf3 = 0.0,
       bool isConnecting = true,
       bool isDisconnecting = false,
       List<String> supportedPids = const [],
@@ -44,7 +46,9 @@ class _$LiveDataStateTearOff {
       lastPosition: lastPosition,
       isLocalMode: isLocalMode,
       acceleration: acceleration,
-      maxAcceleration: maxAcceleration,
+      throttlePressed: throttlePressed,
+      maf2: maf2,
+      maf3: maf3,
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
       supportedPids: supportedPids,
@@ -72,7 +76,10 @@ mixin _$LiveDataState {
   Position? get lastPosition => throw _privateConstructorUsedError;
   bool get isLocalMode => throw _privateConstructorUsedError;
   double get acceleration => throw _privateConstructorUsedError;
-  double get maxAcceleration => throw _privateConstructorUsedError; // Bluetooth
+  bool get throttlePressed =>
+      throw _privateConstructorUsedError; // Just for testing
+  double get maf2 => throw _privateConstructorUsedError;
+  double get maf3 => throw _privateConstructorUsedError; // Bluetooth
   bool get isConnecting => throw _privateConstructorUsedError;
   bool get isDisconnecting => throw _privateConstructorUsedError; // Pids
   List<String> get supportedPids => throw _privateConstructorUsedError;
@@ -104,7 +111,9 @@ abstract class $LiveDataStateCopyWith<$Res> {
       Position? lastPosition,
       bool isLocalMode,
       double acceleration,
-      double maxAcceleration,
+      bool throttlePressed,
+      double maf2,
+      double maf3,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -138,7 +147,9 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? lastPosition = freezed,
     Object? isLocalMode = freezed,
     Object? acceleration = freezed,
-    Object? maxAcceleration = freezed,
+    Object? throttlePressed = freezed,
+    Object? maf2 = freezed,
+    Object? maf3 = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? supportedPids = freezed,
@@ -179,9 +190,17 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.acceleration
           : acceleration // ignore: cast_nullable_to_non_nullable
               as double,
-      maxAcceleration: maxAcceleration == freezed
-          ? _value.maxAcceleration
-          : maxAcceleration // ignore: cast_nullable_to_non_nullable
+      throttlePressed: throttlePressed == freezed
+          ? _value.throttlePressed
+          : throttlePressed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      maf2: maf2 == freezed
+          ? _value.maf2
+          : maf2 // ignore: cast_nullable_to_non_nullable
+              as double,
+      maf3: maf3 == freezed
+          ? _value.maf3
+          : maf3 // ignore: cast_nullable_to_non_nullable
               as double,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
@@ -256,7 +275,9 @@ abstract class _$LiveDataStateCopyWith<$Res>
       Position? lastPosition,
       bool isLocalMode,
       double acceleration,
-      double maxAcceleration,
+      bool throttlePressed,
+      double maf2,
+      double maf3,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -294,7 +315,9 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? lastPosition = freezed,
     Object? isLocalMode = freezed,
     Object? acceleration = freezed,
-    Object? maxAcceleration = freezed,
+    Object? throttlePressed = freezed,
+    Object? maf2 = freezed,
+    Object? maf3 = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? supportedPids = freezed,
@@ -335,9 +358,17 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.acceleration
           : acceleration // ignore: cast_nullable_to_non_nullable
               as double,
-      maxAcceleration: maxAcceleration == freezed
-          ? _value.maxAcceleration
-          : maxAcceleration // ignore: cast_nullable_to_non_nullable
+      throttlePressed: throttlePressed == freezed
+          ? _value.throttlePressed
+          : throttlePressed // ignore: cast_nullable_to_non_nullable
+              as bool,
+      maf2: maf2 == freezed
+          ? _value.maf2
+          : maf2 // ignore: cast_nullable_to_non_nullable
+              as double,
+      maf3: maf3 == freezed
+          ? _value.maf3
+          : maf3 // ignore: cast_nullable_to_non_nullable
               as double,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
@@ -394,7 +425,9 @@ class _$_LiveDataState implements _LiveDataState {
       this.lastPosition,
       this.isLocalMode = false,
       this.acceleration = 0,
-      this.maxAcceleration = 0,
+      this.throttlePressed = false,
+      this.maf2 = 0.0,
+      this.maf3 = 0.0,
       this.isConnecting = true,
       this.isDisconnecting = false,
       this.supportedPids = const [],
@@ -424,9 +457,15 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey(defaultValue: 0)
   @override
   final double acceleration;
-  @JsonKey(defaultValue: 0)
+  @JsonKey(defaultValue: false)
   @override
-  final double maxAcceleration;
+  final bool throttlePressed;
+  @JsonKey(defaultValue: 0.0)
+  @override // Just for testing
+  final double maf2;
+  @JsonKey(defaultValue: 0.0)
+  @override
+  final double maf3;
   @JsonKey(defaultValue: true)
   @override // Bluetooth
   final bool isConnecting;
@@ -459,7 +498,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, maxAcceleration: $maxAcceleration, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, maf2: $maf2, maf3: $maf3, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -481,8 +520,10 @@ class _$_LiveDataState implements _LiveDataState {
                 other.isLocalMode == isLocalMode) &&
             (identical(other.acceleration, acceleration) ||
                 other.acceleration == acceleration) &&
-            (identical(other.maxAcceleration, maxAcceleration) ||
-                other.maxAcceleration == maxAcceleration) &&
+            (identical(other.throttlePressed, throttlePressed) ||
+                other.throttlePressed == throttlePressed) &&
+            (identical(other.maf2, maf2) || other.maf2 == maf2) &&
+            (identical(other.maf3, maf3) || other.maf3 == maf3) &&
             (identical(other.isConnecting, isConnecting) ||
                 other.isConnecting == isConnecting) &&
             (identical(other.isDisconnecting, isDisconnecting) ||
@@ -504,26 +545,29 @@ class _$_LiveDataState implements _LiveDataState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      isRunning,
-      tripStart,
-      tripSeconds,
-      tripRecord,
-      lastPosition,
-      isLocalMode,
-      acceleration,
-      maxAcceleration,
-      isConnecting,
-      isDisconnecting,
-      const DeepCollectionEquality().hash(supportedPids),
-      pidsChecker,
-      vin,
-      fuelSystemStatus,
-      userAccelerometer,
-      temperature,
-      isTemperatureAvaliable,
-      const DeepCollectionEquality().hash(errors));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        isRunning,
+        tripStart,
+        tripSeconds,
+        tripRecord,
+        lastPosition,
+        isLocalMode,
+        acceleration,
+        throttlePressed,
+        maf2,
+        maf3,
+        isConnecting,
+        isDisconnecting,
+        const DeepCollectionEquality().hash(supportedPids),
+        pidsChecker,
+        vin,
+        fuelSystemStatus,
+        userAccelerometer,
+        temperature,
+        isTemperatureAvaliable,
+        const DeepCollectionEquality().hash(errors)
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -540,7 +584,9 @@ abstract class _LiveDataState implements LiveDataState {
       Position? lastPosition,
       bool isLocalMode,
       double acceleration,
-      double maxAcceleration,
+      bool throttlePressed,
+      double maf2,
+      double maf3,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -567,7 +613,11 @@ abstract class _LiveDataState implements LiveDataState {
   @override
   double get acceleration;
   @override
-  double get maxAcceleration;
+  bool get throttlePressed;
+  @override // Just for testing
+  double get maf2;
+  @override
+  double get maf3;
   @override // Bluetooth
   bool get isConnecting;
   @override

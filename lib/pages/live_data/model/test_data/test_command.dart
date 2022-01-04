@@ -16,7 +16,7 @@ class TestCommand {
   }
 
   static TestCommand fromJson(Map<String, dynamic> json) {
-    final data = Uint8List.fromList(json['data']);
+    final data = Uint8List.fromList(List<int>.from(json['data']));
     return TestCommand(
       json['command'],
       json['responseTime'],

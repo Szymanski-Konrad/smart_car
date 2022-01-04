@@ -37,13 +37,19 @@ class MafCommand extends VisibleObdCommand {
     return 0;
   }
 
+  double kmPerL(int speed) {
+    return speed * 14.7 * 740 / (3600 * result.toDouble());
+  }
+
   /// Calculate fuel consumption per 100 km
   /// [speed] - current speed of vehicle
-  double fuel100km(int speed, double load, double longTerm, double shortTerm) {
+  double fuel100km(int speed, double load, double longTerm, double shortTerm,
+      double airFuelRatio) {
+    final flow = fuelFlow(load, airFuelRatio: airFuelRatio);
     if (speed > 0) {
-      return (fuelFlow(load) * longTerm * shortTerm / speed) * 100;
+      return (flow * (longTerm * shortTerm) / speed) * 100;
     }
-    return 0;
+    return flow;
   }
 
   /// Get fuel used between command calls

@@ -14,6 +14,7 @@ class TripRecord with _$TripRecord {
     @Default(0.0) double distance,
     @Default(-1.0) double instFuelConsumption,
     @Default(-1.0) double averageFuelConsumption,
+    @Default(0.0) double kmPerL,
     @Default(0.0) double usedFuel,
     @Default(0.0) double idleUsedFuel,
     @Default(0.0) double savedFuel,
@@ -41,11 +42,13 @@ extension TripRecordExtension on TripRecord {
     return copyWith(startFuelLvl: initial, currentFuelLvl: value);
   }
 
+  int get totalTripSeconds => tripSeconds + idleTripSeconds;
+
   TripRecord updateDistance(double value, int speed) {
     final currDistance = distance + value;
     return copyWith(
       distance: currDistance,
-      averageSpeed: currDistance / (tripSeconds / 3600),
+      averageSpeed: currDistance / (totalTripSeconds / 3600),
       currentSpeed: speed,
     );
   }
@@ -76,34 +79,30 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateSeconds(num speed) {
+    const addSeconds = 1;
     if (speed > 0) {
-      return copyWith(tripSeconds: tripSeconds + 1);
+      return copyWith(tripSeconds: tripSeconds + addSeconds);
     } else {
-      return copyWith(idleTripSeconds: idleTripSeconds + 1);
+      return copyWith(idleTripSeconds: idleTripSeconds + addSeconds);
     }
   }
 
-  TripRecord updateRapidAcceleration({required bool isPositive}) {
+  TripRecord updateRapidAcceleration({required double acceleration}) {
     final secondsSinceEpoch = DateTime.now().secondsSinceEpoch;
-    if (isPositive) {
-      final duration =
-          Duration(seconds: secondsSinceEpoch - lastAccelerationTime);
-      if (secondsSinceEpoch - lastAccelerationTime >
-          Constants.minTimeBetweenRapidSpeedChange) {
-        return copyWith(
-          rapidAccelerations: rapidAccelerations + 1,
-          lastAccelerationTime: secondsSinceEpoch,
-        );
-      }
-    } else {
-      final duration = Duration(seconds: secondsSinceEpoch - lastBreakingTime);
-      if (secondsSinceEpoch - lastBreakingTime >
-          Constants.minTimeBetweenRapidSpeedChange) {
-        return copyWith(
-          rapidBreakings: rapidBreakings + 1,
-          lastBreakingTime: secondsSinceEpoch,
-        );
-      }
+    final seconds = secondsSinceEpoch - lastAccelerationTime;
+
+    if (seconds > Constants.minRapidSpeedTimeThreshold) return this;
+    if (acceleration > Constants.rapidAcceleration) {
+      return copyWith(
+        rapidAccelerations: rapidAccelerations + 1,
+        lastAccelerationTime: secondsSinceEpoch,
+      );
+    }
+    if (acceleration < Constants.rapidBreaking) {
+      return copyWith(
+        rapidBreakings: rapidBreakings + 1,
+        lastBreakingTime: secondsSinceEpoch,
+      );
     }
 
     return this;
@@ -111,6 +110,8 @@ extension TripRecordExtension on TripRecord {
 
   List<InfoTileData> get fuelSection => [
         avgFuelDetails,
+        avgKmPerL,
+        instKmPerL,
         percentFuelConsDetails,
         instFuelDetails,
         usedFuelDetails,
@@ -144,7 +145,7 @@ extension TripRecordExtension on TripRecord {
         value: savedFuel,
         title: 'Saved fuel',
         unit: 'l',
-        digits: 2,
+        digits: 3,
       );
 
   InfoTileData get distanceDetails => InfoTileData(
@@ -165,6 +166,19 @@ extension TripRecordExtension on TripRecord {
         unit: 'l/100km',
         digits: 1,
       );
+  InfoTileData get avgKmPerL => InfoTileData(
+        value: 100 / averageFuelConsumption,
+        title: 'Avg fuel cons.',
+        unit: 'km/l',
+        digits: 1,
+      );
+
+  InfoTileData get instKmPerL => InfoTileData(
+        value: kmPerL,
+        title: 'Inst fuel cons.',
+        unit: 'km/l',
+        digits: 1,
+      );
   InfoTileData get rangeDetails => InfoTileData(
         value: range,
         title: 'Range',
@@ -181,7 +195,7 @@ extension TripRecordExtension on TripRecord {
         value: idleUsedFuel,
         title: 'Idle used fuel',
         unit: 'l',
-        digits: 2,
+        digits: 3,
       );
   InfoTileData get gpsSpeedDetails => InfoTileData(
         value: gpsSpeed,

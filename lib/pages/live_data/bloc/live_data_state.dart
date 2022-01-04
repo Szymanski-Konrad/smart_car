@@ -18,7 +18,11 @@ class LiveDataState with _$LiveDataState {
     Position? lastPosition,
     @Default(false) bool isLocalMode,
     @Default(0) double acceleration,
-    @Default(0) double maxAcceleration,
+    @Default(false) bool throttlePressed,
+
+    // Just for testing
+    @Default(0.0) double maf2,
+    @Default(0.0) double maf3,
 
     // Bluetooth
     @Default(true) bool isConnecting,
