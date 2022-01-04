@@ -71,6 +71,7 @@ class LiveDataPage extends StatelessWidget {
                       child: Text(state.fuelSystemStatus.description),
                     ),
                   ),
+                  Text('${state.localTripProgress.toStringAsFixed(2)} %'),
                   Text(
                       'Used fuel: ${cubit.fuelUsedFromFuelLvl.toStringAsFixed(3)} L'),
                   Text(

@@ -78,8 +78,8 @@ extension TripRecordExtension on TripRecord {
     }
   }
 
-  TripRecord updateSeconds(num speed) {
-    const addSeconds = 1;
+  TripRecord updateSeconds(num speed, bool isLocalMode) {
+    final addSeconds = isLocalMode ? Constants.liveModeSpeedUp : 1;
     if (speed > 0) {
       return copyWith(tripSeconds: tripSeconds + addSeconds);
     } else {
@@ -132,6 +132,8 @@ extension TripRecordExtension on TripRecord {
         rangeDetails,
         gpsSpeedDetails,
         gpsDistanceDetails,
+        producedCarboDetails,
+        savedCarboDetails,
       ];
 
   InfoTileData get percentFuelConsDetails => InfoTileData(
@@ -238,5 +240,17 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: 'Rapid braking',
         unit: '',
+      );
+  InfoTileData get producedCarboDetails => InfoTileData(
+        value: usedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio / 1000,
+        digits: 3,
+        title: 'Generated CO2',
+        unit: 'kg',
+      );
+  InfoTileData get savedCarboDetails => InfoTileData(
+        value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio / 1000,
+        digits: 3,
+        title: 'Saved CO2',
+        unit: 'kg',
       );
 }

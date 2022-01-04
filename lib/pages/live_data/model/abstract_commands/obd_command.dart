@@ -51,6 +51,7 @@ abstract class ObdCommand {
   /// Called when ELM send back [data] from command, then do
   void commandBack(List<int> data, bool isLocalMode) {
     final now = DateTime.now();
+    responseTime = now.difference(sendTime).inMilliseconds.abs();
     final lastTime = lastReciveTime;
     if (lastTime != null) {
       differenceMiliseconds = now.difference(lastTime).inMilliseconds.abs();
@@ -59,7 +60,6 @@ abstract class ObdCommand {
       differenceMiliseconds *= Constants.liveModeSpeedUp;
     }
     lastReciveTime = now;
-    responseTime = now.difference(sendTime).inMilliseconds.abs();
     performCalculations(data);
   }
 

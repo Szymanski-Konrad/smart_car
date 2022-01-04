@@ -8,4 +8,7 @@ abstract class Constants {
   static const minRapidSpeedTimeThreshold = 30; // s
 
   static const liveModeSpeedUp = 64;
+  static const localModeMiliseconds = 1000 ~/ liveModeSpeedUp;
+
+  static const co2GenerationRatio = 11 / 3;
 }

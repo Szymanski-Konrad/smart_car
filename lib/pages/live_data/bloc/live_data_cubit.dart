@@ -103,7 +103,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final speed = commands.safeFirst<SpeedCommand>()?.result;
       emit(state.copyWith(
-          tripRecord: state.tripRecord.updateSeconds(speed ?? 0)));
+          tripRecord:
+              state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
 
       if (timer.tick % 600 == 0) saveCommands();
     });
@@ -151,24 +152,33 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Future<void> _runTest() async {
     print('test runned');
     final json = await rootBundle.loadString('assets/json/very_long.json');
-    final decoded = jsonDecode(json);
-    final testCommands =
-        decoded.map((e) => TestCommand.fromJson(e as Map<String, dynamic>));
+    final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
+    final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
 
     _everySecondTimer = Timer.periodic(
-      const Duration(milliseconds: 1000 ~/ Constants.liveModeSpeedUp),
+      const Duration(seconds: 1),
       (timer) {
         final speed = commands.safeFirst<SpeedCommand>()?.result;
         emit(state.copyWith(
-            tripRecord: state.tripRecord.updateSeconds(speed ?? 0)));
+            tripRecord:
+                state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
       },
     );
 
+    print('start sending test commands: ${testCommands.length}');
+
+    int index = 0;
     for (final testCommand in testCommands) {
       await Future.delayed(Duration(
           milliseconds: testCommand.responseTime ~/ Constants.liveModeSpeedUp));
       _onDataReceived(testCommand.data);
+      index++;
+      if (index % 1000 == 0) {
+        final percentage = index / testCommands.length;
+        emit(state.copyWith(localTripProgress: percentage));
+        print('${percentage.toStringAsFixed(2)} %');
+      }
     }
 
     _everySecondTimer?.cancel();
@@ -183,9 +193,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       return;
     }
 
-    // if (!commands.(obdCommand)) {
     commands.add(obdCommand);
-    // }
   }
 
   void init() async {

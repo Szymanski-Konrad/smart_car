@@ -23,6 +23,7 @@ class LiveDataState with _$LiveDataState {
     // Just for testing
     @Default(0.0) double maf2,
     @Default(0.0) double maf3,
+    @Default(0.0) double localTripProgress,
 
     // Bluetooth
     @Default(true) bool isConnecting,

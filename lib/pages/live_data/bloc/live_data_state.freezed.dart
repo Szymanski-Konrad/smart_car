@@ -28,6 +28,7 @@ class _$LiveDataStateTearOff {
       bool throttlePressed = false,
       double maf2 = 0.0,
       double maf3 = 0.0,
+      double localTripProgress = 0.0,
       bool isConnecting = true,
       bool isDisconnecting = false,
       List<String> supportedPids = const [],
@@ -49,6 +50,7 @@ class _$LiveDataStateTearOff {
       throttlePressed: throttlePressed,
       maf2: maf2,
       maf3: maf3,
+      localTripProgress: localTripProgress,
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
       supportedPids: supportedPids,
@@ -79,7 +81,9 @@ mixin _$LiveDataState {
   bool get throttlePressed =>
       throw _privateConstructorUsedError; // Just for testing
   double get maf2 => throw _privateConstructorUsedError;
-  double get maf3 => throw _privateConstructorUsedError; // Bluetooth
+  double get maf3 => throw _privateConstructorUsedError;
+  double get localTripProgress =>
+      throw _privateConstructorUsedError; // Bluetooth
   bool get isConnecting => throw _privateConstructorUsedError;
   bool get isDisconnecting => throw _privateConstructorUsedError; // Pids
   List<String> get supportedPids => throw _privateConstructorUsedError;
@@ -114,6 +118,7 @@ abstract class $LiveDataStateCopyWith<$Res> {
       bool throttlePressed,
       double maf2,
       double maf3,
+      double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -150,6 +155,7 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? throttlePressed = freezed,
     Object? maf2 = freezed,
     Object? maf3 = freezed,
+    Object? localTripProgress = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? supportedPids = freezed,
@@ -201,6 +207,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
       maf3: maf3 == freezed
           ? _value.maf3
           : maf3 // ignore: cast_nullable_to_non_nullable
+              as double,
+      localTripProgress: localTripProgress == freezed
+          ? _value.localTripProgress
+          : localTripProgress // ignore: cast_nullable_to_non_nullable
               as double,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
@@ -278,6 +288,7 @@ abstract class _$LiveDataStateCopyWith<$Res>
       bool throttlePressed,
       double maf2,
       double maf3,
+      double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -318,6 +329,7 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? throttlePressed = freezed,
     Object? maf2 = freezed,
     Object? maf3 = freezed,
+    Object? localTripProgress = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? supportedPids = freezed,
@@ -369,6 +381,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
       maf3: maf3 == freezed
           ? _value.maf3
           : maf3 // ignore: cast_nullable_to_non_nullable
+              as double,
+      localTripProgress: localTripProgress == freezed
+          ? _value.localTripProgress
+          : localTripProgress // ignore: cast_nullable_to_non_nullable
               as double,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
@@ -428,6 +444,7 @@ class _$_LiveDataState implements _LiveDataState {
       this.throttlePressed = false,
       this.maf2 = 0.0,
       this.maf3 = 0.0,
+      this.localTripProgress = 0.0,
       this.isConnecting = true,
       this.isDisconnecting = false,
       this.supportedPids = const [],
@@ -466,6 +483,9 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey(defaultValue: 0.0)
   @override
   final double maf3;
+  @JsonKey(defaultValue: 0.0)
+  @override
+  final double localTripProgress;
   @JsonKey(defaultValue: true)
   @override // Bluetooth
   final bool isConnecting;
@@ -498,7 +518,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, maf2: $maf2, maf3: $maf3, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, maf2: $maf2, maf3: $maf3, localTripProgress: $localTripProgress, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -524,6 +544,8 @@ class _$_LiveDataState implements _LiveDataState {
                 other.throttlePressed == throttlePressed) &&
             (identical(other.maf2, maf2) || other.maf2 == maf2) &&
             (identical(other.maf3, maf3) || other.maf3 == maf3) &&
+            (identical(other.localTripProgress, localTripProgress) ||
+                other.localTripProgress == localTripProgress) &&
             (identical(other.isConnecting, isConnecting) ||
                 other.isConnecting == isConnecting) &&
             (identical(other.isDisconnecting, isDisconnecting) ||
@@ -557,6 +579,7 @@ class _$_LiveDataState implements _LiveDataState {
         throttlePressed,
         maf2,
         maf3,
+        localTripProgress,
         isConnecting,
         isDisconnecting,
         const DeepCollectionEquality().hash(supportedPids),
@@ -587,6 +610,7 @@ abstract class _LiveDataState implements LiveDataState {
       bool throttlePressed,
       double maf2,
       double maf3,
+      double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
       List<String> supportedPids,
@@ -618,6 +642,8 @@ abstract class _LiveDataState implements LiveDataState {
   double get maf2;
   @override
   double get maf3;
+  @override
+  double get localTripProgress;
   @override // Bluetooth
   bool get isConnecting;
   @override
