@@ -1,36 +1,38 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
+import 'package:smart_car/pages/live_data/model/commanded_evaporative_purge_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
+import 'package:smart_car/pages/live_data/model/control_module_voltage_command.dart';
+import 'package:smart_car/pages/live_data/model/distance_with_mil_command.dart';
 import 'package:smart_car/pages/live_data/model/engine_coolant_command.dart';
 import 'package:smart_car/pages/live_data/model/engine_load_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
+import 'package:smart_car/pages/live_data/model/obd_standard_command.dart';
 import 'package:smart_car/pages/live_data/model/oil_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
 import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
+import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 
 abstract class Pids {
   // Unsupported pids
   static const String fuelPressure = '0A';
   static const String intakeManifoldAbsolutePressure = '0B';
-  static const String timingAdvance = '0E';
   static const String commandedSecondaryAirStatus = '12';
   static const String oxygenSensorsPresents2B = '13';
   static const String oxygenSensor3A = '16';
   static const String oxygenSensor4A = '17';
   static const String oxygenSensor7A = '1A';
   static const String oxygenSensor8A = '1B';
-  static const String obdStandards = '1C';
   static const String oxygenSensorsPresents4B = '1D';
   static const String auxiliaryInputStatus = '1E';
   static const String runTimeSinceStart = '1F';
-  static const String distanceTraveledMIL = '21';
   static const String fuelRailPressure = '22';
   static const String fuelRailGaugePressure = '23';
   static const String oxygenSensor1B = '24';
@@ -43,7 +45,6 @@ abstract class Pids {
   static const String oxygenSensor8B = '2B';
   static const String commandedEGR = '2C';
   static const String egrError = '2D';
-  static const String commandedEvaporativePurge = '2E';
   static const String warmUpsSinceCodeCleared = '30';
   static const String distanceTraveledSinceCodesCleared = '31';
   static const String evapSystemVaporPressure = '32';
@@ -61,7 +62,6 @@ abstract class Pids {
   static const String catalystTemperatureB1S2 = '3E';
   static const String catalystTemperatureB2S2 = '3F';
   static const String monitorStatusDriveCycle = '41';
-  static const String controlModuleVoltage = '42';
   static const String absoluteLoadValue = '43';
   static const String relativeThrottlePosition = '45';
   static const String ambientAirTemperature = '46';
@@ -100,6 +100,12 @@ abstract class Pids {
   static const String oxygenSensor2A = '15';
   static const String oxygenSensor5A = '18';
   static const String oxygenSensor6A = '19';
+
+  static const String commandedEvaporativePurge = '2E';
+  static const String controlModuleVoltage = '42';
+  static const String obdStandards = '1C';
+  static const String timingAdvance = '0E';
+  static const String distanceTraveledMIL = '21';
 
   static const String pidsList1 = '00';
   static const String pidsList2 = '20';
@@ -149,6 +155,11 @@ enum PID {
   LTFTB1,
   STFTB2,
   LTFTB2,
+  controlModuleVoltage,
+  timingAdvance,
+  commandedEvaporativePurge,
+  obdStandards,
+  distanceTraveledMIL,
   unknown,
 }
 
@@ -193,6 +204,16 @@ extension PIDExtension on PID {
         return PID.throttlePosition;
       case Pids.fuelSystemStatus:
         return PID.fuelSystemStatus;
+      case Pids.timingAdvance:
+        return PID.timingAdvance;
+      case Pids.obdStandards:
+        return PID.obdStandards;
+      case Pids.controlModuleVoltage:
+        return PID.controlModuleVoltage;
+      case Pids.commandedEvaporativePurge:
+        return PID.commandedEvaporativePurge;
+      case Pids.distanceTraveledMIL:
+        return PID.distanceTraveledMIL;
       default:
         return PID.unknown;
     }
@@ -238,6 +259,16 @@ extension PIDExtension on PID {
         return ShortTermFuelTrimBank2();
       case PID.LTFTB2:
         return LongTermFuelTrimBank2();
+      case PID.controlModuleVoltage:
+        return ControlModuleVoltageCommand();
+      case PID.timingAdvance:
+        return TimingAdvanceCommand();
+      case PID.commandedEvaporativePurge:
+        return CommandedEvaporativePurgeCommand();
+      case PID.obdStandards:
+        return ObdStandardCommand();
+      case PID.distanceTraveledMIL:
+        return DistanceWithMILCommand();
       case PID.unknown:
         return null;
     }
@@ -296,7 +327,7 @@ const Map<String, String> pidsDescription = {
   '0D': 'Vehicle speed',
   '0E': 'Timing advance',
   '0F': 'Intake air temperature',
-  '10': 'Mass air flow sensor (MAF) air flow rate',
+  '10': 'Mass air flow sensor (MAF) air flow rate',
   '11': 'Throttle position',
   '12': 'Commanded secondary air status',
   '13': 'Oxygen sensors present (in 2 banks)',
@@ -314,8 +345,8 @@ const Map<String, String> pidsDescription = {
   '1F': 'Run time since engine start',
   '20': 'PIDs supported [21 - 40]',
   '21': 'Distance traveled with malfunction indicator lamp (MIL) on',
-  '22': 'Fuel Rail Pressure (relative to manifold vacuum)',
-  '23': 'Fuel Rail Gauge Pressure (diesel, or gasoline direct injection)',
+  '22': 'Fuel Rail Pressure (relative to manifold vacuum)',
+  '23': 'Fuel Rail Gauge Pressure (diesel, or gasoline direct injection)',
   '24': 'Oxygen Sensor 1',
   '25': 'Oxygen Sensor 2',
   '26': 'Oxygen Sensor 3',
@@ -324,7 +355,7 @@ const Map<String, String> pidsDescription = {
   '29': 'Oxygen Sensor 6',
   '2A': 'Oxygen Sensor 7',
   '2B': 'Oxygen Sensor 8',
-  '2C': 'Commanded EGR',
+  '2C': 'Commanded EGR',
   '2D': 'EGR Error',
   '2E': 'Commanded evaporative purge',
   '2F': 'Fuel Tank Level Input',
@@ -363,14 +394,14 @@ const Map<String, String> pidsDescription = {
       'Maximum value for Fuel–Air equivalence ratio, oxygen sensor voltage, oxygen sensor current, and intake manifold absolute pressure',
   '50': 'Maximum value for air flow rate from mass air flow sensor',
   '51': 'Fuel Type',
-  '52': 'Ethanol fuel %',
+  '52': 'Ethanol fuel %',
   '53': 'Absolute Evap system Vapor Pressure',
   '54': 'Evap system vapor pressure',
   '55': 'Short term secondary oxygen sensor trim, A: bank 1, B: bank 3',
   '56': 'Long term secondary oxygen sensor trim, A: bank 1, B: bank 3',
   '57': 'Short term secondary oxygen sensor trim, A: bank 2, B: bank 4',
   '58': 'Long term secondary oxygen sensor trim, A: bank 2, B: bank 4',
-  '59': 'Fuel rail absolute pressure',
+  '59': 'Fuel rail absolute pressure',
   '5A': 'Relative accelerator pedal position',
   '5B': 'Hybrid battery pack remaining life',
   '5C': 'Engine oil temperature',
@@ -409,7 +440,7 @@ const Map<String, String> pidsDescription = {
   '7C': 'Diesel Particulate filter (DPF) temperature',
   '7D': 'NOx NTE (Not-To-Exceed) control area status',
   '7E': 'PM NTE (Not-To-Exceed) control area status',
-  '7F': 'Engine run time [b]',
+  '7F': 'Engine run time [b]',
   '80': 'PIDs supported [81 - A0]',
   '81': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
   '82': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
@@ -445,7 +476,7 @@ const Map<String, String> pidsDescription = {
   'A3': 'Evap System Vapor Pressure',
   'A4': 'Transmission Actual Gear',
   'A5': 'Commanded Diesel Exhaust Fluid Dosing',
-  'A6': 'Odometer [c]',
+  'A6': 'Odometer [c]',
   'A7': 'NOx Sensor Concentration Sensors 3 and 4',
   'A8': 'NOx Sensor Corrected Concentration Sensors 3 and 4',
   'A9': 'ABS Disable Switch State',

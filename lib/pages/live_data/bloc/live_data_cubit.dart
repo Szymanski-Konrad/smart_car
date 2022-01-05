@@ -175,7 +175,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       _onDataReceived(testCommand.data);
       index++;
       if (index % 1000 == 0) {
-        final percentage = index / testCommands.length;
+        final percentage = (index / testCommands.length) * 100;
         emit(state.copyWith(localTripProgress: percentage));
         print('${percentage.toStringAsFixed(2)} %');
       }
@@ -357,10 +357,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           testCommands.add(testCommand);
         }
 
-        if (pid != PID.unknown) {
+        if (pid != PID.unknown && commands.isNotEmpty) {
           final dataIndex = commands.lastIndexWhere(
               (element) => element.command.split(' ').last == splitted[1]);
-
           commands[dataIndex].commandBack(converted, state.isLocalMode);
 
           final tripRecord = state.tripRecord;
@@ -473,10 +472,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               .updateReadedPidsPart('01' + splitted[1])
               .copyWith(supportedPids: currentPids.toSet().toList()));
         } else {
-          print(
-              'Unsupported pid: ${splitted[1]}, description: ${pidsDescription[splitted[1]]}');
-          _insertError(
-              'Unsupported pid: ${splitted[1]}, description: ${pidsDescription[splitted[1]]}');
+          final error = commands.isEmpty
+              ? 'Commands list is empty'
+              : 'Unsupported pid: ${splitted[1]}, description: ${pidsDescription[splitted[1]]}';
+          _insertError(error);
         }
       }
     } catch (e) {

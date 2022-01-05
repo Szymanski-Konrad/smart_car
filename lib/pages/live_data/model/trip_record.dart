@@ -134,6 +134,7 @@ extension TripRecordExtension on TripRecord {
         gpsDistanceDetails,
         producedCarboDetails,
         savedCarboDetails,
+        carboPerKmDetails,
       ];
 
   InfoTileData get percentFuelConsDetails => InfoTileData(
@@ -242,15 +243,29 @@ extension TripRecordExtension on TripRecord {
         unit: '',
       );
   InfoTileData get producedCarboDetails => InfoTileData(
-        value: usedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio / 1000,
+        value: (usedFuel + idleUsedFuel) *
+            0.75 *
+            0.87 *
+            Constants.co2GenerationRatio,
         digits: 3,
         title: 'Generated CO2',
         unit: 'kg',
       );
   InfoTileData get savedCarboDetails => InfoTileData(
-        value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio / 1000,
+        value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio,
         digits: 3,
         title: 'Saved CO2',
         unit: 'kg',
+      );
+
+  InfoTileData get carboPerKmDetails => InfoTileData(
+        value: (averageFuelConsumption / 100) *
+            0.75 *
+            0.87 *
+            Constants.co2GenerationRatio *
+            1000,
+        digits: 0,
+        title: 'CO2 per km',
+        unit: 'g/km',
       );
 }
