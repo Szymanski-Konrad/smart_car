@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
 
@@ -55,6 +56,22 @@ class SettingsPage extends StatelessWidget {
           suffix: 'l',
           onEdit: cubit.updateTankSize,
         ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: DropdownButton<FuelType>(
+            value: state.settings.fuelType,
+            isExpanded: true,
+            itemHeight: 60,
+            items: FuelType.values
+                .map((e) => DropdownMenuItem<FuelType>(
+                      child: Text(e.name),
+                      value: e,
+                    ))
+                .toList(),
+            onChanged: cubit.updateFuelType,
+          ),
+        ),
       ],
     );
   }
@@ -101,8 +118,6 @@ class _SettingsTextFieldState extends State<SettingsTextField> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.keyboardType ==
-        const TextInputType.numberWithOptions(decimal: true));
     return TextFormField(
       initialValue: widget.initalValue,
       keyboardType: widget.keyboardType,

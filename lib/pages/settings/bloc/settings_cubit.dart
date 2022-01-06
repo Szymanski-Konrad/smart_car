@@ -56,10 +56,17 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void updateTankSize(String input) {
-    print('update');
     final value = int.tryParse(input);
     if (value != null) {
       emit(state.copyWith(settings: state.settings.copyWith(tankSize: value)));
+      startTimer();
+    }
+  }
+
+  void updateFuelType(FuelType? fuelType) {
+    if (fuelType != null) {
+      emit(state.copyWith(
+          settings: state.settings.copyWith(fuelType: fuelType)));
       startTimer();
     }
   }
