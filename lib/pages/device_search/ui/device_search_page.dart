@@ -5,6 +5,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/pages/device_search/ui/bonded_devices_page.dart';
 import 'package:smart_car/pages/device_search/ui/discovery_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
+import 'package:smart_car/pages/settings/ui/settings_page.dart';
 
 class DeviceSearchPage extends StatefulWidget {
   const DeviceSearchPage({Key? key}) : super(key: key);
@@ -60,7 +61,6 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
     return Scaffold(
       body: ListView(
         children: [
-          const ListTile(title: Text('General')),
           SwitchListTile(
             title: const Text('Enable Bluetooth'),
             value: _bluetoothState.isEnabled,
@@ -80,18 +80,7 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
               });
             },
           ),
-          ListTile(
-            title: const Text('Bluetooth status'),
-            subtitle: Text(_bluetoothState.toString()),
-            trailing: ElevatedButton(
-              child: const Text('Settings'),
-              onPressed: () {
-                FlutterBluetoothSerial.instance.openSettings();
-              },
-            ),
-          ),
           const Divider(),
-          const ListTile(title: Text('Devices discovery and connection')),
           ListTile(
             title: ElevatedButton(
               child: const Text('Explore discovered devices'),
@@ -129,11 +118,23 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
             ),
           ),
           ListTile(
+            title: ElevatedButton(
+              child: const Text('Local data'),
+              onPressed: () async {
+                const server = BluetoothDevice(address: 'AA:AA');
+                _showLiveData(context, server);
+              },
+            ),
+          ),
+          ListTile(
               title: ElevatedButton(
-            child: const Text('Local data'),
+            child: const Text('Settings'),
             onPressed: () async {
-              const server = BluetoothDevice(address: 'AA:AA');
-              _showLiveData(context, server);
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) {
+                  return const SettingsPage();
+                },
+              ));
             },
           ))
         ],

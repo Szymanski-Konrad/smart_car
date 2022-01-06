@@ -7,6 +7,7 @@ part 'settings_state.freezed.dart';
 class SettingsState with _$SettingsState {
   factory SettingsState({
     required Settings settings,
+    @Default(false) bool isSaved,
   }) = _SettingsState;
 }
 
