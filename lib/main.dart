@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:smart_car/pages/device_search/ui/device_search_page.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
+import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,9 +34,14 @@ class FlutterBlueApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: const DeviceSearchPage(),
-      theme: ThemeData.dark(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => SettingsCubit()..loadSettings()),
+      ],
+      child: MaterialApp(
+        home: const DeviceSearchPage(),
+        theme: ThemeData.dark(),
+      ),
     );
   }
 }

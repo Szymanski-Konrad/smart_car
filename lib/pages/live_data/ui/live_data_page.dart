@@ -6,6 +6,7 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_tile.dart';
+import 'package:smart_car/pages/settings/ui/settings_page.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/ui/fuel_stats_tile.dart';
@@ -34,12 +35,22 @@ class LiveDataPage extends StatelessWidget {
           appBar: AppBar(
             title: Text(
               state.isLocalMode
-                  ? 'Local mode'
+                  ? 'Local mode ${state.localTripProgress.toStringAsFixed(1)} %'
                   : state.isConnecting
                       ? 'Connecting...'
                       : 'Connected! :D',
             ),
             actions: [
+              IconButton(
+                onPressed: () {
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return const SettingsPage();
+                    },
+                  );
+                },
+                icon: const Icon(Icons.settings),
+              ),
               // IconButton(
               //     onPressed: cubit.sendVinCommand,
               //     icon: const Icon(Icons.villa_rounded)),
@@ -71,32 +82,18 @@ class LiveDataPage extends StatelessWidget {
                       child: Text(state.fuelSystemStatus.description),
                     ),
                   ),
-                  Text(
-                      'Local mode progress: ${state.localTripProgress.toStringAsFixed(1)} %'),
-                  Text(
-                      'Used fuel: ${cubit.fuelUsedFromFuelLvl.toStringAsFixed(3)} L'),
-                  Text(
-                      'FC: ${(100 * cubit.fuelUsedFromFuelLvl / state.tripRecord.distance).toStringAsFixed(3)} l/100km'),
-
                   Text('Pedal pressed: ${state.throttlePressed}'),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FuelStatsTile(records: state.tripRecord.fuelSection),
-                      const SizedBox.square(dimension: 8.0),
-                      FuelStatsTile(records: state.tripRecord.tripSection),
-                      const SizedBox.square(dimension: 8.0),
-                      FuelStatsTile(records: state.tripRecord.timeSection),
-                    ],
+                  Icon(
+                    state.throttlePressed ? Icons.upload : Icons.download,
+                    color: !state.throttlePressed ? Colors.green : Colors.amber,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                      child: Text(state.isTemperatureAvaliable
-                          ? 'Indoor temp: ${state.temperature.toStringAsFixed(1)} °C'
-                          : 'Brak czujnika temperatury'),
-                    ),
-                  ),
+                  const SizedBox(width: 16),
+                  Text(state.isTemperatureAvaliable
+                      ? 'Indoor temp: ${state.temperature.toStringAsFixed(1)} °C'
+                      : 'Brak czujnika temperatury'),
+                  FuelStatsTile(records: state.tripRecord.timeSection),
+                  FuelStatsTile(records: state.tripRecord.fuelSection),
+                  FuelStatsTile(records: state.tripRecord.tripSection),
                   // SupportedPidsTile(checker: state.pidsChecker),
                   ...cubit.commands
                       .whereType<VisibleObdCommand>()

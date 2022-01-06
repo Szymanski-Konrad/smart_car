@@ -26,10 +26,6 @@ dependencies:
   # GPS
   geolocator: ^7.6.2
 
-  # Code generation
-  freezed: ^0.15.1+1
-  freezed_annotation: ^0.15.0
-
   # Bloc
   bloc: ^7.2.1
   flutter_bloc: ^7.3.3
@@ -41,6 +37,12 @@ dependencies:
   sensors: ^2.0.3
   environment_sensors: ^0.2.0
 
+  # Storage
+  shared_preferences: ^2.0.11
+
+  # Json annotation
+  json_annotation: ^4.4.0
+
 
   cupertino_icons: ^1.0.2
 
@@ -49,7 +51,9 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^1.0.0
-  build_runner: ^2.1.5
+  freezed: ^1.1.0
+  build_runner:
+  json_serializable: ^6.1.1
 
 flutter:
   uses-material-design: true

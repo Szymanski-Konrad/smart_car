@@ -14,6 +14,9 @@ class TimingAdvanceCommand extends VisibleObdCommand {
   }
 
   @override
+  String get formattedResult => '$result $unit';
+
+  @override
   String get description => 'Timing advance';
 
   @override

@@ -283,40 +283,40 @@ class _$_PidsChecker implements _PidsChecker {
       this.pidsReaded81_A0 = false,
       this.pidsReadedA1_C0 = false});
 
-  @JsonKey(defaultValue: true)
+  @JsonKey()
   @override
   final bool pidsSupported1_20;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsSupported21_40;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsSupported41_60;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsSupported61_80;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsSupported81_A0;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsSupportedA1_C0;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReaded1_20;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReaded21_40;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReaded41_60;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReaded61_80;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReaded81_A0;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool pidsReadedA1_C0;
 
@@ -330,47 +330,47 @@ class _$_PidsChecker implements _PidsChecker {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _PidsChecker &&
-            (identical(other.pidsSupported1_20, pidsSupported1_20) ||
-                other.pidsSupported1_20 == pidsSupported1_20) &&
-            (identical(other.pidsSupported21_40, pidsSupported21_40) ||
-                other.pidsSupported21_40 == pidsSupported21_40) &&
-            (identical(other.pidsSupported41_60, pidsSupported41_60) ||
-                other.pidsSupported41_60 == pidsSupported41_60) &&
-            (identical(other.pidsSupported61_80, pidsSupported61_80) ||
-                other.pidsSupported61_80 == pidsSupported61_80) &&
-            (identical(other.pidsSupported81_A0, pidsSupported81_A0) ||
-                other.pidsSupported81_A0 == pidsSupported81_A0) &&
-            (identical(other.pidsSupportedA1_C0, pidsSupportedA1_C0) ||
-                other.pidsSupportedA1_C0 == pidsSupportedA1_C0) &&
-            (identical(other.pidsReaded1_20, pidsReaded1_20) ||
-                other.pidsReaded1_20 == pidsReaded1_20) &&
-            (identical(other.pidsReaded21_40, pidsReaded21_40) ||
-                other.pidsReaded21_40 == pidsReaded21_40) &&
-            (identical(other.pidsReaded41_60, pidsReaded41_60) ||
-                other.pidsReaded41_60 == pidsReaded41_60) &&
-            (identical(other.pidsReaded61_80, pidsReaded61_80) ||
-                other.pidsReaded61_80 == pidsReaded61_80) &&
-            (identical(other.pidsReaded81_A0, pidsReaded81_A0) ||
-                other.pidsReaded81_A0 == pidsReaded81_A0) &&
-            (identical(other.pidsReadedA1_C0, pidsReadedA1_C0) ||
-                other.pidsReadedA1_C0 == pidsReadedA1_C0));
+            const DeepCollectionEquality()
+                .equals(other.pidsSupported1_20, pidsSupported1_20) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsSupported21_40, pidsSupported21_40) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsSupported41_60, pidsSupported41_60) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsSupported61_80, pidsSupported61_80) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsSupported81_A0, pidsSupported81_A0) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsSupportedA1_C0, pidsSupportedA1_C0) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReaded1_20, pidsReaded1_20) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReaded21_40, pidsReaded21_40) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReaded41_60, pidsReaded41_60) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReaded61_80, pidsReaded61_80) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReaded81_A0, pidsReaded81_A0) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsReadedA1_C0, pidsReadedA1_C0));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      pidsSupported1_20,
-      pidsSupported21_40,
-      pidsSupported41_60,
-      pidsSupported61_80,
-      pidsSupported81_A0,
-      pidsSupportedA1_C0,
-      pidsReaded1_20,
-      pidsReaded21_40,
-      pidsReaded41_60,
-      pidsReaded61_80,
-      pidsReaded81_A0,
-      pidsReadedA1_C0);
+      const DeepCollectionEquality().hash(pidsSupported1_20),
+      const DeepCollectionEquality().hash(pidsSupported21_40),
+      const DeepCollectionEquality().hash(pidsSupported41_60),
+      const DeepCollectionEquality().hash(pidsSupported61_80),
+      const DeepCollectionEquality().hash(pidsSupported81_A0),
+      const DeepCollectionEquality().hash(pidsSupportedA1_C0),
+      const DeepCollectionEquality().hash(pidsReaded1_20),
+      const DeepCollectionEquality().hash(pidsReaded21_40),
+      const DeepCollectionEquality().hash(pidsReaded41_60),
+      const DeepCollectionEquality().hash(pidsReaded61_80),
+      const DeepCollectionEquality().hash(pidsReaded81_A0),
+      const DeepCollectionEquality().hash(pidsReadedA1_C0));
 
   @JsonKey(ignore: true)
   @override

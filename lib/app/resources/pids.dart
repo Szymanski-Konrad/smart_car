@@ -12,6 +12,7 @@ import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
+import 'package:smart_car/pages/live_data/model/map_command.dart';
 import 'package:smart_car/pages/live_data/model/obd_standard_command.dart';
 import 'package:smart_car/pages/live_data/model/oil_temp_command.dart';
 import 'package:smart_car/pages/live_data/model/rpm_command.dart';
@@ -23,7 +24,6 @@ import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 abstract class Pids {
   // Unsupported pids
   static const String fuelPressure = '0A';
-  static const String intakeManifoldAbsolutePressure = '0B';
   static const String commandedSecondaryAirStatus = '12';
   static const String oxygenSensorsPresents2B = '13';
   static const String oxygenSensor3A = '16';
@@ -106,6 +106,7 @@ abstract class Pids {
   static const String obdStandards = '1C';
   static const String timingAdvance = '0E';
   static const String distanceTraveledMIL = '21';
+  static const String intakeManifoldAbsolutePressure = '0B';
 
   static const String pidsList1 = '00';
   static const String pidsList2 = '20';
@@ -160,6 +161,7 @@ enum PID {
   commandedEvaporativePurge,
   obdStandards,
   distanceTraveledMIL,
+  intakeManifoldAbsolutePressure,
   unknown,
 }
 
@@ -214,6 +216,8 @@ extension PIDExtension on PID {
         return PID.commandedEvaporativePurge;
       case Pids.distanceTraveledMIL:
         return PID.distanceTraveledMIL;
+      case Pids.intakeManifoldAbsolutePressure:
+        return PID.intakeManifoldAbsolutePressure;
       default:
         return PID.unknown;
     }
@@ -271,6 +275,8 @@ extension PIDExtension on PID {
         return DistanceWithMILCommand();
       case PID.unknown:
         return null;
+      case PID.intakeManifoldAbsolutePressure:
+        return MapCommand();
     }
   }
 }

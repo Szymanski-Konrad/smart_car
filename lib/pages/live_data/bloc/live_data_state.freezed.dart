@@ -456,63 +456,63 @@ class _$_LiveDataState implements _LiveDataState {
       this.isTemperatureAvaliable = false,
       this.errors = const []});
 
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override // Live data
   final bool isRunning;
   @override
   final DateTime tripStart;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int tripSeconds;
   @override
   final TripRecord tripRecord;
   @override
   final Position? lastPosition;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool isLocalMode;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final double acceleration;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool throttlePressed;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override // Just for testing
   final double maf2;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double maf3;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double localTripProgress;
-  @JsonKey(defaultValue: true)
+  @JsonKey()
   @override // Bluetooth
   final bool isConnecting;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool isDisconnecting;
-  @JsonKey(defaultValue: const [])
+  @JsonKey()
   @override // Pids
   final List<String> supportedPids;
   @override
   final PidsChecker pidsChecker;
-  @JsonKey(defaultValue: '')
+  @JsonKey()
   @override
   final String vin;
-  @JsonKey(defaultValue: FuelSystemStatus.motorOff)
+  @JsonKey()
   @override
   final FuelSystemStatus fuelSystemStatus;
-  @JsonKey(defaultValue: '')
+  @JsonKey()
   @override // Sensors
   final String userAccelerometer;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double temperature;
-  @JsonKey(defaultValue: false)
+  @JsonKey()
   @override
   final bool isTemperatureAvaliable;
-  @JsonKey(defaultValue: const [])
+  @JsonKey()
   @override // Errors
   final List<String> errors;
 
@@ -526,69 +526,67 @@ class _$_LiveDataState implements _LiveDataState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _LiveDataState &&
-            (identical(other.isRunning, isRunning) ||
-                other.isRunning == isRunning) &&
-            (identical(other.tripStart, tripStart) ||
-                other.tripStart == tripStart) &&
-            (identical(other.tripSeconds, tripSeconds) ||
-                other.tripSeconds == tripSeconds) &&
-            (identical(other.tripRecord, tripRecord) ||
-                other.tripRecord == tripRecord) &&
-            (identical(other.lastPosition, lastPosition) ||
-                other.lastPosition == lastPosition) &&
-            (identical(other.isLocalMode, isLocalMode) ||
-                other.isLocalMode == isLocalMode) &&
-            (identical(other.acceleration, acceleration) ||
-                other.acceleration == acceleration) &&
-            (identical(other.throttlePressed, throttlePressed) ||
-                other.throttlePressed == throttlePressed) &&
-            (identical(other.maf2, maf2) || other.maf2 == maf2) &&
-            (identical(other.maf3, maf3) || other.maf3 == maf3) &&
-            (identical(other.localTripProgress, localTripProgress) ||
-                other.localTripProgress == localTripProgress) &&
-            (identical(other.isConnecting, isConnecting) ||
-                other.isConnecting == isConnecting) &&
-            (identical(other.isDisconnecting, isDisconnecting) ||
-                other.isDisconnecting == isDisconnecting) &&
+            const DeepCollectionEquality().equals(other.isRunning, isRunning) &&
+            const DeepCollectionEquality().equals(other.tripStart, tripStart) &&
+            const DeepCollectionEquality()
+                .equals(other.tripSeconds, tripSeconds) &&
+            const DeepCollectionEquality()
+                .equals(other.tripRecord, tripRecord) &&
+            const DeepCollectionEquality()
+                .equals(other.lastPosition, lastPosition) &&
+            const DeepCollectionEquality()
+                .equals(other.isLocalMode, isLocalMode) &&
+            const DeepCollectionEquality()
+                .equals(other.acceleration, acceleration) &&
+            const DeepCollectionEquality()
+                .equals(other.throttlePressed, throttlePressed) &&
+            const DeepCollectionEquality().equals(other.maf2, maf2) &&
+            const DeepCollectionEquality().equals(other.maf3, maf3) &&
+            const DeepCollectionEquality()
+                .equals(other.localTripProgress, localTripProgress) &&
+            const DeepCollectionEquality()
+                .equals(other.isConnecting, isConnecting) &&
+            const DeepCollectionEquality()
+                .equals(other.isDisconnecting, isDisconnecting) &&
             const DeepCollectionEquality()
                 .equals(other.supportedPids, supportedPids) &&
-            (identical(other.pidsChecker, pidsChecker) ||
-                other.pidsChecker == pidsChecker) &&
-            (identical(other.vin, vin) || other.vin == vin) &&
-            (identical(other.fuelSystemStatus, fuelSystemStatus) ||
-                other.fuelSystemStatus == fuelSystemStatus) &&
-            (identical(other.userAccelerometer, userAccelerometer) ||
-                other.userAccelerometer == userAccelerometer) &&
-            (identical(other.temperature, temperature) ||
-                other.temperature == temperature) &&
-            (identical(other.isTemperatureAvaliable, isTemperatureAvaliable) ||
-                other.isTemperatureAvaliable == isTemperatureAvaliable) &&
+            const DeepCollectionEquality()
+                .equals(other.pidsChecker, pidsChecker) &&
+            const DeepCollectionEquality().equals(other.vin, vin) &&
+            const DeepCollectionEquality()
+                .equals(other.fuelSystemStatus, fuelSystemStatus) &&
+            const DeepCollectionEquality()
+                .equals(other.userAccelerometer, userAccelerometer) &&
+            const DeepCollectionEquality()
+                .equals(other.temperature, temperature) &&
+            const DeepCollectionEquality()
+                .equals(other.isTemperatureAvaliable, isTemperatureAvaliable) &&
             const DeepCollectionEquality().equals(other.errors, errors));
   }
 
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        isRunning,
-        tripStart,
-        tripSeconds,
-        tripRecord,
-        lastPosition,
-        isLocalMode,
-        acceleration,
-        throttlePressed,
-        maf2,
-        maf3,
-        localTripProgress,
-        isConnecting,
-        isDisconnecting,
+        const DeepCollectionEquality().hash(isRunning),
+        const DeepCollectionEquality().hash(tripStart),
+        const DeepCollectionEquality().hash(tripSeconds),
+        const DeepCollectionEquality().hash(tripRecord),
+        const DeepCollectionEquality().hash(lastPosition),
+        const DeepCollectionEquality().hash(isLocalMode),
+        const DeepCollectionEquality().hash(acceleration),
+        const DeepCollectionEquality().hash(throttlePressed),
+        const DeepCollectionEquality().hash(maf2),
+        const DeepCollectionEquality().hash(maf3),
+        const DeepCollectionEquality().hash(localTripProgress),
+        const DeepCollectionEquality().hash(isConnecting),
+        const DeepCollectionEquality().hash(isDisconnecting),
         const DeepCollectionEquality().hash(supportedPids),
-        pidsChecker,
-        vin,
-        fuelSystemStatus,
-        userAccelerometer,
-        temperature,
-        isTemperatureAvaliable,
+        const DeepCollectionEquality().hash(pidsChecker),
+        const DeepCollectionEquality().hash(vin),
+        const DeepCollectionEquality().hash(fuelSystemStatus),
+        const DeepCollectionEquality().hash(userAccelerometer),
+        const DeepCollectionEquality().hash(temperature),
+        const DeepCollectionEquality().hash(isTemperatureAvaliable),
         const DeepCollectionEquality().hash(errors)
       ]);
 

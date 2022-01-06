@@ -14,6 +14,7 @@ class CommandedAirFuelRatioCommand extends VisibleObdCommand {
   void performCalculations(List<int> data) {
     if (data.length >= 2) {
       result = (2 / 65536) * (256 * data[0] + data[1]);
+      print(result);
       super.performCalculations(data);
     }
   }

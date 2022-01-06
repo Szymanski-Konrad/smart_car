@@ -35,6 +35,9 @@ class _$TripRecordTearOff {
       double tankSize = 55.0,
       int tripSeconds = 0,
       int idleTripSeconds = 0,
+      double torque = 0.0,
+      double horsepower = 0.0,
+      double designedHorsepower = 116.0,
       int rapidAccelerations = 0,
       int rapidBreakings = 0,
       int lastAccelerationTime = 0,
@@ -58,6 +61,9 @@ class _$TripRecordTearOff {
       tankSize: tankSize,
       tripSeconds: tripSeconds,
       idleTripSeconds: idleTripSeconds,
+      torque: torque,
+      horsepower: horsepower,
+      designedHorsepower: designedHorsepower,
       rapidAccelerations: rapidAccelerations,
       rapidBreakings: rapidBreakings,
       lastAccelerationTime: lastAccelerationTime,
@@ -88,7 +94,10 @@ mixin _$TripRecord {
   double get range => throw _privateConstructorUsedError;
   double get tankSize => throw _privateConstructorUsedError;
   int get tripSeconds => throw _privateConstructorUsedError;
-  int get idleTripSeconds =>
+  int get idleTripSeconds => throw _privateConstructorUsedError;
+  double get torque => throw _privateConstructorUsedError;
+  double get horsepower => throw _privateConstructorUsedError;
+  double get designedHorsepower =>
       throw _privateConstructorUsedError; // Rapid driving
   int get rapidAccelerations => throw _privateConstructorUsedError;
   int get rapidBreakings => throw _privateConstructorUsedError;
@@ -124,6 +133,9 @@ abstract class $TripRecordCopyWith<$Res> {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double torque,
+      double horsepower,
+      double designedHorsepower,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -158,6 +170,9 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
+    Object? torque = freezed,
+    Object? horsepower = freezed,
+    Object? designedHorsepower = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -233,6 +248,18 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.idleTripSeconds
           : idleTripSeconds // ignore: cast_nullable_to_non_nullable
               as int,
+      torque: torque == freezed
+          ? _value.torque
+          : torque // ignore: cast_nullable_to_non_nullable
+              as double,
+      horsepower: horsepower == freezed
+          ? _value.horsepower
+          : horsepower // ignore: cast_nullable_to_non_nullable
+              as double,
+      designedHorsepower: designedHorsepower == freezed
+          ? _value.designedHorsepower
+          : designedHorsepower // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -281,6 +308,9 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double torque,
+      double horsepower,
+      double designedHorsepower,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -317,6 +347,9 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
+    Object? torque = freezed,
+    Object? horsepower = freezed,
+    Object? designedHorsepower = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -392,6 +425,18 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.idleTripSeconds
           : idleTripSeconds // ignore: cast_nullable_to_non_nullable
               as int,
+      torque: torque == freezed
+          ? _value.torque
+          : torque // ignore: cast_nullable_to_non_nullable
+              as double,
+      horsepower: horsepower == freezed
+          ? _value.horsepower
+          : horsepower // ignore: cast_nullable_to_non_nullable
+              as double,
+      designedHorsepower: designedHorsepower == freezed
+          ? _value.designedHorsepower
+          : designedHorsepower // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -437,82 +482,94 @@ class _$_TripRecord implements _TripRecord {
       this.tankSize = 55.0,
       this.tripSeconds = 0,
       this.idleTripSeconds = 0,
+      this.torque = 0.0,
+      this.horsepower = 0.0,
+      this.designedHorsepower = 116.0,
       this.rapidAccelerations = 0,
       this.rapidBreakings = 0,
       this.lastAccelerationTime = 0,
       this.lastBreakingTime = 0,
       this.engineLoad = 0.0});
 
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double startFuelLvl;
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double currentFuelLvl;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double distance;
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double instFuelConsumption;
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double averageFuelConsumption;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double kmPerL;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double usedFuel;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double idleUsedFuel;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double savedFuel;
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double gpsSpeed;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double gpsDistance;
-  @JsonKey(defaultValue: -1)
+  @JsonKey()
   @override
   final int currentSpeed;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double averageSpeed;
-  @JsonKey(defaultValue: -1.0)
+  @JsonKey()
   @override
   final double range;
-  @JsonKey(defaultValue: 55.0)
+  @JsonKey()
   @override
   final double tankSize;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int tripSeconds;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int idleTripSeconds;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
+  @override
+  final double torque;
+  @JsonKey()
+  @override
+  final double horsepower;
+  @JsonKey()
+  @override
+  final double designedHorsepower;
+  @JsonKey()
   @override // Rapid driving
   final int rapidAccelerations;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int rapidBreakings;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int lastAccelerationTime;
-  @JsonKey(defaultValue: 0)
+  @JsonKey()
   @override
   final int lastBreakingTime;
-  @JsonKey(defaultValue: 0.0)
+  @JsonKey()
   @override
   final double engineLoad;
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, torque: $torque, horsepower: $horsepower, designedHorsepower: $designedHorsepower, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -520,75 +577,78 @@ class _$_TripRecord implements _TripRecord {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _TripRecord &&
-            (identical(other.startFuelLvl, startFuelLvl) ||
-                other.startFuelLvl == startFuelLvl) &&
-            (identical(other.currentFuelLvl, currentFuelLvl) ||
-                other.currentFuelLvl == currentFuelLvl) &&
-            (identical(other.distance, distance) ||
-                other.distance == distance) &&
-            (identical(other.instFuelConsumption, instFuelConsumption) ||
-                other.instFuelConsumption == instFuelConsumption) &&
-            (identical(other.averageFuelConsumption, averageFuelConsumption) ||
-                other.averageFuelConsumption == averageFuelConsumption) &&
-            (identical(other.kmPerL, kmPerL) || other.kmPerL == kmPerL) &&
-            (identical(other.usedFuel, usedFuel) ||
-                other.usedFuel == usedFuel) &&
-            (identical(other.idleUsedFuel, idleUsedFuel) ||
-                other.idleUsedFuel == idleUsedFuel) &&
-            (identical(other.savedFuel, savedFuel) ||
-                other.savedFuel == savedFuel) &&
-            (identical(other.gpsSpeed, gpsSpeed) ||
-                other.gpsSpeed == gpsSpeed) &&
-            (identical(other.gpsDistance, gpsDistance) ||
-                other.gpsDistance == gpsDistance) &&
-            (identical(other.currentSpeed, currentSpeed) ||
-                other.currentSpeed == currentSpeed) &&
-            (identical(other.averageSpeed, averageSpeed) ||
-                other.averageSpeed == averageSpeed) &&
-            (identical(other.range, range) || other.range == range) &&
-            (identical(other.tankSize, tankSize) ||
-                other.tankSize == tankSize) &&
-            (identical(other.tripSeconds, tripSeconds) ||
-                other.tripSeconds == tripSeconds) &&
-            (identical(other.idleTripSeconds, idleTripSeconds) ||
-                other.idleTripSeconds == idleTripSeconds) &&
-            (identical(other.rapidAccelerations, rapidAccelerations) ||
-                other.rapidAccelerations == rapidAccelerations) &&
-            (identical(other.rapidBreakings, rapidBreakings) ||
-                other.rapidBreakings == rapidBreakings) &&
-            (identical(other.lastAccelerationTime, lastAccelerationTime) ||
-                other.lastAccelerationTime == lastAccelerationTime) &&
-            (identical(other.lastBreakingTime, lastBreakingTime) ||
-                other.lastBreakingTime == lastBreakingTime) &&
-            (identical(other.engineLoad, engineLoad) ||
-                other.engineLoad == engineLoad));
+            const DeepCollectionEquality()
+                .equals(other.startFuelLvl, startFuelLvl) &&
+            const DeepCollectionEquality()
+                .equals(other.currentFuelLvl, currentFuelLvl) &&
+            const DeepCollectionEquality().equals(other.distance, distance) &&
+            const DeepCollectionEquality()
+                .equals(other.instFuelConsumption, instFuelConsumption) &&
+            const DeepCollectionEquality()
+                .equals(other.averageFuelConsumption, averageFuelConsumption) &&
+            const DeepCollectionEquality().equals(other.kmPerL, kmPerL) &&
+            const DeepCollectionEquality().equals(other.usedFuel, usedFuel) &&
+            const DeepCollectionEquality()
+                .equals(other.idleUsedFuel, idleUsedFuel) &&
+            const DeepCollectionEquality().equals(other.savedFuel, savedFuel) &&
+            const DeepCollectionEquality().equals(other.gpsSpeed, gpsSpeed) &&
+            const DeepCollectionEquality()
+                .equals(other.gpsDistance, gpsDistance) &&
+            const DeepCollectionEquality()
+                .equals(other.currentSpeed, currentSpeed) &&
+            const DeepCollectionEquality()
+                .equals(other.averageSpeed, averageSpeed) &&
+            const DeepCollectionEquality().equals(other.range, range) &&
+            const DeepCollectionEquality().equals(other.tankSize, tankSize) &&
+            const DeepCollectionEquality()
+                .equals(other.tripSeconds, tripSeconds) &&
+            const DeepCollectionEquality()
+                .equals(other.idleTripSeconds, idleTripSeconds) &&
+            const DeepCollectionEquality().equals(other.torque, torque) &&
+            const DeepCollectionEquality()
+                .equals(other.horsepower, horsepower) &&
+            const DeepCollectionEquality()
+                .equals(other.designedHorsepower, designedHorsepower) &&
+            const DeepCollectionEquality()
+                .equals(other.rapidAccelerations, rapidAccelerations) &&
+            const DeepCollectionEquality()
+                .equals(other.rapidBreakings, rapidBreakings) &&
+            const DeepCollectionEquality()
+                .equals(other.lastAccelerationTime, lastAccelerationTime) &&
+            const DeepCollectionEquality()
+                .equals(other.lastBreakingTime, lastBreakingTime) &&
+            const DeepCollectionEquality()
+                .equals(other.engineLoad, engineLoad));
   }
 
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        startFuelLvl,
-        currentFuelLvl,
-        distance,
-        instFuelConsumption,
-        averageFuelConsumption,
-        kmPerL,
-        usedFuel,
-        idleUsedFuel,
-        savedFuel,
-        gpsSpeed,
-        gpsDistance,
-        currentSpeed,
-        averageSpeed,
-        range,
-        tankSize,
-        tripSeconds,
-        idleTripSeconds,
-        rapidAccelerations,
-        rapidBreakings,
-        lastAccelerationTime,
-        lastBreakingTime,
-        engineLoad
+        const DeepCollectionEquality().hash(startFuelLvl),
+        const DeepCollectionEquality().hash(currentFuelLvl),
+        const DeepCollectionEquality().hash(distance),
+        const DeepCollectionEquality().hash(instFuelConsumption),
+        const DeepCollectionEquality().hash(averageFuelConsumption),
+        const DeepCollectionEquality().hash(kmPerL),
+        const DeepCollectionEquality().hash(usedFuel),
+        const DeepCollectionEquality().hash(idleUsedFuel),
+        const DeepCollectionEquality().hash(savedFuel),
+        const DeepCollectionEquality().hash(gpsSpeed),
+        const DeepCollectionEquality().hash(gpsDistance),
+        const DeepCollectionEquality().hash(currentSpeed),
+        const DeepCollectionEquality().hash(averageSpeed),
+        const DeepCollectionEquality().hash(range),
+        const DeepCollectionEquality().hash(tankSize),
+        const DeepCollectionEquality().hash(tripSeconds),
+        const DeepCollectionEquality().hash(idleTripSeconds),
+        const DeepCollectionEquality().hash(torque),
+        const DeepCollectionEquality().hash(horsepower),
+        const DeepCollectionEquality().hash(designedHorsepower),
+        const DeepCollectionEquality().hash(rapidAccelerations),
+        const DeepCollectionEquality().hash(rapidBreakings),
+        const DeepCollectionEquality().hash(lastAccelerationTime),
+        const DeepCollectionEquality().hash(lastBreakingTime),
+        const DeepCollectionEquality().hash(engineLoad)
       ]);
 
   @JsonKey(ignore: true)
@@ -616,6 +676,9 @@ abstract class _TripRecord implements TripRecord {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double torque,
+      double horsepower,
+      double designedHorsepower,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -656,6 +719,12 @@ abstract class _TripRecord implements TripRecord {
   int get tripSeconds;
   @override
   int get idleTripSeconds;
+  @override
+  double get torque;
+  @override
+  double get horsepower;
+  @override
+  double get designedHorsepower;
   @override // Rapid driving
   int get rapidAccelerations;
   @override

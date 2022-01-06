@@ -14,6 +14,9 @@ class DistanceWithMILCommand extends VisibleObdCommand {
   }
 
   @override
+  String get formattedResult => '$result $unit';
+
+  @override
   String get description =>
       'Distance traveled with malfunction indicator lam (MIL) on';
 

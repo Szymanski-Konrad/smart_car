@@ -14,16 +14,17 @@ class FuelStatsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: MediaQuery.of(context).size.width * 0.31,
+      // width: MediaQuery.of(context).size.width * 0.31,
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.blueGrey,
+          width: 3,
         ),
         borderRadius: const BorderRadius.all(
           Radius.circular(8.0),
         ),
       ),
-      child: Column(
+      child: Wrap(
         children: records
             .map((data) => Padding(
                   padding: const EdgeInsets.all(8.0),

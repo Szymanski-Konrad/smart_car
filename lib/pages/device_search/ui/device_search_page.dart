@@ -60,7 +60,6 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
     return Scaffold(
       body: ListView(
         children: [
-          const Divider(),
           const ListTile(title: Text('General')),
           SwitchListTile(
             title: const Text('Enable Bluetooth'),

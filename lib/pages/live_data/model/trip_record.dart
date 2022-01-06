@@ -110,10 +110,8 @@ extension TripRecordExtension on TripRecord {
 
   List<InfoTileData> get fuelSection => [
         avgFuelDetails,
-        avgKmPerL,
-        instKmPerL,
-        percentFuelConsDetails,
         instFuelDetails,
+        percentFuelConsDetails,
         usedFuelDetails,
         idleUsedFuelDetails,
         savedFuelDetails,
@@ -130,11 +128,11 @@ extension TripRecordExtension on TripRecord {
         avgSpeedDetails,
         distanceDetails,
         rangeDetails,
-        gpsSpeedDetails,
+        carboPerKmDetails,
         gpsDistanceDetails,
         producedCarboDetails,
         savedCarboDetails,
-        carboPerKmDetails,
+        // gpsSpeedDetails,
       ];
 
   InfoTileData get percentFuelConsDetails => InfoTileData(
@@ -159,7 +157,7 @@ extension TripRecordExtension on TripRecord {
       );
   InfoTileData get instFuelDetails => InfoTileData(
         value: instFuelConsumption,
-        title: 'Fuel cons.',
+        title: 'Inst Fuel cons.',
         unit: 'l/100km',
         digits: 1,
       );
@@ -233,13 +231,13 @@ extension TripRecordExtension on TripRecord {
   InfoTileData get rapidAccelerationsDetails => InfoTileData(
         value: rapidAccelerations,
         digits: 0,
-        title: 'Rapid acc.',
+        title: 'Acc.',
         unit: '',
       );
   InfoTileData get rapidBrakingDetails => InfoTileData(
         value: rapidBreakings,
         digits: 0,
-        title: 'Rapid braking',
+        title: 'Braking',
         unit: '',
       );
   InfoTileData get producedCarboDetails => InfoTileData(
@@ -247,13 +245,13 @@ extension TripRecordExtension on TripRecord {
             0.75 *
             0.87 *
             Constants.co2GenerationRatio,
-        digits: 3,
-        title: 'Generated CO2',
+        digits: 2,
+        title: 'Burnt CO2',
         unit: 'kg',
       );
   InfoTileData get savedCarboDetails => InfoTileData(
         value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio,
-        digits: 3,
+        digits: 2,
         title: 'Saved CO2',
         unit: 'kg',
       );
@@ -265,7 +263,7 @@ extension TripRecordExtension on TripRecord {
             Constants.co2GenerationRatio *
             1000,
         digits: 0,
-        title: 'CO2 per km',
+        title: 'avg CO2',
         unit: 'g/km',
       );
 }

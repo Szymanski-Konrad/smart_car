@@ -151,7 +151,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   Future<void> _runTest() async {
     print('test runned');
-    final json = await rootBundle.loadString('assets/json/very_long.json');
+    final json = await rootBundle.loadString('assets/json/legionowo_trip.json');
     final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
     final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
@@ -256,9 +256,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     } else {
       String? _command;
       while (_command == null) {
-        _commandIndex++;
-        _commandIndex %= commands.length;
-        _command = commands[_commandIndex].sendCommand();
+        if (commands.isNotEmpty) {
+          _commandIndex++;
+          _commandIndex %= commands.length;
+          _command = commands[_commandIndex].sendCommand();
+        }
       }
       await _sendCommand(_command);
     }
@@ -445,7 +447,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
             case PID.throttlePosition:
               if (command is ThrottlePositionCommand) {
                 final position = command.result.toDouble();
-                emit(state.copyWith(throttlePressed: position > 20));
+                emit(state.copyWith(
+                    throttlePressed:
+                        position > Constants.throttlePositionIdle));
               }
               break;
             default:
