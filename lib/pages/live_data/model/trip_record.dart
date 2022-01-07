@@ -129,7 +129,7 @@ extension TripRecordExtension on TripRecord {
         distanceDetails,
         rangeDetails,
         carboPerKmDetails,
-        gpsDistanceDetails,
+        // gpsDistanceDetails,
         producedCarboDetails,
         savedCarboDetails,
         // gpsSpeedDetails,

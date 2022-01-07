@@ -14,7 +14,6 @@ abstract class PercentObdCommand extends VisibleObdCommand {
   @override
   void performCalculations(List<int> data) {
     if (data.isNotEmpty) {
-      previousResult = result;
       result = (100 * data[0]) / 255;
       super.performCalculations(data);
     }

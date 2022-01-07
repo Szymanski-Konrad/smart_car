@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
 import 'package:smart_car/utils/ui/info_tile.dart';
 
@@ -24,13 +23,18 @@ class FuelStatsTile extends StatelessWidget {
           Radius.circular(8.0),
         ),
       ),
-      child: Wrap(
-        children: records
-            .map((data) => Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InfoTile(data: data),
-                ))
-            .toList(),
+      child: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        height: 60,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: records
+              .map((data) => Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InfoTile(data: data),
+                  ))
+              .toList(),
+        ),
       ),
     );
   }

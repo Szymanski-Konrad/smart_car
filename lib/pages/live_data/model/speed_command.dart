@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class SpeedCommand extends VisibleObdCommand {
-  SpeedCommand() : super('01 0D', prio: 0);
+  SpeedCommand() : super('01 0D', max: 140, prio: 0);
 
   double get traveledDistance => result * 1000 * responseTime / 3600000;
 
@@ -15,7 +15,6 @@ class SpeedCommand extends VisibleObdCommand {
   @override
   void performCalculations(List<int> data) {
     if (data.isNotEmpty) {
-      previousResult = result;
       result = data[0];
       super.performCalculations(data);
     }
@@ -23,12 +22,6 @@ class SpeedCommand extends VisibleObdCommand {
 
   @override
   String get unit => 'km/h';
-
-  @override
-  double? get max => 255;
-
-  @override
-  double? get min => 0;
 
   @override
   IconData get icon => Icons.speed;

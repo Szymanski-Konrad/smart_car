@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
+import 'package:smart_car/utils/list_extension.dart';
 import 'package:smart_car/utils/trending.dart';
 
 abstract class VisibleObdCommand extends ObdCommand {
-  VisibleObdCommand(String command, {num? min, num? max, required int prio})
+  VisibleObdCommand(String command,
+      {num? min, num? max, required int prio, this.range = 0.0})
       : super(command, min: min, max: max, prio: prio);
 
   String get name;
@@ -13,21 +15,15 @@ abstract class VisibleObdCommand extends ObdCommand {
   String get formattedReactionTime => '$responseTime ms';
   Trending trending = Trending.constant;
   IconData get icon;
-  num previousResult = double.nan;
 
   IconData get trendingIcon => trending.icon;
+  double range;
 
   @override
   void performCalculations(List<int> data) {
     if (data.isNotEmpty) {
       super.performCalculations(data);
-      if (result > previousResult) {
-        trending = Trending.up;
-      } else if (result == previousResult) {
-        trending = Trending.constant;
-      } else {
-        trending = Trending.down;
-      }
+      // trending = historyData.trending(range: range);
     }
   }
 

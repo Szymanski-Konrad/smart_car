@@ -57,6 +57,34 @@ class LiveDataPage extends StatelessWidget {
               // IconButton(
               //     onPressed: cubit.sendCheck9Command,
               //     icon: const Icon(Icons.check)),
+              IconButton(
+                onPressed: () async {
+                  final files = await cubit.showFilesInDirectory();
+                  showDialog(
+                      context: context,
+                      builder: (ctx) {
+                        return AlertDialog(
+                          title: Text('Files in directory: ${files.length}'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => cubit.sendTripsToMail(files),
+                              child: const Text('Send files'),
+                            ),
+                          ],
+                          content: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                ...files.map((e) => ListTile(
+                                      title: Text(e),
+                                    )),
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                },
+                icon: const Icon(Icons.file_copy_sharp),
+              ),
               if (cubit.testCommands.isNotEmpty)
                 IconButton(
                   onPressed: cubit.saveCommands,
@@ -88,20 +116,19 @@ class LiveDataPage extends StatelessWidget {
                     color: !state.throttlePressed ? Colors.green : Colors.amber,
                   ),
                   const SizedBox(width: 16),
-                  Text(state.isTemperatureAvaliable
-                      ? 'Indoor temp: ${state.temperature.toStringAsFixed(1)} °C'
-                      : 'Brak czujnika temperatury'),
+                  if (state.isTemperatureAvaliable)
+                    Text('Indoor temp: ${state.getTemperature} °C'),
                   FuelStatsTile(records: state.tripRecord.timeSection),
                   FuelStatsTile(records: state.tripRecord.fuelSection),
                   FuelStatsTile(records: state.tripRecord.tripSection),
                   // SupportedPidsTile(checker: state.pidsChecker),
-                  ...cubit.commands
-                      .whereType<VisibleObdCommand>()
-                      .map((command) => LiveDataTile(command: command))
-                      .toList(),
+                  if (cubit.commands.isEmpty) Text('Loading pids...'),
+                  if (cubit.commands.isNotEmpty)
+                    ...cubit.commands
+                        .whereType<VisibleObdCommand>()
+                        .map((command) => LiveDataTile(command: command))
+                        .toList(),
 
-                  // ...state.tripRecord.tripDetails
-                  //     .map((details) => TripTile(details: details)),
                   const SizedBox(height: 20.0),
                   ...state.errors.map((e) => ListTile(title: Text(e))),
                 ],

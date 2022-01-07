@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:math';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
@@ -9,7 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -17,11 +19,9 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
-import 'package:smart_car/pages/live_data/model/engine_load_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
-import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
@@ -82,6 +82,41 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
   }
 
+  /// Save trip file
+  Future<void> saveCommandsToFile() async {
+    if (testCommands.isNotEmpty) {
+      final feedback = jsonEncode(testCommands.map((e) => e.toJson()).toList());
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      final now = DateTime.now();
+      final path = '${appDocDir.path}/trip${now.toString()}.json';
+      File file = File(path);
+      file.writeAsString(feedback);
+    }
+  }
+
+  /// Show files in app documents directory
+  Future<List<String>> showFilesInDirectory() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final files = appDocDir.listSync();
+    final paths = files.map((e) => e.path).toList();
+    return paths.where((element) => element.contains('trip')).toList();
+  }
+
+  Future<void> sendTripsToMail(List<String> files) async {
+    final mailOptions = MailOptions(
+      body: 'Sending my last trips',
+      recipients: ['hunteelar.programowanie@gmail.com'],
+      isHTML: true,
+      attachments: files,
+    );
+
+    await FlutterMailer.send(mailOptions);
+    for (final path in files) {
+      final file = File(path);
+      file.delete();
+    }
+  }
+
   Future<void> initializeObd() async {
     emit(LiveDataState.init(pids: state.supportedPids));
     _sendCommand('AT Z'); // Reset obd
@@ -105,13 +140,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       emit(state.copyWith(
           tripRecord:
               state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
-
-      if (timer.tick % 600 == 0) saveCommands();
     });
 
     await _determinePosition();
     lastReciveCommandTime = DateTime.now();
-    await _sendNextCommand();
+    _decideNextMove();
+    // await _sendNextCommand();
   }
 
   void sendCheckPidsCommands() {
@@ -150,7 +184,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> _runTest() async {
-    print('test runned');
     final json = await rootBundle.loadString('assets/json/legionowo_trip.json');
     final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
     final testCommands = decoded.map(TestCommand.fromJson).toList();
@@ -166,8 +199,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       },
     );
 
-    print('start sending test commands: ${testCommands.length}');
-
     int index = 0;
     for (final testCommand in testCommands) {
       await Future.delayed(Duration(
@@ -177,7 +208,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       if (index % 1000 == 0) {
         final percentage = (index / testCommands.length) * 100;
         emit(state.copyWith(localTripProgress: percentage));
-        print('${percentage.toStringAsFixed(2)} %');
       }
     }
 
@@ -214,6 +244,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         connection.input?.listen(_onDataReceived).onDone(() {
           print('Connection is done');
         });
+        print('connected, now initializing obd');
         initializeObd();
       }).catchError((error) {
         print('Cannot connect, exception occured');
@@ -266,17 +297,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
   }
 
-  double get fuelUsedFromFuelLvl {
-    final fuelCommand = commands.safeFirst<FuelLevelCommand>();
-    if (fuelCommand == null) return 0;
-    final max = fuelCommand.maxValue;
-    final current = fuelCommand.result;
-    if (max.isFinite && current.isFinite) {
-      return ((max - current).toDouble() / 100) * 55;
-    }
-    return 0;
-  }
-
   Future<void> _sendCommand(String command) async {
     if (command.isNotEmpty) {
       try {
@@ -291,15 +311,16 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   Future<void> saveCommands() async {
     try {
-      final feedback = jsonEncode(testCommands.map((e) => e.toJson()).toList());
-      testCommands.clear();
-      await sendFeedback(feedback: feedback);
+      saveCommandsToFile();
+      // final feedback = jsonEncode(testCommands.map((e) => e.toJson()).toList());
+      // testCommands.clear();
+      // await _sendFeedback(feedback: feedback);
     } catch (e) {
       _insertError(e.toString());
     }
   }
 
-  Future<bool> sendFeedback({required String feedback}) async {
+  Future<bool> _sendFeedback({required String feedback}) async {
     final mailer = Mailer(
         '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');
     const toAddress = Address('hunteelar.programowanie@gmail.com');
@@ -318,6 +339,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   DateTime lastReciveCommandTime = DateTime.now();
 
+  void _decideNextMove() {
+    final specialCommand = state.nextReadPidsPart;
+    if (specialCommand.isNotEmpty && specialCommands.isEmpty) {
+      specialCommands.add(specialCommand);
+    }
+    _sendNextCommand();
+  }
+
   void _onDataReceived(Uint8List data) {
     try {
       String dataString = String.fromCharCodes(data);
@@ -327,11 +356,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
       if (dataString.endsWith(Strings.promptCharacter)) {
         if (!state.isLocalMode && state.isRunning) {
-          _sendNextCommand();
-          final specialCommand = state.nextReadPidsPart;
-          if (specialCommand.isNotEmpty && specialCommands.isEmpty) {
-            specialCommands.add(specialCommand);
-          }
+          _decideNextMove();
         }
 
         return;
@@ -507,6 +532,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   @override
   Future<void> close() async {
+    await saveCommands();
+    _connection?.finish();
     _everySecondTimer?.cancel();
     positionSub?.cancel();
 

@@ -14,8 +14,7 @@ abstract class OxygenSensorVolts extends VisibleObdCommand
   double B = 0.0;
 
   @override
-  String get formattedResult =>
-      '${A.toStringAsFixed(3)} $unitA\n ${B.toStringAsFixed(3)} $unitB';
+  String get formattedResult => '${A.toStringAsFixed(3)} $unitA';
 
   @override
   void performCalculations(List<int> data) {
@@ -34,7 +33,7 @@ abstract class OxygenSensorVolts extends VisibleObdCommand
   String get unit => '';
 
   @override
-  String get unitA => 'volts';
+  String get unitA => 'V';
 
   @override
   String get unitB => '%';
@@ -47,7 +46,7 @@ class OxygenSensorVolts1 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 1';
 
   @override
-  String get name => 'Oxygen sensor 1';
+  String get name => 'O2 sensor 1';
 }
 
 class OxygenSensorVolts2 extends OxygenSensorVolts {
@@ -57,7 +56,7 @@ class OxygenSensorVolts2 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 2';
 
   @override
-  String get name => 'Oxygen sensor 2';
+  String get name => 'O2 sensor 2';
 }
 
 class OxygenSensorVolts3 extends OxygenSensorVolts {
@@ -67,7 +66,7 @@ class OxygenSensorVolts3 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 3';
 
   @override
-  String get name => 'Oxygen sensor 3';
+  String get name => 'O2 sensor 3';
 }
 
 class OxygenSensorVolts4 extends OxygenSensorVolts {
@@ -77,7 +76,7 @@ class OxygenSensorVolts4 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 4';
 
   @override
-  String get name => 'Oxygen sensor 4';
+  String get name => 'O2 sensor 4';
 }
 
 class OxygenSensorVolts5 extends OxygenSensorVolts {
@@ -87,7 +86,7 @@ class OxygenSensorVolts5 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 5';
 
   @override
-  String get name => 'Oxygen sensor 5';
+  String get name => 'O2 sensor 5';
 }
 
 class OxygenSensorVolts6 extends OxygenSensorVolts {
@@ -97,7 +96,7 @@ class OxygenSensorVolts6 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 6';
 
   @override
-  String get name => 'Oxygen sensor 6';
+  String get name => 'O2 sensor 6';
 }
 
 class OxygenSensorVolts7 extends OxygenSensorVolts {
@@ -107,7 +106,7 @@ class OxygenSensorVolts7 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 7';
 
   @override
-  String get name => 'Oxygen sensor 7';
+  String get name => 'O2 sensor 7';
 }
 
 class OxygenSensorVolts8 extends OxygenSensorVolts {
@@ -117,5 +116,5 @@ class OxygenSensorVolts8 extends OxygenSensorVolts {
   String get description => 'Oxygen sensor 8';
 
   @override
-  String get name => 'Oxygen sensor 8';
+  String get name => 'O2 sensor 8';
 }

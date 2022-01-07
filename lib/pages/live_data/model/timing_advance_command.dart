@@ -23,7 +23,7 @@ class TimingAdvanceCommand extends VisibleObdCommand {
   IconData get icon => Icons.timelapse;
 
   @override
-  String get name => 'Timing advance';
+  String get name => 'Timing adv.';
 
   @override
   String get unit => '°';

@@ -50,6 +50,8 @@ class LiveDataState with _$LiveDataState {
       tripRecord: TripRecord(),
       pidsChecker: PidsChecker(),
       supportedPids: pids,
+      isConnecting: false,
+      isDisconnecting: false,
     );
   }
 }
@@ -138,4 +140,6 @@ extension LiveDataStateExtension on LiveDataState {
       pidsChecker.pidsSupported81_A0 && !pidsChecker.pidsReaded81_A0;
   bool get shouldReadA1_C0 =>
       pidsChecker.pidsSupportedA1_C0 && !pidsChecker.pidsReadedA1_C0;
+
+  String get getTemperature => temperature.toStringAsFixed(1);
 }

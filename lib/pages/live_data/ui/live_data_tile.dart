@@ -49,27 +49,25 @@ class LiveDataTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.blue),
+        border: Border.all(color: command.trendingColor),
         borderRadius: const BorderRadius.all(Radius.circular(10.0)),
       ),
       child: Row(
         children: [
-          Column(
-            children: [
-              Icon(command.icon),
-              if (command.enableHistorical)
-                Icon(
-                  command.trendingIcon,
-                  color: command.trendingColor,
-                ),
-            ],
-          ),
           Expanded(
             child: Column(
               children: [
                 Text(command.name, style: textTheme),
-                Text(command.formattedResult, style: textTheme),
-                // Text(command.formattedReactionTime, style: textTheme),
+                Row(
+                  children: [
+                    Icon(command.icon),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(command.formattedResult, style: textTheme),
+                    ),
+                  ],
+                ),
+                Text(command.formattedReactionTime, style: textTheme),
               ],
             ),
           ),

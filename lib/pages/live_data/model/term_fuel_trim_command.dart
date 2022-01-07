@@ -5,7 +5,7 @@ abstract class TermFuelTrim extends VisibleObdCommand {
   TermFuelTrim(String command) : super(command, prio: 1, max: 99.2, min: -100);
 
   @override
-  String get formattedResult => '$result $unit';
+  String get formattedResult => '${result.toStringAsFixed(3)} $unit';
 
   @override
   void performCalculations(List<int> data) {

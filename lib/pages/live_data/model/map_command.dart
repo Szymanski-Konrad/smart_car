@@ -13,7 +13,6 @@ class MapCommand extends VisibleObdCommand {
   @override
   void performCalculations(List<int> data) {
     if (data.isNotEmpty) {
-      previousResult = result;
       result = data[0];
       super.performCalculations(data);
     }
@@ -25,10 +24,7 @@ class MapCommand extends VisibleObdCommand {
   @override
   IconData get icon => Icons.air;
 
-  double gramsOfAir() {
-    return 0.0;
-  }
-
+  @override
   String get formattedResult =>
       result.isFinite ? '$result $unit' : super.formattedResult;
 }

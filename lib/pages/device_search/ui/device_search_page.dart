@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_mailer/flutter_mailer.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/pages/device_search/ui/bonded_devices_page.dart';
 import 'package:smart_car/pages/device_search/ui/discovery_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
@@ -20,9 +23,13 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
   Timer? _discoverableTimeoutTimer;
   int _discoverableTimeoutSecondsLeft = 0;
 
+  List<String> files = [];
+
   @override
   void initState() {
     super.initState();
+
+    showFilesInDirectory();
 
     FlutterBluetoothSerial.instance.state.then(
       (value) => setState(() {
@@ -58,6 +65,7 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    showFilesInDirectory();
     return Scaffold(
       body: ListView(
         children: [
@@ -127,16 +135,30 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
             ),
           ),
           ListTile(
+            title: ElevatedButton(
+              child: const Text('Settings'),
+              onPressed: () async {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return const SettingsPage();
+                  },
+                ));
+              },
+            ),
+          ),
+          if (files.isNotEmpty)
+            ListTile(
               title: ElevatedButton(
-            child: const Text('Settings'),
-            onPressed: () async {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) {
-                  return const SettingsPage();
+                child: const Text('Send saved trips'),
+                onPressed: () async {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) {
+                      return const SettingsPage();
+                    },
+                  ));
                 },
-              ));
-            },
-          ))
+              ),
+            )
         ],
       ),
     );
@@ -146,5 +168,29 @@ class _DeviceSearchPageState extends State<DeviceSearchPage> {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return LiveDataPage(device: server);
     }));
+  }
+
+  Future<void> showFilesInDirectory() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final list = appDocDir.listSync();
+    final paths = list.map((e) => e.path).toList();
+    setState(() {
+      files = paths.where((element) => element.contains('trip')).toList();
+    });
+  }
+
+  Future<void> sendTripsToMail(List<String> files) async {
+    final mailOptions = MailOptions(
+      body: 'Sending my last trips',
+      recipients: ['hunteelar.programowanie@gmail.com'],
+      isHTML: true,
+      attachments: files,
+    );
+
+    await FlutterMailer.send(mailOptions);
+    for (final path in files) {
+      final file = File(path);
+      file.delete();
+    }
   }
 }

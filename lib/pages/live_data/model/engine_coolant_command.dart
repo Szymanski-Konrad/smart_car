@@ -7,5 +7,5 @@ class EngineCoolantCommand extends TempObdCommand {
   String get description => 'Coolant temperature of engine';
 
   @override
-  String get name => 'Engine coolant';
+  String get name => 'Engine temp';
 }

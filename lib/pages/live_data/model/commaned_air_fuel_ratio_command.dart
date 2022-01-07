@@ -8,7 +8,7 @@ class CommandedAirFuelRatioCommand extends VisibleObdCommand {
   String get description => 'Commanded Air Fuel Ratio command';
 
   @override
-  String get formattedResult => '$result $unit';
+  String get formattedResult => '${result.toStringAsFixed(3)} $unit';
 
   @override
   void performCalculations(List<int> data) {
