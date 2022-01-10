@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commanded_evaporative_purge_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
@@ -23,16 +24,10 @@ import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 
 abstract class Pids {
   // Unsupported pids
-  static const String fuelPressure = '0A';
   static const String commandedSecondaryAirStatus = '12';
   static const String oxygenSensorsPresents2B = '13';
-  static const String oxygenSensor3A = '16';
-  static const String oxygenSensor4A = '17';
-  static const String oxygenSensor7A = '1A';
-  static const String oxygenSensor8A = '1B';
   static const String oxygenSensorsPresents4B = '1D';
   static const String auxiliaryInputStatus = '1E';
-  static const String runTimeSinceStart = '1F';
   static const String fuelRailPressure = '22';
   static const String fuelRailGaugePressure = '23';
   static const String oxygenSensor1B = '24';
@@ -76,7 +71,6 @@ abstract class Pids {
   static const String fuelType = '51';
   static const String hybridBatteryPackRemainingLife = '5B';
   static const String fuelInjectionTiming = '5D';
-  static const String engineFuelRate = '5E';
   static const String engineReferenceTorque = '63';
   static const String odometer = 'A6';
 
@@ -100,13 +94,20 @@ abstract class Pids {
   static const String oxygenSensor2A = '15';
   static const String oxygenSensor5A = '18';
   static const String oxygenSensor6A = '19';
-
   static const String commandedEvaporativePurge = '2E';
   static const String controlModuleVoltage = '42';
   static const String obdStandards = '1C';
   static const String timingAdvance = '0E';
   static const String distanceTraveledMIL = '21';
   static const String intakeManifoldAbsolutePressure = '0B';
+
+  static const String fuelPressure = '0A';
+  static const String oxygenSensor3A = '16';
+  static const String oxygenSensor4A = '17';
+  static const String oxygenSensor7A = '1A';
+  static const String oxygenSensor8A = '1B';
+  static const String runTimeSinceStart = '1F';
+  static const String engineFuelRate = '5E';
 
   static const String pidsList1 = '00';
   static const String pidsList2 = '20';
@@ -162,6 +163,7 @@ enum PID {
   obdStandards,
   distanceTraveledMIL,
   intakeManifoldAbsolutePressure,
+  engineFuelRate,
   unknown,
 }
 
@@ -218,6 +220,8 @@ extension PIDExtension on PID {
         return PID.distanceTraveledMIL;
       case Pids.intakeManifoldAbsolutePressure:
         return PID.intakeManifoldAbsolutePressure;
+      case Pids.engineFuelRate:
+        return PID.engineFuelRate;
       default:
         return PID.unknown;
     }
@@ -225,6 +229,8 @@ extension PIDExtension on PID {
 
   ObdCommand? get command {
     switch (this) {
+      case PID.engineFuelRate:
+        return EngineFuelRateCommand();
       case PID.engineCoolant:
         return EngineCoolantCommand();
       case PID.engineLoad:

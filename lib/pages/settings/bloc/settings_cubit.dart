@@ -19,7 +19,6 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   Future<void> saveSettings() async {
-    print('saving settings');
     final json = jsonEncode(state.settings);
     await Storage.updateSettings(json);
     changeSaved(true);
