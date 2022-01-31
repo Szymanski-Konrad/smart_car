@@ -1,11 +1,7 @@
-import 'dart:math';
-
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
-import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
-import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
 
 class LiveDataTile extends StatelessWidget {
   const LiveDataTile({
@@ -16,34 +12,47 @@ class LiveDataTile extends StatelessWidget {
   final VisibleObdCommand command;
 
   Widget chart() {
-    final maximum = max(command.max?.toDouble() ?? command.maxValue.toDouble(),
-        command.maxValue.toDouble());
     return Sparkline(
       fallbackHeight: Constants.tileHeight,
       data: command.lastHistoryData,
       lineColor: Colors.blueGrey,
-      fillColor: Colors.blueGrey.shade800,
+      fillColor: command.color,
       fillMode: FillMode.below,
-      max: maximum,
-      min: command.min?.toDouble() ?? command.minValue.toDouble(),
+      max: command.max.toDouble(),
+      min: command.min.toDouble(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: Constants.tileHeight,
-      width: MediaQuery.of(context).size.width * 0.31,
-      child: Stack(
-        children: [
-          if (command.enableHistorical) chart(),
-          commandInfo(context),
-        ],
+    return GestureDetector(
+      onTap: () => showDescription(context),
+      child: SizedBox(
+        height: Constants.tileHeight,
+        width: MediaQuery.of(context).size.width * 0.31,
+        child: Stack(
+          children: [
+            if (command.enableHistorical) chart(),
+            commandInfo(context),
+          ],
+        ),
       ),
     );
   }
 
   final textTheme = const TextStyle(fontSize: 16);
+
+  void showDescription(BuildContext context) {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(command.namePL ?? command.name),
+            content: Text(command.descriptionPL ?? 'Brak informacji'),
+          );
+        });
+  }
 
   Widget commandInfo(BuildContext context) {
     return Container(

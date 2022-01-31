@@ -1,4 +1,3 @@
-import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 class ObdStandardCommand extends ObdCommand {

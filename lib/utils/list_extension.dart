@@ -1,7 +1,7 @@
-import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/utils/trending.dart';
 
 extension DoubleListExtension<T> on List<double> {
+  /// Add [value] to list, max to count of [max]
   void addWithMax(double value, int max) {
     if (length >= max) {
       removeAt(0);
@@ -9,6 +9,7 @@ extension DoubleListExtension<T> on List<double> {
     add(value);
   }
 
+  /// Calcute trending based on values in list with [range] tolerance
   Trending trending({double range = 0.0}) {
     if (length < 2) return Trending.constant;
     final mean = reduce((value, element) => value + element) / length;

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -26,6 +27,16 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   void changeSaved(bool value) {
     emit(state.copyWith(isSaved: value));
+  }
+
+  void updateDevice(BluetoothDevice device) {
+    emit(state.copyWith(
+      settings: state.settings.copyWith(
+        deviceAddress: device.address,
+        deviceName: device.name,
+      ),
+    ));
+    startTimer();
   }
 
   void updateEngineCapacity(String input) {

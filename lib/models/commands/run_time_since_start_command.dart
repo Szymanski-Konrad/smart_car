@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class RunTimeSinceStartCommand extends VisibleObdCommand {
-  RunTimeSinceStartCommand() : super('01 1F', prio: 5);
+  RunTimeSinceStartCommand() : super('01 1F', min: 0, max: 65535, prio: 5);
 
   @override
   String get description => 'Run time since start';
@@ -14,6 +13,11 @@ class RunTimeSinceStartCommand extends VisibleObdCommand {
       result = 256 * data[0] + data[1];
       super.performCalculations(data);
     }
+  }
+
+  @override
+  Color get color {
+    return normalColor;
   }
 
   @override

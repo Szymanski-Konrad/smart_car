@@ -7,6 +7,8 @@ import 'package:smart_car/pages/live_data/model/trip_record.dart';
 
 part 'live_data_state.freezed.dart';
 
+enum TripStatus { idle, driving, savingFuel }
+
 @freezed
 class LiveDataState with _$LiveDataState {
   factory LiveDataState({
@@ -19,15 +21,17 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isLocalMode,
     @Default(0) double acceleration,
     @Default(false) bool throttlePressed,
+    @Default(0) int currentTimeSpent,
+    @Default(0) double currentFuelBurnt,
+    @Default(TripStatus.idle) TripStatus tripStatus,
 
     // Just for testing
-    @Default(0.0) double maf2,
-    @Default(0.0) double maf3,
     @Default(0.0) double localTripProgress,
 
     // Bluetooth
     @Default(true) bool isConnecting,
     @Default(false) bool isDisconnecting,
+    @Default(false) bool isConnnectingError,
 
     // Pids
     @Default([]) List<String> supportedPids,

@@ -5,6 +5,13 @@ class MafCommand extends VisibleObdCommand {
   MafCommand() : super('01 10', min: 0, max: 100, prio: 0);
 
   @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   String get description => 'Current MAF (grams of air per second)';
 
   @override
@@ -30,8 +37,8 @@ class MafCommand extends VisibleObdCommand {
   double fuelFlow(double load,
       {double fuelDensity = 740, double airFuelRatio = 14.7}) {
     if (result > 0) {
-      // return 10 * (load / 100 * result * 3600) / (fuelDensity * airFuelRatio);
-      return (result * 3600) / (fuelDensity * airFuelRatio);
+      // return (load * result * 3600) / (fuelDensity * airFuelRatio);
+      return (result * 3600) / airFuelRatio / fuelDensity;
     }
     return 0;
   }
@@ -44,9 +51,9 @@ class MafCommand extends VisibleObdCommand {
   /// [speed] - current speed of vehicle
   double fuel100km(int speed, double load, double longTerm, double shortTerm,
       double airFuelRatio) {
-    final flow = fuelFlow(load, airFuelRatio: airFuelRatio);
+    final flow = fuelFlow(load / 100, airFuelRatio: airFuelRatio);
     if (speed > 0) {
-      return (flow * (longTerm * shortTerm) / speed) * 100;
+      return (flow * (longTerm + shortTerm) / speed) * 100;
     }
     return flow;
   }

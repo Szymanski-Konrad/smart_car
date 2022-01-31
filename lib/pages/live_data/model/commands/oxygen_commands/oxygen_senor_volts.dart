@@ -17,6 +17,13 @@ abstract class OxygenSensorVolts extends VisibleObdCommand
   String get formattedResult => '${A.toStringAsFixed(3)} $unitA';
 
   @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   void performCalculations(List<int> data) {
     if (data.length >= 2) {
       A = data[0] / 200;

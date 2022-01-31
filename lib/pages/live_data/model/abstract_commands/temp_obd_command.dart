@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 abstract class TempObdCommand extends VisibleObdCommand {
-  TempObdCommand(String command, {required int prio})
-      : super(command, min: -40, max: 215, prio: prio);
+  TempObdCommand(
+    String command, {
+    required int prio,
+    int min = -40,
+    int max = 215,
+  }) : super(command, min: min, max: max, prio: prio);
 
   @override
   IconData get icon => Icons.thermostat;

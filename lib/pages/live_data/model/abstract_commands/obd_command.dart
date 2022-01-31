@@ -5,8 +5,8 @@ import 'package:smart_car/utils/list_extension.dart';
 abstract class ObdCommand {
   ObdCommand(
     this.command, {
-    this.min,
-    this.max,
+    this.min = 0,
+    this.max = 100,
     required int prio,
     this.enableHistorical = true,
   }) {
@@ -18,7 +18,7 @@ abstract class ObdCommand {
   final String command;
 
   // Priority
-  late final int priority;
+  late int priority;
   late int waitTimes;
 
   // Time
@@ -28,10 +28,8 @@ abstract class ObdCommand {
   int differenceMiliseconds = 0;
 
   // Extreme values
-  num? max;
-  num? min;
-  num maxValue = double.negativeInfinity;
-  num minValue = double.infinity;
+  num max;
+  num min;
 
   // History data
   List<double> historyData = [];
@@ -41,8 +39,6 @@ abstract class ObdCommand {
 
   @mustCallSuper
   void performCalculations(List<int> data) {
-    if (result > maxValue) maxValue = result;
-    if (result < minValue) minValue = result;
     if (enableHistorical) {
       insertHistoryData();
     }

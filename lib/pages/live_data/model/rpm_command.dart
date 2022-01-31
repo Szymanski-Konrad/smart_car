@@ -5,6 +5,13 @@ class RpmCommand extends VisibleObdCommand {
   RpmCommand() : super('01 0C', min: 0, max: 7000, prio: 0);
 
   @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   String get description => 'Engine rotation speed';
 
   @override

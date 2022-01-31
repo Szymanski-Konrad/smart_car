@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class SpeedCommand extends VisibleObdCommand {
-  SpeedCommand() : super('01 0D', max: 140, prio: 0);
+  SpeedCommand() : super('01 0D', min: 0, max: 140, prio: 0);
 
   double get traveledDistance => result * 1000 * responseTime / 3600000;
+
+  @override
+  Color get color {
+    if (result > 120) return warningColor;
+    if (result > 140) return dangerColor;
+    return normalColor;
+  }
 
   @override
   String get description => 'Speed of the vehicle';

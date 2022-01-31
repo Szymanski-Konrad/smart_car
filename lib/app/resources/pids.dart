@@ -1,6 +1,9 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
+import 'package:smart_car/models/commands/fuel_injection_time.dart';
+import 'package:smart_car/models/commands/fuel_pressure_command.dart';
+import 'package:smart_car/models/commands/run_time_since_start_command.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commanded_evaporative_purge_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
@@ -23,13 +26,20 @@ import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 
 abstract class Pids {
+  // Unsupported important pids
+  static const String fuelRailPressure = '22';
+  static const String fuelRailGaugePressure = '23';
+  static const String relativeThrottlePosition = '45';
+  static const String ambientAirTemperature = '46';
+  static const String fuelType = '51';
+  static const String engineReferenceTorque = '63';
+  static const String odometer = 'A6';
+
   // Unsupported pids
   static const String commandedSecondaryAirStatus = '12';
   static const String oxygenSensorsPresents2B = '13';
   static const String oxygenSensorsPresents4B = '1D';
   static const String auxiliaryInputStatus = '1E';
-  static const String fuelRailPressure = '22';
-  static const String fuelRailGaugePressure = '23';
   static const String oxygenSensor1B = '24';
   static const String oxygenSensor2B = '25';
   static const String oxygenSensor3B = '26';
@@ -58,8 +68,6 @@ abstract class Pids {
   static const String catalystTemperatureB2S2 = '3F';
   static const String monitorStatusDriveCycle = '41';
   static const String absoluteLoadValue = '43';
-  static const String relativeThrottlePosition = '45';
-  static const String ambientAirTemperature = '46';
   static const String absoluteThrottlePositionB = '47';
   static const String absoluteThrottlePositionC = '48';
   static const String acceleratorPedalPositionD = '49';
@@ -68,11 +76,7 @@ abstract class Pids {
   static const String commanededThrottleAcutator = '4C';
   static const String timeRunWithMIL = '4D';
   static const String timeSinceTroubleCodesCleared = '4E';
-  static const String fuelType = '51';
   static const String hybridBatteryPackRemainingLife = '5B';
-  static const String fuelInjectionTiming = '5D';
-  static const String engineReferenceTorque = '63';
-  static const String odometer = 'A6';
 
   // Supported pids
   static const String shortTermFTB1 = '06';
@@ -100,6 +104,7 @@ abstract class Pids {
   static const String timingAdvance = '0E';
   static const String distanceTraveledMIL = '21';
   static const String intakeManifoldAbsolutePressure = '0B';
+  static const String engineFuelRate = '5E';
 
   static const String fuelPressure = '0A';
   static const String oxygenSensor3A = '16';
@@ -107,7 +112,7 @@ abstract class Pids {
   static const String oxygenSensor7A = '1A';
   static const String oxygenSensor8A = '1B';
   static const String runTimeSinceStart = '1F';
-  static const String engineFuelRate = '5E';
+  static const String fuelInjectionTiming = '5D';
 
   static const String pidsList1 = '00';
   static const String pidsList2 = '20';
@@ -151,8 +156,12 @@ enum PID {
   commandedAirFuelRatio,
   oxygenSensor1A,
   oxygenSensor2A,
+  oxygenSensor3A,
+  oxygenSensor4A,
   oxygenSensor5A,
   oxygenSensor6A,
+  oxygenSensor7A,
+  oxygenSensor8A,
   STFTB1,
   LTFTB1,
   STFTB2,
@@ -164,6 +173,9 @@ enum PID {
   distanceTraveledMIL,
   intakeManifoldAbsolutePressure,
   engineFuelRate,
+  fuelPressure,
+  runTimeSinceStart,
+  fuelInjectionTiming,
   unknown,
 }
 
@@ -174,10 +186,18 @@ extension PIDExtension on PID {
         return PID.oxygenSensor1A;
       case Pids.oxygenSensor2A:
         return PID.oxygenSensor2A;
+      case Pids.oxygenSensor3A:
+        return PID.oxygenSensor3A;
+      case Pids.oxygenSensor4A:
+        return PID.oxygenSensor4A;
       case Pids.oxygenSensor5A:
         return PID.oxygenSensor5A;
       case Pids.oxygenSensor6A:
         return PID.oxygenSensor6A;
+      case Pids.oxygenSensor7A:
+        return PID.oxygenSensor7A;
+      case Pids.oxygenSensor8A:
+        return PID.oxygenSensor8A;
       case Pids.commandedAirFuelRatio:
         return PID.commandedAirFuelRatio;
       case Pids.shortTermFTB1:
@@ -222,6 +242,12 @@ extension PIDExtension on PID {
         return PID.intakeManifoldAbsolutePressure;
       case Pids.engineFuelRate:
         return PID.engineFuelRate;
+      case Pids.fuelPressure:
+        return PID.fuelPressure;
+      case Pids.runTimeSinceStart:
+        return PID.runTimeSinceStart;
+      case Pids.fuelInjectionTiming:
+        return PID.fuelInjectionTiming;
       default:
         return PID.unknown;
     }
@@ -283,6 +309,20 @@ extension PIDExtension on PID {
         return null;
       case PID.intakeManifoldAbsolutePressure:
         return MapCommand();
+      case PID.oxygenSensor3A:
+        return OxygenSensorVolts3();
+      case PID.oxygenSensor4A:
+        return OxygenSensorVolts4();
+      case PID.oxygenSensor7A:
+        return OxygenSensorVolts7();
+      case PID.oxygenSensor8A:
+        return OxygenSensorVolts8();
+      case PID.fuelPressure:
+        return FuelPressureCommand();
+      case PID.runTimeSinceStart:
+        return RunTimeSinceStartCommand();
+      case PID.fuelInjectionTiming:
+        return FuelInjectionTime();
     }
   }
 }
@@ -406,6 +446,356 @@ const Map<String, String> pidsDescription = {
       'Maximum value for Fuel–Air equivalence ratio, oxygen sensor voltage, oxygen sensor current, and intake manifold absolute pressure',
   '50': 'Maximum value for air flow rate from mass air flow sensor',
   '51': 'Fuel Type',
+  '52': 'Ethanol fuel %',
+  '53': 'Absolute Evap system Vapor Pressure',
+  '54': 'Evap system vapor pressure',
+  '55': 'Short term secondary oxygen sensor trim, A: bank 1, B: bank 3',
+  '56': 'Long term secondary oxygen sensor trim, A: bank 1, B: bank 3',
+  '57': 'Short term secondary oxygen sensor trim, A: bank 2, B: bank 4',
+  '58': 'Long term secondary oxygen sensor trim, A: bank 2, B: bank 4',
+  '59': 'Fuel rail absolute pressure',
+  '5A': 'Relative accelerator pedal position',
+  '5B': 'Hybrid battery pack remaining life',
+  '5C': 'Engine oil temperature',
+  '5D': 'Fuel injection timing',
+  '5E': 'Engine fuel rate',
+  '5F': 'Emission requirements to which vehicle is designed',
+  '60': 'PIDs supported [61 - 80]',
+  '61': "Driver's demand engine - percent torque",
+  '62': 'Actual engine - percent torque',
+  '63': 'Engine reference torque',
+  '64': 'Engine percent torque data',
+  '65': 'Auxiliary input / output supported',
+  '66': 'Mass air flow sensor',
+  '67': 'Engine coolant temperature',
+  '68': 'Intake air temperature sensor',
+  '69': 'Actual EGR, Commanded EGR, and EGR Error',
+  '6A':
+      'Commanded Diesel intake air flow control and relative intake air flow position',
+  '6B': 'Exhaust gas recirculation temperature',
+  '6C': 'Commanded throttle actuator control and relative throttle position',
+  '6D': 'Fuel pressure control system',
+  '6E': 'Injection pressure control system',
+  '6F': 'Turbocharger compressor inlet pressure',
+  '70': 'Boost pressure control',
+  '71': 'Variable Geometry turbo (VGT) control',
+  '72': 'Wastegate control',
+  '73': 'Exhaust pressure',
+  '74': 'Turbocharger RPM',
+  '75': 'Turbocharger temperature',
+  '76': 'Turbocharger temperature',
+  '77': 'Charge air cooler temperature (CACT)',
+  '78': 'Exhaust Gas temperature (EGT) Bank 1',
+  '79': 'Exhaust Gas temperature (EGT) Bank 2',
+  '7A': 'Diesel particulate filter (DPF)',
+  '7B': 'Diesel particulate filter (DPF)',
+  '7C': 'Diesel Particulate filter (DPF) temperature',
+  '7D': 'NOx NTE (Not-To-Exceed) control area status',
+  '7E': 'PM NTE (Not-To-Exceed) control area status',
+  '7F': 'Engine run time [b]',
+  '80': 'PIDs supported [81 - A0]',
+  '81': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
+  '82': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
+  '83': 'NOx sensor',
+  '84': 'Manifold surface temperature',
+  '85': 'NOx reagent system',
+  '86': 'Particulate matter (PM) sensor',
+  '87': 'Intake manifold absolute pressure',
+  '88': 'SCR Induce System',
+  '89': 'Run Time for AECD #11-#15',
+  '8A': 'Run Time for AECD #16-#20',
+  '8B': 'Diesel Aftertreatment',
+  '8C': 'O2 Sensor (Wide Range)',
+  '8D': 'Throttle Position G',
+  '8E': 'Engine Friction - Percent Torque',
+  '8F': 'PM Sensor Bank 1 & 2',
+  '90': 'WWH-OBD Vehicle OBD System Information',
+  '91': 'WWH-OBD Vehicle OBD System Information',
+  '92': 'Fuel System Control',
+  '93': 'WWH-OBD Vehicle OBD Counters support',
+  '94': 'NOx Warning And Inducement System',
+  '98': 'Exhaust Gas Temperature Sensor',
+  '99': 'Exhaust Gas Temperature Sensor',
+  '9A': 'Hybrid/EV Vehicle System Data, Battery, Voltage',
+  '9B': 'Diesel Exhaust Fluid Sensor Data',
+  '9C': 'O2 Sensor Data',
+  '9D': 'Engine Fuel Rate',
+  '9E': 'Engine Exhaust Flow Rate',
+  '9F': 'Fuel System Percentage Use',
+  'A0': 'PIDs supported [A1 - C0]',
+  'A1': 'NOx Sensor Corrected Data',
+  'A2': 'Cylinder Fuel Rate',
+  'A3': 'Evap System Vapor Pressure',
+  'A4': 'Transmission Actual Gear',
+  'A5': 'Commanded Diesel Exhaust Fluid Dosing',
+  'A6': 'Odometer [c]',
+  'A7': 'NOx Sensor Concentration Sensors 3 and 4',
+  'A8': 'NOx Sensor Corrected Concentration Sensors 3 and 4',
+  'A9': 'ABS Disable Switch State',
+  'C0': 'PIDs supported [C1 - E0]',
+};
+
+///TODO: Remove that
+const Map<String, String> pidsDescriptionPL = {
+  '00': 'Pids supported 01-20',
+  '01':
+      'Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL) status and number of DTCs.)',
+  '02': 'Freeze DTC',
+  '03': 'Status układu zapłonu',
+  '04': 'Wyświetla aktualne obciążenie silnika',
+  '05': 'Engine coolant temperature',
+  '06': 'Short term fuel trim—Bank 1',
+  '07': 'Long term fuel trim—Bank 1',
+  '08': 'Short term fuel trim—Bank 2',
+  '09': 'Long term fuel trim—Bank 2',
+  '0A': 'Fuel pressure (gauge pressure)',
+  '0B': 'Intake manifold absolute pressure',
+  '0C': 'Engine speed',
+  '0D': 'Vehicle speed',
+  '0E': 'Timing advance',
+  '0F': 'Intake air temperature',
+  '10': 'Mass air flow sensor (MAF) air flow rate',
+  '11': 'Throttle position',
+  '12': 'Commanded secondary air status',
+  '13': 'Oxygen sensors present (in 2 banks)',
+  '14': 'Oxygen Sensor 1',
+  '15': 'Oxygen Sensor 2',
+  '16': 'Oxygen Sensor 3',
+  '17': 'Oxygen Sensor 4',
+  '18': 'Oxygen Sensor 5',
+  '19': 'Oxygen Sensor 6',
+  '1A': 'Oxygen Sensor 7',
+  '1B': 'Oxygen Sensor 8',
+  '1C': 'OBD standards this vehicle conforms to',
+  '1D': 'Oxygen sensors present (in 4 banks)',
+  '1E': 'Auxiliary input status',
+  '1F': 'Run time since engine start',
+  '20': 'PIDs supported [21 - 40]',
+  '21': 'Distance traveled with malfunction indicator lamp (MIL) on',
+  '22': 'Fuel Rail Pressure (relative to manifold vacuum)',
+  '23': 'Fuel Rail Gauge Pressure (diesel, or gasoline direct injection)',
+  '24': 'Oxygen Sensor 1',
+  '25': 'Oxygen Sensor 2',
+  '26': 'Oxygen Sensor 3',
+  '27': 'Oxygen Sensor 4',
+  '28': 'Oxygen Sensor 5',
+  '29': 'Oxygen Sensor 6',
+  '2A': 'Oxygen Sensor 7',
+  '2B': 'Oxygen Sensor 8',
+  '2C': 'Commanded EGR',
+  '2D': 'EGR Error',
+  '2E': 'Commanded evaporative purge',
+  '2F': 'Fuel Tank Level Input',
+  '30': 'Warm-ups since codes cleared',
+  '31': 'Distance traveled since codes cleared',
+  '32': 'Evap. System Vapor Pressure',
+  '33': 'Absolute Barometric Pressure',
+  '34': 'Oxygen Sensor 1',
+  '35': 'Oxygen Sensor 2',
+  '36': 'Oxygen Sensor 3',
+  '37': 'Oxygen Sensor 4',
+  '38': 'Oxygen Sensor 5',
+  '39': 'Oxygen Sensor 6',
+  '3A': 'Oxygen Sensor 7',
+  '3B': 'Oxygen Sensor 8',
+  '3C': 'Catalyst Temperature: Bank 1, Sensor 1',
+  '3D': 'Catalyst Temperature: Bank 2, Sensor 1',
+  '3E': 'Catalyst Temperature: Bank 1, Sensor 2',
+  '3F': 'Catalyst Temperature: Bank 2, Sensor 2',
+  '40': 'PIDs supported [41 - 60]',
+  '41': 'Monitor status this drive cycle',
+  '42': 'Control module voltage',
+  '43': 'Absolute load value',
+  '44': 'Commanded Air-Fuel Equivalence Ratio (lambda,λ)',
+  '45': 'Relative throttle position',
+  '46': 'Ambient air temperature',
+  '47': 'Absolute throttle position B',
+  '48': 'Absolute throttle position C',
+  '49': 'Accelerator pedal position D',
+  '4A': 'Accelerator pedal position E',
+  '4B': 'Accelerator pedal position F',
+  '4C': 'Commanded throttle actuator',
+  '4D': 'Time run with MIL on',
+  '4E': 'Time since trouble codes cleared',
+  '4F':
+      'Maximum value for Fuel–Air equivalence ratio, oxygen sensor voltage, oxygen sensor current, and intake manifold absolute pressure',
+  '50': 'Maximum value for air flow rate from mass air flow sensor',
+  '51': 'Fuel Type',
+  '52': 'Ethanol fuel %',
+  '53': 'Absolute Evap system Vapor Pressure',
+  '54': 'Evap system vapor pressure',
+  '55': 'Short term secondary oxygen sensor trim, A: bank 1, B: bank 3',
+  '56': 'Long term secondary oxygen sensor trim, A: bank 1, B: bank 3',
+  '57': 'Short term secondary oxygen sensor trim, A: bank 2, B: bank 4',
+  '58': 'Long term secondary oxygen sensor trim, A: bank 2, B: bank 4',
+  '59': 'Fuel rail absolute pressure',
+  '5A': 'Relative accelerator pedal position',
+  '5B': 'Hybrid battery pack remaining life',
+  '5C': 'Engine oil temperature',
+  '5D': 'Fuel injection timing',
+  '5E': 'Engine fuel rate',
+  '5F': 'Emission requirements to which vehicle is designed',
+  '60': 'PIDs supported [61 - 80]',
+  '61': "Driver's demand engine - percent torque",
+  '62': 'Actual engine - percent torque',
+  '63': 'Engine reference torque',
+  '64': 'Engine percent torque data',
+  '65': 'Auxiliary input / output supported',
+  '66': 'Mass air flow sensor',
+  '67': 'Engine coolant temperature',
+  '68': 'Intake air temperature sensor',
+  '69': 'Actual EGR, Commanded EGR, and EGR Error',
+  '6A':
+      'Commanded Diesel intake air flow control and relative intake air flow position',
+  '6B': 'Exhaust gas recirculation temperature',
+  '6C': 'Commanded throttle actuator control and relative throttle position',
+  '6D': 'Fuel pressure control system',
+  '6E': 'Injection pressure control system',
+  '6F': 'Turbocharger compressor inlet pressure',
+  '70': 'Boost pressure control',
+  '71': 'Variable Geometry turbo (VGT) control',
+  '72': 'Wastegate control',
+  '73': 'Exhaust pressure',
+  '74': 'Turbocharger RPM',
+  '75': 'Turbocharger temperature',
+  '76': 'Turbocharger temperature',
+  '77': 'Charge air cooler temperature (CACT)',
+  '78': 'Exhaust Gas temperature (EGT) Bank 1',
+  '79': 'Exhaust Gas temperature (EGT) Bank 2',
+  '7A': 'Diesel particulate filter (DPF)',
+  '7B': 'Diesel particulate filter (DPF)',
+  '7C': 'Diesel Particulate filter (DPF) temperature',
+  '7D': 'NOx NTE (Not-To-Exceed) control area status',
+  '7E': 'PM NTE (Not-To-Exceed) control area status',
+  '7F': 'Engine run time [b]',
+  '80': 'PIDs supported [81 - A0]',
+  '81': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
+  '82': 'Engine run time for Auxiliary Emissions Control Device(AECD)',
+  '83': 'NOx sensor',
+  '84': 'Manifold surface temperature',
+  '85': 'NOx reagent system',
+  '86': 'Particulate matter (PM) sensor',
+  '87': 'Intake manifold absolute pressure',
+  '88': 'SCR Induce System',
+  '89': 'Run Time for AECD #11-#15',
+  '8A': 'Run Time for AECD #16-#20',
+  '8B': 'Diesel Aftertreatment',
+  '8C': 'O2 Sensor (Wide Range)',
+  '8D': 'Throttle Position G',
+  '8E': 'Engine Friction - Percent Torque',
+  '8F': 'PM Sensor Bank 1 & 2',
+  '90': 'WWH-OBD Vehicle OBD System Information',
+  '91': 'WWH-OBD Vehicle OBD System Information',
+  '92': 'Fuel System Control',
+  '93': 'WWH-OBD Vehicle OBD Counters support',
+  '94': 'NOx Warning And Inducement System',
+  '98': 'Exhaust Gas Temperature Sensor',
+  '99': 'Exhaust Gas Temperature Sensor',
+  '9A': 'Hybrid/EV Vehicle System Data, Battery, Voltage',
+  '9B': 'Diesel Exhaust Fluid Sensor Data',
+  '9C': 'O2 Sensor Data',
+  '9D': 'Engine Fuel Rate',
+  '9E': 'Engine Exhaust Flow Rate',
+  '9F': 'Fuel System Percentage Use',
+  'A0': 'PIDs supported [A1 - C0]',
+  'A1': 'NOx Sensor Corrected Data',
+  'A2': 'Cylinder Fuel Rate',
+  'A3': 'Evap System Vapor Pressure',
+  'A4': 'Transmission Actual Gear',
+  'A5': 'Commanded Diesel Exhaust Fluid Dosing',
+  'A6': 'Odometer [c]',
+  'A7': 'NOx Sensor Concentration Sensors 3 and 4',
+  'A8': 'NOx Sensor Corrected Concentration Sensors 3 and 4',
+  'A9': 'ABS Disable Switch State',
+  'C0': 'PIDs supported [C1 - E0]',
+};
+
+///TODO: Remove this
+const Map<String, String> pidsNamePL = {
+  '00': 'Pids supported 01-20',
+  '01':
+      'Monitor status since DTCs cleared. (Includes malfunction indicator lamp (MIL) status and number of DTCs.)',
+  '02': 'Freeze DTC',
+  '03': 'Status układu zapłonu',
+  '04': 'Obciążenie silnika',
+  '05': 'Temperatura oleju',
+  '06': 'Short term fuel trim—Bank 1',
+  '07': 'Long term fuel trim—Bank 1',
+  '08': 'Short term fuel trim—Bank 2',
+  '09': 'Long term fuel trim—Bank 2',
+  '0A': 'Ciśnienie paliwa',
+  '0B': 'Ciśnienie w kolektorze dolotowym',
+  '0C': 'Obroty silnika',
+  '0D': 'Prędkość pojazdu',
+  '0E': 'Wyprzedzenie zapłonu',
+  '0F': 'Temperatura powietrza wlotowego',
+  '10': 'Masa przepływającego powietrza',
+  '11': 'Pozycja przepustnicy',
+  '12': 'Commanded secondary air status',
+  '13': 'Oxygen sensors present (in 2 banks)',
+  '14': 'Czujnik tlenu (lamdba) 1',
+  '15': 'Czujnik tlenu (lamdba) 2',
+  '16': 'Czujnik tlenu (lamdba) 3',
+  '17': 'Czujnik tlenu (lamdba) 4',
+  '18': 'Czujnik tlenu (lamdba) 5',
+  '19': 'Czujnik tlenu (lamdba) 6',
+  '1A': 'Czujnik tlenu (lamdba) 7',
+  '1B': 'Czujnik tlenu (lamdba) 8',
+  '1C': 'Obsługiwany standard OBD',
+  '1D': 'Oxygen sensors present (in 4 banks)',
+  '1E': 'Auxiliary input status',
+  '1F': 'Czas od uruchomienia silnika',
+  '20': 'PIDs supported [21 - 40]',
+  '21': 'Distance traveled with malfunction indicator lamp (MIL) on',
+  '22': 'Fuel Rail Pressure (relative to manifold vacuum)',
+  '23': 'Fuel Rail Gauge Pressure (diesel, or gasoline direct injection)',
+  '24': 'Czujnik tlenu (lamdba) 1',
+  '25': 'Czujnik tlenu (lamdba) 2',
+  '26': 'Czujnik tlenu (lamdba) 3',
+  '27': 'Czujnik tlenu (lamdba) 4',
+  '28': 'Czujnik tlenu (lamdba) 5',
+  '29': 'Czujnik tlenu (lamdba) 6',
+  '2A': 'Czujnik tlenu (lamdba) 7',
+  '2B': 'Czujnik tlenu (lamdba) 8',
+  '2C': 'Commanded EGR',
+  '2D': 'EGR Error',
+  '2E': 'Commanded evaporative purge',
+  '2F': 'Poziom paliwa',
+  '30': 'Warm-ups since codes cleared',
+  '31': 'Distance traveled since codes cleared',
+  '32': 'Evap. System Vapor Pressure',
+  '33': 'Absolute Barometric Pressure',
+  '34': 'Oxygen Sensor 1',
+  '35': 'Oxygen Sensor 2',
+  '36': 'Oxygen Sensor 3',
+  '37': 'Oxygen Sensor 4',
+  '38': 'Oxygen Sensor 5',
+  '39': 'Oxygen Sensor 6',
+  '3A': 'Oxygen Sensor 7',
+  '3B': 'Oxygen Sensor 8',
+  '3C': 'Catalyst Temperature: Bank 1, Sensor 1',
+  '3D': 'Catalyst Temperature: Bank 2, Sensor 1',
+  '3E': 'Catalyst Temperature: Bank 1, Sensor 2',
+  '3F': 'Catalyst Temperature: Bank 2, Sensor 2',
+  '40': 'PIDs supported [41 - 60]',
+  '41': 'Monitor status this drive cycle',
+  '42': 'Napięcie akumulatora',
+  '43': 'Absolute load value',
+  '44': 'Commanded Air-Fuel Equivalence Ratio (lambda,λ)',
+  '45': 'Pozycja pedału gazu',
+  '46': 'Ambient air temperature',
+  '47': 'Absolute throttle position B',
+  '48': 'Absolute throttle position C',
+  '49': 'Accelerator pedal position D',
+  '4A': 'Accelerator pedal position E',
+  '4B': 'Accelerator pedal position F',
+  '4C': 'Commanded throttle actuator',
+  '4D': 'Time run with MIL on',
+  '4E': 'Time since trouble codes cleared',
+  '4F':
+      'Maximum value for Fuel–Air equivalence ratio, oxygen sensor voltage, oxygen sensor current, and intake manifold absolute pressure',
+  '50': 'Maximum value for air flow rate from mass air flow sensor',
+  '51': 'Rodzaj paliwa',
   '52': 'Ethanol fuel %',
   '53': 'Absolute Evap system Vapor Pressure',
   '54': 'Evap system vapor pressure',

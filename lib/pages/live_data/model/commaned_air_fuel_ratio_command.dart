@@ -5,6 +5,14 @@ class CommandedAirFuelRatioCommand extends VisibleObdCommand {
   CommandedAirFuelRatioCommand() : super('01 44', max: 2, min: 0, prio: 0);
 
   @override
+  Color get color {
+    //TODO: Fix this to take ranges
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   String get description => 'Commanded Air Fuel Ratio command';
 
   @override

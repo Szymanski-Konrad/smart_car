@@ -15,4 +15,11 @@ class FuelLevelCommand extends PercentObdCommand {
 
   @override
   IconData get icon => Icons.local_gas_station;
+
+  @override
+  Color get color {
+    if (result < 30) return warningColor;
+    if (result < 15) return dangerColor;
+    return normalColor;
+  }
 }

@@ -5,6 +5,13 @@ abstract class TermFuelTrim extends VisibleObdCommand {
   TermFuelTrim(String command) : super(command, prio: 1, max: 99.2, min: -100);
 
   @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   String get formattedResult => '${result.toStringAsFixed(3)} $unit';
 
   @override

@@ -26,11 +26,13 @@ class _$LiveDataStateTearOff {
       bool isLocalMode = false,
       double acceleration = 0,
       bool throttlePressed = false,
-      double maf2 = 0.0,
-      double maf3 = 0.0,
+      int currentTimeSpent = 0,
+      double currentFuelBurnt = 0,
+      TripStatus tripStatus = TripStatus.idle,
       double localTripProgress = 0.0,
       bool isConnecting = true,
       bool isDisconnecting = false,
+      bool isConnnectingError = false,
       List<String> supportedPids = const [],
       required PidsChecker pidsChecker,
       String vin = '',
@@ -48,11 +50,13 @@ class _$LiveDataStateTearOff {
       isLocalMode: isLocalMode,
       acceleration: acceleration,
       throttlePressed: throttlePressed,
-      maf2: maf2,
-      maf3: maf3,
+      currentTimeSpent: currentTimeSpent,
+      currentFuelBurnt: currentFuelBurnt,
+      tripStatus: tripStatus,
       localTripProgress: localTripProgress,
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
+      isConnnectingError: isConnnectingError,
       supportedPids: supportedPids,
       pidsChecker: pidsChecker,
       vin: vin,
@@ -78,14 +82,16 @@ mixin _$LiveDataState {
   Position? get lastPosition => throw _privateConstructorUsedError;
   bool get isLocalMode => throw _privateConstructorUsedError;
   double get acceleration => throw _privateConstructorUsedError;
-  bool get throttlePressed =>
+  bool get throttlePressed => throw _privateConstructorUsedError;
+  int get currentTimeSpent => throw _privateConstructorUsedError;
+  double get currentFuelBurnt => throw _privateConstructorUsedError;
+  TripStatus get tripStatus =>
       throw _privateConstructorUsedError; // Just for testing
-  double get maf2 => throw _privateConstructorUsedError;
-  double get maf3 => throw _privateConstructorUsedError;
   double get localTripProgress =>
       throw _privateConstructorUsedError; // Bluetooth
   bool get isConnecting => throw _privateConstructorUsedError;
-  bool get isDisconnecting => throw _privateConstructorUsedError; // Pids
+  bool get isDisconnecting => throw _privateConstructorUsedError;
+  bool get isConnnectingError => throw _privateConstructorUsedError; // Pids
   List<String> get supportedPids => throw _privateConstructorUsedError;
   PidsChecker get pidsChecker => throw _privateConstructorUsedError;
   String get vin => throw _privateConstructorUsedError;
@@ -116,11 +122,13 @@ abstract class $LiveDataStateCopyWith<$Res> {
       bool isLocalMode,
       double acceleration,
       bool throttlePressed,
-      double maf2,
-      double maf3,
+      int currentTimeSpent,
+      double currentFuelBurnt,
+      TripStatus tripStatus,
       double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
+      bool isConnnectingError,
       List<String> supportedPids,
       PidsChecker pidsChecker,
       String vin,
@@ -153,11 +161,13 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? isLocalMode = freezed,
     Object? acceleration = freezed,
     Object? throttlePressed = freezed,
-    Object? maf2 = freezed,
-    Object? maf3 = freezed,
+    Object? currentTimeSpent = freezed,
+    Object? currentFuelBurnt = freezed,
+    Object? tripStatus = freezed,
     Object? localTripProgress = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
+    Object? isConnnectingError = freezed,
     Object? supportedPids = freezed,
     Object? pidsChecker = freezed,
     Object? vin = freezed,
@@ -200,14 +210,18 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.throttlePressed
           : throttlePressed // ignore: cast_nullable_to_non_nullable
               as bool,
-      maf2: maf2 == freezed
-          ? _value.maf2
-          : maf2 // ignore: cast_nullable_to_non_nullable
+      currentTimeSpent: currentTimeSpent == freezed
+          ? _value.currentTimeSpent
+          : currentTimeSpent // ignore: cast_nullable_to_non_nullable
+              as int,
+      currentFuelBurnt: currentFuelBurnt == freezed
+          ? _value.currentFuelBurnt
+          : currentFuelBurnt // ignore: cast_nullable_to_non_nullable
               as double,
-      maf3: maf3 == freezed
-          ? _value.maf3
-          : maf3 // ignore: cast_nullable_to_non_nullable
-              as double,
+      tripStatus: tripStatus == freezed
+          ? _value.tripStatus
+          : tripStatus // ignore: cast_nullable_to_non_nullable
+              as TripStatus,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
           : localTripProgress // ignore: cast_nullable_to_non_nullable
@@ -219,6 +233,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
       isDisconnecting: isDisconnecting == freezed
           ? _value.isDisconnecting
           : isDisconnecting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isConnnectingError: isConnnectingError == freezed
+          ? _value.isConnnectingError
+          : isConnnectingError // ignore: cast_nullable_to_non_nullable
               as bool,
       supportedPids: supportedPids == freezed
           ? _value.supportedPids
@@ -286,11 +304,13 @@ abstract class _$LiveDataStateCopyWith<$Res>
       bool isLocalMode,
       double acceleration,
       bool throttlePressed,
-      double maf2,
-      double maf3,
+      int currentTimeSpent,
+      double currentFuelBurnt,
+      TripStatus tripStatus,
       double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
+      bool isConnnectingError,
       List<String> supportedPids,
       PidsChecker pidsChecker,
       String vin,
@@ -327,11 +347,13 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? isLocalMode = freezed,
     Object? acceleration = freezed,
     Object? throttlePressed = freezed,
-    Object? maf2 = freezed,
-    Object? maf3 = freezed,
+    Object? currentTimeSpent = freezed,
+    Object? currentFuelBurnt = freezed,
+    Object? tripStatus = freezed,
     Object? localTripProgress = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
+    Object? isConnnectingError = freezed,
     Object? supportedPids = freezed,
     Object? pidsChecker = freezed,
     Object? vin = freezed,
@@ -374,14 +396,18 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.throttlePressed
           : throttlePressed // ignore: cast_nullable_to_non_nullable
               as bool,
-      maf2: maf2 == freezed
-          ? _value.maf2
-          : maf2 // ignore: cast_nullable_to_non_nullable
+      currentTimeSpent: currentTimeSpent == freezed
+          ? _value.currentTimeSpent
+          : currentTimeSpent // ignore: cast_nullable_to_non_nullable
+              as int,
+      currentFuelBurnt: currentFuelBurnt == freezed
+          ? _value.currentFuelBurnt
+          : currentFuelBurnt // ignore: cast_nullable_to_non_nullable
               as double,
-      maf3: maf3 == freezed
-          ? _value.maf3
-          : maf3 // ignore: cast_nullable_to_non_nullable
-              as double,
+      tripStatus: tripStatus == freezed
+          ? _value.tripStatus
+          : tripStatus // ignore: cast_nullable_to_non_nullable
+              as TripStatus,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
           : localTripProgress // ignore: cast_nullable_to_non_nullable
@@ -393,6 +419,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
       isDisconnecting: isDisconnecting == freezed
           ? _value.isDisconnecting
           : isDisconnecting // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isConnnectingError: isConnnectingError == freezed
+          ? _value.isConnnectingError
+          : isConnnectingError // ignore: cast_nullable_to_non_nullable
               as bool,
       supportedPids: supportedPids == freezed
           ? _value.supportedPids
@@ -442,11 +472,13 @@ class _$_LiveDataState implements _LiveDataState {
       this.isLocalMode = false,
       this.acceleration = 0,
       this.throttlePressed = false,
-      this.maf2 = 0.0,
-      this.maf3 = 0.0,
+      this.currentTimeSpent = 0,
+      this.currentFuelBurnt = 0,
+      this.tripStatus = TripStatus.idle,
       this.localTripProgress = 0.0,
       this.isConnecting = true,
       this.isDisconnecting = false,
+      this.isConnnectingError = false,
       this.supportedPids = const [],
       required this.pidsChecker,
       this.vin = '',
@@ -478,13 +510,16 @@ class _$_LiveDataState implements _LiveDataState {
   @override
   final bool throttlePressed;
   @JsonKey()
+  @override
+  final int currentTimeSpent;
+  @JsonKey()
+  @override
+  final double currentFuelBurnt;
+  @JsonKey()
+  @override
+  final TripStatus tripStatus;
+  @JsonKey()
   @override // Just for testing
-  final double maf2;
-  @JsonKey()
-  @override
-  final double maf3;
-  @JsonKey()
-  @override
   final double localTripProgress;
   @JsonKey()
   @override // Bluetooth
@@ -492,6 +527,9 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey()
   @override
   final bool isDisconnecting;
+  @JsonKey()
+  @override
+  final bool isConnnectingError;
   @JsonKey()
   @override // Pids
   final List<String> supportedPids;
@@ -518,7 +556,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, maf2: $maf2, maf3: $maf3, localTripProgress: $localTripProgress, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, localTripProgress: $localTripProgress, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -540,14 +578,20 @@ class _$_LiveDataState implements _LiveDataState {
                 .equals(other.acceleration, acceleration) &&
             const DeepCollectionEquality()
                 .equals(other.throttlePressed, throttlePressed) &&
-            const DeepCollectionEquality().equals(other.maf2, maf2) &&
-            const DeepCollectionEquality().equals(other.maf3, maf3) &&
+            const DeepCollectionEquality()
+                .equals(other.currentTimeSpent, currentTimeSpent) &&
+            const DeepCollectionEquality()
+                .equals(other.currentFuelBurnt, currentFuelBurnt) &&
+            const DeepCollectionEquality()
+                .equals(other.tripStatus, tripStatus) &&
             const DeepCollectionEquality()
                 .equals(other.localTripProgress, localTripProgress) &&
             const DeepCollectionEquality()
                 .equals(other.isConnecting, isConnecting) &&
             const DeepCollectionEquality()
                 .equals(other.isDisconnecting, isDisconnecting) &&
+            const DeepCollectionEquality()
+                .equals(other.isConnnectingError, isConnnectingError) &&
             const DeepCollectionEquality()
                 .equals(other.supportedPids, supportedPids) &&
             const DeepCollectionEquality()
@@ -575,11 +619,13 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(isLocalMode),
         const DeepCollectionEquality().hash(acceleration),
         const DeepCollectionEquality().hash(throttlePressed),
-        const DeepCollectionEquality().hash(maf2),
-        const DeepCollectionEquality().hash(maf3),
+        const DeepCollectionEquality().hash(currentTimeSpent),
+        const DeepCollectionEquality().hash(currentFuelBurnt),
+        const DeepCollectionEquality().hash(tripStatus),
         const DeepCollectionEquality().hash(localTripProgress),
         const DeepCollectionEquality().hash(isConnecting),
         const DeepCollectionEquality().hash(isDisconnecting),
+        const DeepCollectionEquality().hash(isConnnectingError),
         const DeepCollectionEquality().hash(supportedPids),
         const DeepCollectionEquality().hash(pidsChecker),
         const DeepCollectionEquality().hash(vin),
@@ -606,11 +652,13 @@ abstract class _LiveDataState implements LiveDataState {
       bool isLocalMode,
       double acceleration,
       bool throttlePressed,
-      double maf2,
-      double maf3,
+      int currentTimeSpent,
+      double currentFuelBurnt,
+      TripStatus tripStatus,
       double localTripProgress,
       bool isConnecting,
       bool isDisconnecting,
+      bool isConnnectingError,
       List<String> supportedPids,
       required PidsChecker pidsChecker,
       String vin,
@@ -636,16 +684,20 @@ abstract class _LiveDataState implements LiveDataState {
   double get acceleration;
   @override
   bool get throttlePressed;
+  @override
+  int get currentTimeSpent;
+  @override
+  double get currentFuelBurnt;
+  @override
+  TripStatus get tripStatus;
   @override // Just for testing
-  double get maf2;
-  @override
-  double get maf3;
-  @override
   double get localTripProgress;
   @override // Bluetooth
   bool get isConnecting;
   @override
   bool get isDisconnecting;
+  @override
+  bool get isConnnectingError;
   @override // Pids
   List<String> get supportedPids;
   @override

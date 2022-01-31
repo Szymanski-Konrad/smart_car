@@ -91,7 +91,7 @@ extension TripRecordExtension on TripRecord {
     final secondsSinceEpoch = DateTime.now().secondsSinceEpoch;
     final seconds = secondsSinceEpoch - lastAccelerationTime;
 
-    if (seconds > Constants.minRapidSpeedTimeThreshold) return this;
+    if (seconds < Constants.minRapidSpeedTimeThreshold) return this;
     if (acceleration > Constants.rapidAcceleration) {
       return copyWith(
         rapidAccelerations: rapidAccelerations + 1,
@@ -111,7 +111,6 @@ extension TripRecordExtension on TripRecord {
   List<InfoTileData> get fuelSection => [
         avgFuelDetails,
         instFuelDetails,
-        percentFuelConsDetails,
         usedFuelDetails,
         idleUsedFuelDetails,
         savedFuelDetails,
@@ -134,13 +133,6 @@ extension TripRecordExtension on TripRecord {
         savedCarboDetails,
         // gpsSpeedDetails,
       ];
-
-  InfoTileData get percentFuelConsDetails => InfoTileData(
-        value: averageFuelConsumption / 7.444,
-        title: '% of expected',
-        unit: '%',
-        digits: 2,
-      );
 
   InfoTileData get savedFuelDetails => InfoTileData(
         value: savedFuel,

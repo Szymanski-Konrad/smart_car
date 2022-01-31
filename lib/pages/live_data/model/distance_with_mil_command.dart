@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class DistanceWithMILCommand extends VisibleObdCommand {
-  DistanceWithMILCommand() : super('01 21', prio: 50);
+  DistanceWithMILCommand() : super('01 21', min: 0, max: 65535, prio: 50);
+
+  @override
+  Color get color {
+    if (result > 0) return warningColor;
+    if (result > 100) return dangerColor;
+    return normalColor;
+  }
 
   @override
   void performCalculations(List<int> data) {

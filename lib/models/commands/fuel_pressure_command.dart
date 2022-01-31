@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class FuelPressureCommand extends VisibleObdCommand {
-  FuelPressureCommand() : super('01 0A', max: 765, prio: 1);
+  FuelPressureCommand() : super('01 0A', min: 0, max: 765, prio: 1);
 
   @override
   void performCalculations(List<int> data) {
@@ -11,6 +10,13 @@ class FuelPressureCommand extends VisibleObdCommand {
       result = 3 * data[0];
       super.performCalculations(data);
     }
+  }
+
+  @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
   }
 
   @override

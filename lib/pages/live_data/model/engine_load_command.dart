@@ -5,6 +5,13 @@ class EngineLoadCommand extends PercentObdCommand {
   EngineLoadCommand() : super('01 04', prio: 0);
 
   @override
+  Color get color {
+    if (max * 0.8 < result) return dangerColor;
+    if (max * 0.6 < result) return warningColor;
+    return normalColor;
+  }
+
+  @override
   String get description => 'How much load is on engine';
 
   @override

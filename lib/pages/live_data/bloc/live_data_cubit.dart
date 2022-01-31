@@ -5,13 +5,16 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -19,6 +22,7 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
+import 'package:smart_car/pages/live_data/model/control_module_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
@@ -27,13 +31,20 @@ import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
-import 'package:sendgrid_mailer/sendgrid_mailer.dart';
 import 'package:smart_car/utils/list_extension.dart';
 
 class LiveDataCubit extends Cubit<LiveDataState> {
-  LiveDataCubit({required this.device}) : super(LiveDataState.init()) {
+  LiveDataCubit({required this.address}) : super(LiveDataState.init()) {
     init();
   }
+
+  static const _backgroundConfig = FlutterBackgroundAndroidConfig(
+    notificationTitle: 'Jestem połączony :)',
+    notificationText: 'Jedź, a ja się wszystkim zajmę :)',
+    notificationIcon: AndroidResource(name: 'background_icon'),
+    notificationImportance: AndroidNotificationImportance.Default,
+    enableWifiLock: false,
+  );
 
   // Commands to create test data to work without OBD
   List<TestCommand> testCommands = [];
@@ -43,8 +54,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Queue<String> specialCommands = Queue();
   Queue<String> pidsQueue = Queue<String>();
 
-  final BluetoothDevice device;
+  final String? address;
   int _commandIndex = 0;
+  DateTime? lastDataReciveTime;
 
   // Bluetooth
   BluetoothConnection? _connection;
@@ -55,6 +67,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   // GPS info
   StreamSubscription<Position>? positionSub;
+
+  Future<void> _initBackgroundWorking() async {
+    final hasPermissions =
+        await FlutterBackground.initialize(androidConfig: _backgroundConfig);
+    if (hasPermissions) {
+      await FlutterBackground.enableBackgroundExecution();
+    }
+  }
 
   void onGpsPositionChange(Position position) {
     final lastPosition = state.lastPosition;
@@ -136,16 +156,21 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isRunning: true));
 
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      final now = DateTime.now();
+      if (now.difference(lastReciveCommandTime).inSeconds >
+          Durations.maxNoDataReciveSeconds) {
+        motorOff();
+      }
       final speed = commands.safeFirst<SpeedCommand>()?.result;
       emit(state.copyWith(
-          tripRecord:
-              state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
+        tripRecord:
+            state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode),
+      ));
     });
 
     await _determinePosition();
     lastReciveCommandTime = DateTime.now();
     _decideNextMove();
-    // await _sendNextCommand();
   }
 
   void sendCheckPidsCommands() {
@@ -184,7 +209,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> _runTest() async {
-    final json = await rootBundle.loadString('assets/json/legionowo_trip.json');
+    final json =
+        await rootBundle.loadString('assets/json/trip_12_01_2022.json');
     final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
     final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
@@ -193,6 +219,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       const Duration(seconds: 1),
       (timer) {
         final speed = commands.safeFirst<SpeedCommand>()?.result;
+        final fuelStatus =
+            commands.safeFirst<FuelSystemStatusCommand>()?.status;
+        //TODO: Recoginize current trip status to show subValues down to main values
         emit(state.copyWith(
             tripRecord:
                 state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
@@ -200,12 +229,13 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
 
     int index = 0;
+    final percentyl = testCommands.length ~/ 10000; // 0.01%
     for (final testCommand in testCommands) {
       await Future.delayed(Duration(
           milliseconds: testCommand.responseTime ~/ Constants.liveModeSpeedUp));
       _onDataReceived(testCommand.data);
       index++;
-      if (index % 1000 == 0) {
+      if (index % percentyl == 0) {
         final percentage = (index / testCommands.length) * 100;
         emit(state.copyWith(localTripProgress: percentage));
       }
@@ -227,16 +257,16 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void init() async {
+    emit(state.copyWith(isConnnectingError: false));
     // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
     //   emit(state.copyWith(
     //       userAccelerometer: '\n${event.x}\n${event.y}\n${event.z}'));
     // });
 
-    if (device.address == 'AA:AA') {
-      _runTest();
-    } else {
-      BluetoothConnection.toAddress(device.address).then((connection) {
+    if (address != null) {
+      BluetoothConnection.toAddress(address).then((connection) {
         _connection = connection;
+        print(connection);
         emit(state.copyWith(
           isConnecting: false,
           isDisconnecting: false,
@@ -244,13 +274,16 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         connection.input?.listen(_onDataReceived).onDone(() {
           print('Connection is done');
         });
-        print('connected, now initializing obd');
         initializeObd();
+        _initBackgroundWorking();
       }).catchError((error) {
         print('Cannot connect, exception occured');
         print(error);
+        emit(state.copyWith(isConnnectingError: true));
       });
-    }
+    } else if (kDebugMode) {
+      _runTest();
+    } //TODO: else show info that something goes wrong;
 
     final environmentSensors = EnvironmentSensors();
 
@@ -259,7 +292,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
     if (isTemperatureAvailable) {
       environmentSensors.temperature.listen((event) {
-        print(event);
         emit(state.copyWith(temperature: event));
       });
     }
@@ -269,12 +301,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     ).listen(onGpsPositionChange);
   }
 
+  /// Sending Vin request
   void sendVinCommand() {
     specialCommands.add('0902');
   }
 
+  /// Sending battery voltage request
   void sendCheck9Command() {
-    specialCommands.add('0900');
+    specialCommands.add('ATRV');
   }
 
   Future<void> _sendNextCommand() async {
@@ -309,32 +343,19 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
   }
 
+  Future<void> motorOff() async {
+    _connection?.close();
+    saveCommands();
+    Navigation.instance.pop();
+  }
+
   Future<void> saveCommands() async {
     try {
-      saveCommandsToFile();
-      // final feedback = jsonEncode(testCommands.map((e) => e.toJson()).toList());
-      // testCommands.clear();
-      // await _sendFeedback(feedback: feedback);
+      await saveCommandsToFile();
+      testCommands.clear();
     } catch (e) {
       _insertError(e.toString());
     }
-  }
-
-  Future<bool> _sendFeedback({required String feedback}) async {
-    final mailer = Mailer(
-        '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');
-    const toAddress = Address('hunteelar.programowanie@gmail.com');
-    const fromAddress = Address('shoptogether07@gmail.com');
-    final content = Content(
-      'text/plain',
-      feedback,
-    );
-    const subject = 'Trip json';
-    const personalization = Personalization([toAddress]);
-    final email =
-        Email([personalization], fromAddress, subject, content: [content]);
-    final result = await mailer.send(email);
-    return !result.isError;
   }
 
   DateTime lastReciveCommandTime = DateTime.now();
@@ -348,6 +369,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _onDataReceived(Uint8List data) {
+    lastReciveCommandTime = DateTime.now();
     try {
       String dataString = String.fromCharCodes(data);
       if (dataString.trim().isEmpty) {
@@ -393,6 +415,16 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           final command = commands[dataIndex];
 
           switch (pid) {
+            case PID.controlModuleVoltage:
+              if (command is ControlModuleVoltageCommand) {
+                if (command.result < Constants.minModuleVoltage) {
+                  // Probably motor is off already
+                  emit(state.copyWith(
+                      fuelSystemStatus: FuelSystemStatus.motorOff));
+                  _connection?.close();
+                }
+              }
+              break;
             case PID.engineLoad:
               emit(state.copyWith(
                   tripRecord:
@@ -533,10 +565,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   @override
   Future<void> close() async {
     await saveCommands();
-    _connection?.finish();
+    await _connection?.finish();
     _everySecondTimer?.cancel();
-    positionSub?.cancel();
-
+    await positionSub?.cancel();
+    await FlutterBackground.disableBackgroundExecution();
     super.close();
   }
 }

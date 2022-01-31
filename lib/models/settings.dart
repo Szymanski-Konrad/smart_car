@@ -17,8 +17,16 @@ class Settings with _$Settings {
     @Default(0) int tankSize,
     @Default(0.0) double fuelPrice,
     @Default(FuelType.gasoline) FuelType fuelType,
+    String? deviceAddress,
+    String? deviceName,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
       _$SettingsFromJson(json);
+}
+
+extension SettingsExtension on Settings {
+  String get deviceDescription => deviceAddress == null
+      ? 'No selected default device'
+      : '${deviceName ?? 'no-name'} - $deviceAddress';
 }

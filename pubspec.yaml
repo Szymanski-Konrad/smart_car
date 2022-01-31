@@ -31,7 +31,6 @@ dependencies:
   flutter_bloc: ^7.3.3
 
   # Mailer
-  sendgrid_mailer: ^0.1.3
   flutter_mailer: ^2.0.1
 
   # Sensors
@@ -47,6 +46,9 @@ dependencies:
   # Path provider
   path_provider: ^2.0.8
 
+  # Foreground service
+  flutter_foreground_task: ^3.5.5
+  flutter_background: ^1.1.0  
 
   cupertino_icons: ^1.0.2
 

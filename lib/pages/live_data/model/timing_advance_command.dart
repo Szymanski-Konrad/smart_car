@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/icon_data.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class TimingAdvanceCommand extends VisibleObdCommand {
-  TimingAdvanceCommand() : super('01 0E', prio: 1);
+  TimingAdvanceCommand() : super('01 0E', min: -64, max: 63.5, prio: 1);
 
   @override
   void performCalculations(List<int> data) {
@@ -11,6 +10,13 @@ class TimingAdvanceCommand extends VisibleObdCommand {
       result = data[0] / 2 - 64;
       super.performCalculations(data);
     }
+  }
+
+  @override
+  Color get color {
+    if (max * 0.9 < result) return dangerColor;
+    if (max * 0.8 < result) return warningColor;
+    return normalColor;
   }
 
   @override

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -23,7 +26,7 @@ class SettingsPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: Text('Settings'),
+            title: const Text('Settings'),
           ),
           body: _buildBody(context, state),
         );
@@ -35,13 +38,29 @@ class SettingsPage extends StatelessWidget {
     final cubit = context.read<SettingsCubit>();
     return ListView(
       children: [
+        ListTile(
+          title: ElevatedButton(
+            child: const Text('Select default OBDII device'),
+            onPressed: () async {
+              final BluetoothDevice device = await Navigation.instance
+                  .push(SharedRoutes.selectBoundedDevice);
+              cubit.updateDevice(device);
+            },
+          ),
+        ),
+        ListTile(
+          title: Text(state.settings.deviceDescription),
+          subtitle: const Text('Selected device'),
+        ),
         _buildSettingsTile(
           value: state.settings.engineCapacity.toString(),
+          leading: 'Pojemność silnika',
           suffix: 'cm3',
           onEdit: cubit.updateEngineCapacity,
         ),
         _buildSettingsTile(
           value: state.settings.fuelPrice.toString(),
+          leading: 'Cena paliwa',
           suffix: 'zł',
           onEdit: cubit.updateFuelPrice,
           keyboardType: const TextInputType.numberWithOptions(
@@ -49,27 +68,37 @@ class SettingsPage extends StatelessWidget {
         ),
         _buildSettingsTile(
             value: state.settings.horsepower.toString(),
+            leading: 'Moc silnika',
             suffix: 'KM',
             onEdit: cubit.updateHorsepower),
         _buildSettingsTile(
           value: state.settings.tankSize.toString(),
+          leading: 'Pojemność baku',
           suffix: 'l',
           onEdit: cubit.updateTankSize,
         ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.all(16.0),
-          child: DropdownButton<FuelType>(
-            value: state.settings.fuelType,
-            isExpanded: true,
-            itemHeight: 60,
-            items: FuelType.values
-                .map((e) => DropdownMenuItem<FuelType>(
-                      child: Text(e.name),
-                      value: e,
-                    ))
-                .toList(),
-            onChanged: cubit.updateFuelType,
+          child: Row(
+            children: [
+              const Text('Rodzaj paliwa: '),
+              const SizedBox(width: 32),
+              Expanded(
+                child: DropdownButton<FuelType>(
+                  value: state.settings.fuelType,
+                  isExpanded: true,
+                  itemHeight: 60,
+                  items: FuelType.values
+                      .map((e) => DropdownMenuItem<FuelType>(
+                            child: Text(e.name),
+                            value: e,
+                          ))
+                      .toList(),
+                  onChanged: cubit.updateFuelType,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -79,10 +108,15 @@ class SettingsPage extends StatelessWidget {
   Widget _buildSettingsTile({
     required String value,
     required String suffix,
+    required String leading,
     Function(String)? onEdit,
     TextInputType keyboardType = TextInputType.number,
   }) {
     return ListTile(
+      leading: SizedBox(
+        width: 120,
+        child: Text(leading),
+      ),
       title: onEdit == null
           ? Text(value)
           : SettingsTextField(
