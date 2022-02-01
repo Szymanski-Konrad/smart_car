@@ -26,6 +26,7 @@ class TripRecord with _$TripRecord {
     @Default(55.0) double tankSize,
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
+    @Default(0) double fuelCosts,
 
     // Rapid driving
     @Default(0) int rapidAccelerations,
@@ -66,15 +67,25 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateUsedFuel(
-      double value, num speed, FuelSystemStatus fuelStatus) {
+    double value,
+    num speed,
+    FuelSystemStatus fuelStatus,
+    double fuelPrice,
+  ) {
     if (speed > 0) {
       if (fuelStatus == FuelSystemStatus.fuelCut) {
         return copyWith(savedFuel: savedFuel + value);
       } else {
-        return copyWith(usedFuel: usedFuel + value);
+        return copyWith(
+          usedFuel: usedFuel + value,
+          fuelCosts: (usedFuel + idleUsedFuel) * fuelPrice,
+        );
       }
     } else {
-      return copyWith(idleUsedFuel: idleUsedFuel + value);
+      return copyWith(
+        idleUsedFuel: idleUsedFuel + value,
+        fuelCosts: (usedFuel + idleUsedFuel) * fuelPrice,
+      );
     }
   }
 
@@ -114,6 +125,7 @@ extension TripRecordExtension on TripRecord {
         usedFuelDetails,
         idleUsedFuelDetails,
         savedFuelDetails,
+        fuelCostsDetails,
       ];
 
   List<InfoTileData> get timeSection => [
@@ -128,11 +140,18 @@ extension TripRecordExtension on TripRecord {
         distanceDetails,
         rangeDetails,
         carboPerKmDetails,
-        // gpsDistanceDetails,
+        gpsDistanceDetails,
         producedCarboDetails,
         savedCarboDetails,
-        // gpsSpeedDetails,
+        gpsSpeedDetails,
       ];
+
+  InfoTileData get fuelCostsDetails => InfoTileData(
+        value: fuelCosts,
+        title: 'Fuel costs',
+        unit: 'PLN',
+        digits: 2,
+      );
 
   InfoTileData get savedFuelDetails => InfoTileData(
         value: savedFuel,

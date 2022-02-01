@@ -16,13 +16,9 @@ import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/ui/fuel_stats_tile.dart';
 
 class LiveDataPageArguments {
-  LiveDataPageArguments({
-    this.isLocalMode = false,
-    this.localFile,
-  });
+  LiveDataPageArguments({this.isLocalMode = false});
 
   final bool isLocalMode;
-  final String? localFile;
 }
 
 class LiveDataPage extends StatelessWidget
@@ -35,10 +31,13 @@ class LiveDataPage extends StatelessWidget
     final address = isLocalMode
         ? null
         : context.read<SettingsCubit>().state.settings.deviceAddress;
+    final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
+    final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
     return ScopedBlocBuilder<LiveDataCubit, LiveDataState>(
       create: (_) => LiveDataCubit(
         address: address,
-        localFile: getArgument(context).localFile,
+        localFile: localFile,
+        fuelPrice: fuelPrice,
       ),
       listener: (context, state) {
         ScaffoldMessenger.of(context).showSnackBar(

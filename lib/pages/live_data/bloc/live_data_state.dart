@@ -25,6 +25,7 @@ class LiveDataState with _$LiveDataState {
     @Default(0) int currentTimeSpent,
     @Default(0) double currentFuelBurnt,
     @Default(TripStatus.idle) TripStatus tripStatus,
+    @Default(0) double fuelPrice,
 
     // Just for testing
     @Default(0.0) double localTripProgress,
@@ -50,7 +51,11 @@ class LiveDataState with _$LiveDataState {
     @Default([]) List<String> errors,
   }) = _LiveDataState;
 
-  static LiveDataState init({List<String> pids = const [], String? localFile}) {
+  static LiveDataState init({
+    List<String> pids = const [],
+    String? localFile,
+    required double fuelPrice,
+  }) {
     return LiveDataState(
       tripStart: DateTime.now(),
       tripRecord: TripRecord(),
@@ -59,6 +64,7 @@ class LiveDataState with _$LiveDataState {
       isConnecting: false,
       isDisconnecting: false,
       localData: localFile ?? Constants.defaultLocalFile,
+      fuelPrice: fuelPrice,
     );
   }
 }
@@ -71,6 +77,8 @@ extension LiveDataStateExtension on LiveDataState {
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
+      localData: localData,
+      fuelPrice: fuelPrice,
     );
   }
 
@@ -82,6 +90,8 @@ extension LiveDataStateExtension on LiveDataState {
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
       isLocalMode: true,
+      localData: localData,
+      fuelPrice: fuelPrice,
     );
   }
 

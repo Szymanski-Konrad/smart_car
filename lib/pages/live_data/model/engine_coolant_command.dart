@@ -18,7 +18,9 @@ class EngineCoolantCommand extends TempObdCommand {
   void performCalculations(List<int> data) {
     super.performCalculations(data);
     if (result > 80) {
-      priority = 60;
+      priority = 80;
+    } else {
+      priority = 20;
     }
   }
 

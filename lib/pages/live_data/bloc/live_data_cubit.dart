@@ -37,7 +37,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   LiveDataCubit({
     required this.address,
     String? localFile,
-  }) : super(LiveDataState.init(localFile: localFile)) {
+    required double fuelPrice,
+  }) : super(LiveDataState.init(
+          localFile: localFile,
+          fuelPrice: fuelPrice,
+        )) {
     init();
   }
 
@@ -144,6 +148,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(LiveDataState.init(
       pids: state.supportedPids,
       localFile: state.localData,
+      fuelPrice: state.fuelPrice,
     ));
     _sendCommand('AT Z'); // Reset obd
     await Future.delayed(const Duration(milliseconds: 1000));
@@ -485,8 +490,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
                 emit(state.copyWith(
                   tripRecord: tripRecord
-                      .updateUsedFuel(usedFuel(tripRecord.engineLoad),
-                          speed ?? 0, fuelStatus ?? FuelSystemStatus.motorOff)
+                      .updateUsedFuel(
+                        usedFuel(tripRecord.engineLoad),
+                        speed ?? 0,
+                        fuelStatus ?? FuelSystemStatus.motorOff,
+                        state.fuelPrice,
+                      )
                       .copyWith(
                         instFuelConsumption: instFuelConsumption,
                         averageFuelConsumption: avgFuelConsumption,

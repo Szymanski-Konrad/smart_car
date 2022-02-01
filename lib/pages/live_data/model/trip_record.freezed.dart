@@ -35,6 +35,7 @@ class _$TripRecordTearOff {
       double tankSize = 55.0,
       int tripSeconds = 0,
       int idleTripSeconds = 0,
+      double fuelCosts = 0,
       int rapidAccelerations = 0,
       int rapidBreakings = 0,
       int lastAccelerationTime = 0,
@@ -58,6 +59,7 @@ class _$TripRecordTearOff {
       tankSize: tankSize,
       tripSeconds: tripSeconds,
       idleTripSeconds: idleTripSeconds,
+      fuelCosts: fuelCosts,
       rapidAccelerations: rapidAccelerations,
       rapidBreakings: rapidBreakings,
       lastAccelerationTime: lastAccelerationTime,
@@ -88,8 +90,8 @@ mixin _$TripRecord {
   double get range => throw _privateConstructorUsedError;
   double get tankSize => throw _privateConstructorUsedError;
   int get tripSeconds => throw _privateConstructorUsedError;
-  int get idleTripSeconds =>
-      throw _privateConstructorUsedError; // Rapid driving
+  int get idleTripSeconds => throw _privateConstructorUsedError;
+  double get fuelCosts => throw _privateConstructorUsedError; // Rapid driving
   int get rapidAccelerations => throw _privateConstructorUsedError;
   int get rapidBreakings => throw _privateConstructorUsedError;
   int get lastAccelerationTime => throw _privateConstructorUsedError;
@@ -124,6 +126,7 @@ abstract class $TripRecordCopyWith<$Res> {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double fuelCosts,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -158,6 +161,7 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
+    Object? fuelCosts = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -233,6 +237,10 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.idleTripSeconds
           : idleTripSeconds // ignore: cast_nullable_to_non_nullable
               as int,
+      fuelCosts: fuelCosts == freezed
+          ? _value.fuelCosts
+          : fuelCosts // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -281,6 +289,7 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double fuelCosts,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -317,6 +326,7 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? tankSize = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
+    Object? fuelCosts = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -392,6 +402,10 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.idleTripSeconds
           : idleTripSeconds // ignore: cast_nullable_to_non_nullable
               as int,
+      fuelCosts: fuelCosts == freezed
+          ? _value.fuelCosts
+          : fuelCosts // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -437,6 +451,7 @@ class _$_TripRecord implements _TripRecord {
       this.tankSize = 55.0,
       this.tripSeconds = 0,
       this.idleTripSeconds = 0,
+      this.fuelCosts = 0,
       this.rapidAccelerations = 0,
       this.rapidBreakings = 0,
       this.lastAccelerationTime = 0,
@@ -495,6 +510,9 @@ class _$_TripRecord implements _TripRecord {
   @override
   final int idleTripSeconds;
   @JsonKey()
+  @override
+  final double fuelCosts;
+  @JsonKey()
   @override // Rapid driving
   final int rapidAccelerations;
   @JsonKey()
@@ -512,7 +530,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, fuelCosts: $fuelCosts, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -547,6 +565,7 @@ class _$_TripRecord implements _TripRecord {
                 .equals(other.tripSeconds, tripSeconds) &&
             const DeepCollectionEquality()
                 .equals(other.idleTripSeconds, idleTripSeconds) &&
+            const DeepCollectionEquality().equals(other.fuelCosts, fuelCosts) &&
             const DeepCollectionEquality()
                 .equals(other.rapidAccelerations, rapidAccelerations) &&
             const DeepCollectionEquality()
@@ -579,6 +598,7 @@ class _$_TripRecord implements _TripRecord {
         const DeepCollectionEquality().hash(tankSize),
         const DeepCollectionEquality().hash(tripSeconds),
         const DeepCollectionEquality().hash(idleTripSeconds),
+        const DeepCollectionEquality().hash(fuelCosts),
         const DeepCollectionEquality().hash(rapidAccelerations),
         const DeepCollectionEquality().hash(rapidBreakings),
         const DeepCollectionEquality().hash(lastAccelerationTime),
@@ -611,6 +631,7 @@ abstract class _TripRecord implements TripRecord {
       double tankSize,
       int tripSeconds,
       int idleTripSeconds,
+      double fuelCosts,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -651,6 +672,8 @@ abstract class _TripRecord implements TripRecord {
   int get tripSeconds;
   @override
   int get idleTripSeconds;
+  @override
+  double get fuelCosts;
   @override // Rapid driving
   int get rapidAccelerations;
   @override
