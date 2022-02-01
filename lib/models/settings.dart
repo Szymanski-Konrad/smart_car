@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:smart_car/app/resources/constants.dart';
 
 part 'settings.freezed.dart';
 part 'settings.g.dart';
@@ -17,6 +18,7 @@ class Settings with _$Settings {
     @Default(0) int tankSize,
     @Default(0.0) double fuelPrice,
     @Default(FuelType.gasoline) FuelType fuelType,
+    @Default(Constants.defaultLocalFile) String selectedJson,
     String? deviceAddress,
     String? deviceName,
   }) = _Settings;

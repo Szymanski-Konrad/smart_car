@@ -94,13 +94,14 @@ class _AppState extends State<App> {
                           .settings
                           .deviceAddress;
 
-                      // if (kDebugMode || address != null) {
-                      //   _showLiveData(context);
-                      //   return;
-                      // }
+                      final localFile = context
+                          .read<SettingsCubit>()
+                          .state
+                          .settings
+                          .selectedJson;
 
                       if (address != null) {
-                        _showLiveData(context, false);
+                        _showLiveData(context, false, localFile);
                         return;
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -117,7 +118,13 @@ class _AppState extends State<App> {
                   title: ElevatedButton(
                     child: const Text('Local data'),
                     onPressed: () async {
-                      _showLiveData(context, true);
+                      final localFile = context
+                          .read<SettingsCubit>()
+                          .state
+                          .settings
+                          .selectedJson;
+
+                      _showLiveData(context, true, localFile);
                     },
                   ),
                 ),
@@ -144,10 +151,13 @@ class _AppState extends State<App> {
     );
   }
 
-  void _showLiveData(BuildContext context, bool isLocalMode) {
+  void _showLiveData(BuildContext context, bool isLocalMode, String file) {
     Navigation.instance.push(
       SharedRoutes.liveData,
-      arguments: LiveDataPageArguments(isLocalMode: isLocalMode),
+      arguments: LiveDataPageArguments(
+        isLocalMode: isLocalMode,
+        localFile: file,
+      ),
     );
   }
 

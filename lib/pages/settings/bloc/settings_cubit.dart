@@ -39,6 +39,15 @@ class SettingsCubit extends Cubit<SettingsState> {
     startTimer();
   }
 
+  void updateJson(String? value) {
+    if (value != null) {
+      emit(
+        state.copyWith(settings: state.settings.copyWith(selectedJson: value)),
+      );
+      startTimer();
+    }
+  }
+
   void updateEngineCapacity(String input) {
     final value = int.tryParse(input);
     if (value != null) {

@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -52,6 +54,20 @@ class SettingsPage extends StatelessWidget {
           title: Text(state.settings.deviceDescription),
           subtitle: const Text('Selected device'),
         ),
+        if (kDebugMode)
+          ListTile(
+            leading: const Text('Select file: '),
+            title: DropdownButton(
+              value: state.settings.selectedJson,
+              onChanged: cubit.updateJson,
+              items: Constants.localFiles
+                  .map((e) => DropdownMenuItem(
+                        child: Text(e),
+                        value: e,
+                      ))
+                  .toList(),
+            ),
+          ),
         _buildSettingsTile(
           value: state.settings.engineCapacity.toString(),
           leading: 'Pojemność silnika',

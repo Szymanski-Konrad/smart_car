@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
-import 'package:smart_car/app.dart';
+import 'package:smart_car/app/navigation/navigator.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 
 Future<void> main() async {
@@ -41,7 +41,7 @@ class FlutterBlueApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        home: const App(),
+        home: const PageNavigator(),
         theme: ThemeData.dark(),
       ),
     );

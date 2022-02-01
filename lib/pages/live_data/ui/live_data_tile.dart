@@ -40,7 +40,7 @@ class LiveDataTile extends StatelessWidget {
     );
   }
 
-  final textTheme = const TextStyle(fontSize: 16);
+  final textTheme = const TextStyle(fontSize: 18);
 
   void showDescription(BuildContext context) {
     showDialog(
@@ -66,7 +66,11 @@ class LiveDataTile extends StatelessWidget {
           Expanded(
             child: Column(
               children: [
-                Text(command.name, style: textTheme),
+                Text(
+                  command.name,
+                  maxLines: 1,
+                  style: textTheme,
+                ),
                 Row(
                   children: [
                     Icon(command.icon),

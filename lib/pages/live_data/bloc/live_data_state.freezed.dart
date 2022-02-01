@@ -30,6 +30,7 @@ class _$LiveDataStateTearOff {
       double currentFuelBurnt = 0,
       TripStatus tripStatus = TripStatus.idle,
       double localTripProgress = 0.0,
+      String localData = Constants.defaultLocalFile,
       bool isConnecting = true,
       bool isDisconnecting = false,
       bool isConnnectingError = false,
@@ -54,6 +55,7 @@ class _$LiveDataStateTearOff {
       currentFuelBurnt: currentFuelBurnt,
       tripStatus: tripStatus,
       localTripProgress: localTripProgress,
+      localData: localData,
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
       isConnnectingError: isConnnectingError,
@@ -87,8 +89,8 @@ mixin _$LiveDataState {
   double get currentFuelBurnt => throw _privateConstructorUsedError;
   TripStatus get tripStatus =>
       throw _privateConstructorUsedError; // Just for testing
-  double get localTripProgress =>
-      throw _privateConstructorUsedError; // Bluetooth
+  double get localTripProgress => throw _privateConstructorUsedError;
+  String get localData => throw _privateConstructorUsedError; // Bluetooth
   bool get isConnecting => throw _privateConstructorUsedError;
   bool get isDisconnecting => throw _privateConstructorUsedError;
   bool get isConnnectingError => throw _privateConstructorUsedError; // Pids
@@ -126,6 +128,7 @@ abstract class $LiveDataStateCopyWith<$Res> {
       double currentFuelBurnt,
       TripStatus tripStatus,
       double localTripProgress,
+      String localData,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -165,6 +168,7 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? currentFuelBurnt = freezed,
     Object? tripStatus = freezed,
     Object? localTripProgress = freezed,
+    Object? localData = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
@@ -226,6 +230,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.localTripProgress
           : localTripProgress // ignore: cast_nullable_to_non_nullable
               as double,
+      localData: localData == freezed
+          ? _value.localData
+          : localData // ignore: cast_nullable_to_non_nullable
+              as String,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
           : isConnecting // ignore: cast_nullable_to_non_nullable
@@ -308,6 +316,7 @@ abstract class _$LiveDataStateCopyWith<$Res>
       double currentFuelBurnt,
       TripStatus tripStatus,
       double localTripProgress,
+      String localData,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -351,6 +360,7 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? currentFuelBurnt = freezed,
     Object? tripStatus = freezed,
     Object? localTripProgress = freezed,
+    Object? localData = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
@@ -412,6 +422,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.localTripProgress
           : localTripProgress // ignore: cast_nullable_to_non_nullable
               as double,
+      localData: localData == freezed
+          ? _value.localData
+          : localData // ignore: cast_nullable_to_non_nullable
+              as String,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
           : isConnecting // ignore: cast_nullable_to_non_nullable
@@ -476,6 +490,7 @@ class _$_LiveDataState implements _LiveDataState {
       this.currentFuelBurnt = 0,
       this.tripStatus = TripStatus.idle,
       this.localTripProgress = 0.0,
+      this.localData = Constants.defaultLocalFile,
       this.isConnecting = true,
       this.isDisconnecting = false,
       this.isConnnectingError = false,
@@ -522,6 +537,9 @@ class _$_LiveDataState implements _LiveDataState {
   @override // Just for testing
   final double localTripProgress;
   @JsonKey()
+  @override
+  final String localData;
+  @JsonKey()
   @override // Bluetooth
   final bool isConnecting;
   @JsonKey()
@@ -556,7 +574,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, localTripProgress: $localTripProgress, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -586,6 +604,7 @@ class _$_LiveDataState implements _LiveDataState {
                 .equals(other.tripStatus, tripStatus) &&
             const DeepCollectionEquality()
                 .equals(other.localTripProgress, localTripProgress) &&
+            const DeepCollectionEquality().equals(other.localData, localData) &&
             const DeepCollectionEquality()
                 .equals(other.isConnecting, isConnecting) &&
             const DeepCollectionEquality()
@@ -623,6 +642,7 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(currentFuelBurnt),
         const DeepCollectionEquality().hash(tripStatus),
         const DeepCollectionEquality().hash(localTripProgress),
+        const DeepCollectionEquality().hash(localData),
         const DeepCollectionEquality().hash(isConnecting),
         const DeepCollectionEquality().hash(isDisconnecting),
         const DeepCollectionEquality().hash(isConnnectingError),
@@ -656,6 +676,7 @@ abstract class _LiveDataState implements LiveDataState {
       double currentFuelBurnt,
       TripStatus tripStatus,
       double localTripProgress,
+      String localData,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -692,6 +713,8 @@ abstract class _LiveDataState implements LiveDataState {
   TripStatus get tripStatus;
   @override // Just for testing
   double get localTripProgress;
+  @override
+  String get localData;
   @override // Bluetooth
   bool get isConnecting;
   @override

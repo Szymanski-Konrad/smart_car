@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
@@ -27,6 +28,7 @@ class LiveDataState with _$LiveDataState {
 
     // Just for testing
     @Default(0.0) double localTripProgress,
+    @Default(Constants.defaultLocalFile) String localData,
 
     // Bluetooth
     @Default(true) bool isConnecting,
@@ -48,7 +50,7 @@ class LiveDataState with _$LiveDataState {
     @Default([]) List<String> errors,
   }) = _LiveDataState;
 
-  static LiveDataState init({List<String> pids = const []}) {
+  static LiveDataState init({List<String> pids = const [], String? localFile}) {
     return LiveDataState(
       tripStart: DateTime.now(),
       tripRecord: TripRecord(),
@@ -56,6 +58,7 @@ class LiveDataState with _$LiveDataState {
       supportedPids: pids,
       isConnecting: false,
       isDisconnecting: false,
+      localData: localFile ?? Constants.defaultLocalFile,
     );
   }
 }

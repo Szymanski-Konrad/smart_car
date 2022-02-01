@@ -12,7 +12,7 @@ class ControlModuleVoltageCommand extends VisibleObdCommand {
   }
 
   @override
-  String get formattedResult => '$result $unit';
+  String get formattedResult => '${result.toStringAsFixed(2)} $unit';
 
   @override
   void performCalculations(List<int> data) {

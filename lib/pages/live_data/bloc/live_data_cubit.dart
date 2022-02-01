@@ -34,7 +34,10 @@ import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/list_extension.dart';
 
 class LiveDataCubit extends Cubit<LiveDataState> {
-  LiveDataCubit({required this.address}) : super(LiveDataState.init()) {
+  LiveDataCubit({
+    required this.address,
+    String? localFile,
+  }) : super(LiveDataState.init(localFile: localFile)) {
     init();
   }
 
@@ -138,7 +141,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> initializeObd() async {
-    emit(LiveDataState.init(pids: state.supportedPids));
+    emit(LiveDataState.init(
+      pids: state.supportedPids,
+      localFile: state.localData,
+    ));
     _sendCommand('AT Z'); // Reset obd
     await Future.delayed(const Duration(milliseconds: 1000));
     _sendCommand('AT E0'); // Echo off
@@ -210,7 +216,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   Future<void> _runTest() async {
     final json =
-        await rootBundle.loadString('assets/json/trip_12_01_2022.json');
+        await rootBundle.loadString('assets/json/${state.localData}.json');
     final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
     final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
@@ -344,6 +350,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> motorOff() async {
+    print('Live data closing');
     _connection?.close();
     saveCommands();
     Navigation.instance.pop();
@@ -568,7 +575,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     await _connection?.finish();
     _everySecondTimer?.cancel();
     await positionSub?.cancel();
-    await FlutterBackground.disableBackgroundExecution();
+    if (FlutterBackground.isBackgroundExecutionEnabled) {
+      await FlutterBackground.disableBackgroundExecution();
+    }
     super.close();
   }
 }
