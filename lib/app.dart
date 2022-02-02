@@ -82,7 +82,7 @@ class _AppState extends State<App> {
                   });
                 },
               ),
-              const Divider(),
+              const Divider(color: Colors.yellow),
               if (_bluetoothState.isEnabled)
                 ListTile(
                   title: ElevatedButton(
@@ -116,6 +116,17 @@ class _AppState extends State<App> {
                     },
                   ),
                 ),
+              if (kDebugMode)
+                ListTile(
+                  title: ElevatedButton(
+                    child: const Text('CAN testing'),
+                    onPressed: () {
+                      Navigation.instance.push(SharedRoutes.canTest);
+                    },
+                  ),
+                ),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.yellow),
               ListTile(
                 title: ElevatedButton(
                   child: const Text('Settings'),

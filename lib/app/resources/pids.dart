@@ -1,12 +1,38 @@
 // ignore_for_file: constant_identifier_names
 
+import 'package:smart_car/models/commands/absolute_barometric_pressure_command.dart';
+import 'package:smart_car/models/commands/absolute_load_value_command.dart';
+import 'package:smart_car/models/commands/absolute_throttle_position_command.dart';
+import 'package:smart_car/models/commands/accelerator_pedal_position_command.dart';
+import 'package:smart_car/models/commands/ambient_air_temperature_command.dart';
+import 'package:smart_car/models/commands/auxiliary_input_status_command.dart';
+import 'package:smart_car/models/commands/catalyst_temperature_bank_command.dart';
+import 'package:smart_car/models/commands/commanded_egr_command.dart';
+import 'package:smart_car/models/commands/commanded_secondary_air_status_command.dart';
+import 'package:smart_car/models/commands/commanded_throttle_actuator_command.dart';
+import 'package:smart_car/models/commands/cylinder_fuel_rate_command.dart';
+import 'package:smart_car/models/commands/distance_traveled_codes_cleared.dart';
+import 'package:smart_car/models/commands/egr_error_command.dart';
 import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
+import 'package:smart_car/models/commands/engine_reference_torque_command.dart';
+import 'package:smart_car/models/commands/evap_system_vapor_pressure_command.dart';
 import 'package:smart_car/models/commands/fuel_injection_time.dart';
 import 'package:smart_car/models/commands/fuel_pressure_command.dart';
+import 'package:smart_car/models/commands/fuel_rail_gauge_pressure_command.dart';
+import 'package:smart_car/models/commands/fuel_rail_pressure_command.dart';
+import 'package:smart_car/models/commands/fuel_type_command.dart';
+import 'package:smart_car/models/commands/hybrid_battery_remaining_life_command.dart';
+import 'package:smart_car/models/commands/odometer_command.dart';
+import 'package:smart_car/models/commands/relative_throttle_position_command.dart';
 import 'package:smart_car/models/commands/run_time_since_start_command.dart';
+import 'package:smart_car/models/commands/time_run_with_mil_on_command.dart';
+import 'package:smart_car/models/commands/time_since_troubles_codes_cleared_command.dart';
+import 'package:smart_car/models/commands/warmups_since_codes_cleared_command.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commanded_evaporative_purge_command.dart';
-import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_volts.dart';
+import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_trim_volts.dart';
+import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_sensor_lambda_voltage_command.dart';
+import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_sensor_lamdba_current_command.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
 import 'package:smart_car/pages/live_data/model/control_module_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/distance_with_mil_command.dart';
@@ -26,20 +52,63 @@ import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 
 abstract class Pids {
-  // Unsupported important pids
-  static const String fuelRailPressure = '22';
-  static const String fuelRailGaugePressure = '23';
-  static const String relativeThrottlePosition = '45';
-  static const String ambientAirTemperature = '46';
-  static const String fuelType = '51';
-  static const String engineReferenceTorque = '63';
-  static const String odometer = 'A6';
-
   // Unsupported pids
-  static const String commandedSecondaryAirStatus = '12';
   static const String oxygenSensorsPresents2B = '13';
   static const String oxygenSensorsPresents4B = '1D';
+  static const String monitorStatusDriveCycle = '41';
+  static const String maxValuesP1 = '4F';
+  static const String maxMAFValue = '50';
+  static const String ethanolFuelRemaining = '52';
+  static const String absoluteEvapSystemVaporPressure = '53';
+  static const String evapSystemVaporPressureV2 = '54';
+  static const String secondaryOxygenSensor1 = '55';
+  static const String secondaryOxygenSensor2 = '56';
+  static const String secondaryOxygenSensor3 = '57';
+  static const String secondaryOxygenSensor4 = '58';
+  static const String fuelRailAbsolutePressure = '59';
+  static const String relativeAcceleratorPedalPosition = '5A';
+  static const String emissionRequirements = '5F';
+  static const String driversDemandEnginePercentTorque = '61';
+  static const String actualEnginePercentTorque = '62';
+  static const String enginePercentTorqueData = '64';
+  static const String auxiliarySupported = '65';
+  static const String mafSensor = '66';
+  static const String engineCoolantTemp = '67';
+  static const String intakeAirTempSensor = '68';
+
+  static const String transmissionActualGear = 'A4';
+
+  // Supported pids
+  static const String fuelSystemStatus = '03';
+  static const String engineLoad = '04';
+  static const String engineCoolant = '05';
+  static const String shortTermFTB1 = '06';
+  static const String longTermFTB1 = '07';
+  static const String shortTermFTB2 = '08';
+  static const String longTermFTB2 = '09';
+  static const String fuelPressure = '0A';
+  static const String intakeManifoldAbsolutePressure = '0B';
+  static const String rpm = '0C';
+  static const String speed = '0D';
+  static const String timingAdvance = '0E';
+  static const String intakeAirTemp = '0F';
+  static const String maf = '10';
+  static const String throttlePosition = '11';
+  static const String commandedSecondaryAirStatus = '12';
+  static const String oxygenSensor1A = '14';
+  static const String oxygenSensor2A = '15';
+  static const String oxygenSensor3A = '16';
+  static const String oxygenSensor4A = '17';
+  static const String oxygenSensor5A = '18';
+  static const String oxygenSensor6A = '19';
+  static const String oxygenSensor7A = '1A';
+  static const String oxygenSensor8A = '1B';
+  static const String obdStandards = '1C';
   static const String auxiliaryInputStatus = '1E';
+  static const String runTimeSinceStart = '1F';
+  static const String distanceTraveledMIL = '21';
+  static const String fuelRailPressure = '22';
+  static const String fuelRailGaugePressure = '23';
   static const String oxygenSensor1B = '24';
   static const String oxygenSensor2B = '25';
   static const String oxygenSensor3B = '26';
@@ -50,6 +119,8 @@ abstract class Pids {
   static const String oxygenSensor8B = '2B';
   static const String commandedEGR = '2C';
   static const String egrError = '2D';
+  static const String commandedEvaporativePurge = '2E';
+  static const String fuelLevel = '2F';
   static const String warmUpsSinceCodeCleared = '30';
   static const String distanceTraveledSinceCodesCleared = '31';
   static const String evapSystemVaporPressure = '32';
@@ -66,8 +137,11 @@ abstract class Pids {
   static const String catalystTemperatureB2S1 = '3D';
   static const String catalystTemperatureB1S2 = '3E';
   static const String catalystTemperatureB2S2 = '3F';
-  static const String monitorStatusDriveCycle = '41';
+  static const String controlModuleVoltage = '42';
   static const String absoluteLoadValue = '43';
+  static const String commandedAirFuelRatio = '44';
+  static const String relativeThrottlePosition = '45';
+  static const String ambientAirTemperature = '46';
   static const String absoluteThrottlePositionB = '47';
   static const String absoluteThrottlePositionC = '48';
   static const String acceleratorPedalPositionD = '49';
@@ -76,44 +150,16 @@ abstract class Pids {
   static const String commanededThrottleAcutator = '4C';
   static const String timeRunWithMIL = '4D';
   static const String timeSinceTroubleCodesCleared = '4E';
+  static const String fuelType = '51';
   static const String hybridBatteryPackRemainingLife = '5B';
-
-  // Supported pids
-  static const String shortTermFTB1 = '06';
-  static const String longTermFTB1 = '07';
-  static const String shortTermFTB2 = '08';
-  static const String longTermFTB2 = '09';
-  static const String fuelSystemStatus = '03';
-  static const String engineLoad = '04';
-  static const String engineCoolant = '05';
-  static const String rpm = '0C';
-  static const String speed = '0D';
-  static const String intakeAirTemp = '0F';
-  static const String maf = '10';
-  static const String throttlePosition = '11';
-  static const String fuelLevel = '2F';
   static const String oilTemp = '5C';
-  static const String commandedAirFuelRatio = '44';
-  static const String oxygenSensor1A = '14';
-  static const String oxygenSensor2A = '15';
-  static const String oxygenSensor5A = '18';
-  static const String oxygenSensor6A = '19';
-  static const String commandedEvaporativePurge = '2E';
-  static const String controlModuleVoltage = '42';
-  static const String obdStandards = '1C';
-  static const String timingAdvance = '0E';
-  static const String distanceTraveledMIL = '21';
-  static const String intakeManifoldAbsolutePressure = '0B';
-  static const String engineFuelRate = '5E';
-
-  static const String fuelPressure = '0A';
-  static const String oxygenSensor3A = '16';
-  static const String oxygenSensor4A = '17';
-  static const String oxygenSensor7A = '1A';
-  static const String oxygenSensor8A = '1B';
-  static const String runTimeSinceStart = '1F';
   static const String fuelInjectionTiming = '5D';
+  static const String engineFuelRate = '5E';
+  static const String engineReferenceTorque = '63';
+  static const String cylinderFuelRate = 'A2';
+  static const String odometer = 'A6';
 
+  /// Special commands
   static const String pidsList1 = '00';
   static const String pidsList2 = '20';
   static const String pidsList3 = '40';
@@ -176,12 +222,157 @@ enum PID {
   fuelPressure,
   runTimeSinceStart,
   fuelInjectionTiming,
+  fuelRailPressure,
+  fuelRailGaugePressure,
+  relativeThrottlePosition,
+  ambientAirTemperature,
+  engineReferenceTorque,
+  odometer,
+  commandedSecondaryAirStatus,
+  oxygenSensorsPresents2B,
+  oxygenSensorsPresents4B,
+  auxiliaryInputStatus,
+  oxygenSensor1B,
+  oxygenSensor2B,
+  oxygenSensor3B,
+  oxygenSensor4B,
+  oxygenSensor5B,
+  oxygenSensor6B,
+  oxygenSensor7B,
+  oxygenSensor8B,
+  commandedEGR,
+  egrError,
+  warmUpsSinceCodeCleared,
+  distanceTraveledSinceCodesCleared,
+  evapSystemVaporPressure,
+  absoluteBarometricPressure,
+  oxygenSensor1C,
+  oxygenSensor2C,
+  oxygenSensor3C,
+  oxygenSensor4C,
+  oxygenSensor5C,
+  oxygenSensor6C,
+  oxygenSensor7C,
+  oxygenSensor8C,
+  catalystTemperatureB1S1,
+  catalystTemperatureB2S1,
+  catalystTemperatureB1S2,
+  catalystTemperatureB2S2,
+  monitorStatusDriveCycle,
+  absoluteLoadValue,
+  absoluteThrottlePositionB,
+  absoluteThrottlePositionC,
+  acceleratorPedalPositionD,
+  acceleratorPedalPositionE,
+  acceleratorPedalPositionF,
+  commanededThrottleAcutator,
+  timeRunWithMIL,
+  timeSinceTroubleCodesCleared,
+  hybridBatteryPackRemainingLife,
+  fuelType,
+  cylinderFuelRate,
   unknown,
 }
 
 extension PIDExtension on PID {
   static PID code(String value) {
     switch (value) {
+      case Pids.cylinderFuelRate:
+        return PID.cylinderFuelRate;
+      case Pids.commandedSecondaryAirStatus:
+        return PID.commandedSecondaryAirStatus;
+      case Pids.oxygenSensorsPresents2B:
+        return PID.oxygenSensorsPresents2B;
+      case Pids.oxygenSensorsPresents4B:
+        return PID.oxygenSensorsPresents4B;
+      case Pids.auxiliaryInputStatus:
+        return PID.auxiliaryInputStatus;
+      case Pids.oxygenSensor1B:
+        return PID.oxygenSensor1B;
+      case Pids.oxygenSensor2B:
+        return PID.oxygenSensor2B;
+      case Pids.oxygenSensor3B:
+        return PID.oxygenSensor3B;
+      case Pids.oxygenSensor4B:
+        return PID.oxygenSensor4B;
+      case Pids.oxygenSensor5B:
+        return PID.oxygenSensor5B;
+      case Pids.oxygenSensor6B:
+        return PID.oxygenSensor6B;
+      case Pids.oxygenSensor7B:
+        return PID.oxygenSensor7B;
+      case Pids.oxygenSensor8B:
+        return PID.oxygenSensor8B;
+      case Pids.commandedEGR:
+        return PID.commandedEGR;
+      case Pids.egrError:
+        return PID.egrError;
+      case Pids.warmUpsSinceCodeCleared:
+        return PID.warmUpsSinceCodeCleared;
+      case Pids.distanceTraveledSinceCodesCleared:
+        return PID.distanceTraveledSinceCodesCleared;
+      case Pids.evapSystemVaporPressure:
+        return PID.evapSystemVaporPressure;
+      case Pids.absoluteBarometricPressure:
+        return PID.absoluteBarometricPressure;
+      case Pids.oxygenSensor1C:
+        return PID.oxygenSensor1C;
+      case Pids.oxygenSensor2C:
+        return PID.oxygenSensor2C;
+      case Pids.oxygenSensor3C:
+        return PID.oxygenSensor3C;
+      case Pids.oxygenSensor4C:
+        return PID.oxygenSensor4C;
+      case Pids.oxygenSensor5C:
+        return PID.oxygenSensor5C;
+      case Pids.oxygenSensor6C:
+        return PID.oxygenSensor6C;
+      case Pids.oxygenSensor7C:
+        return PID.oxygenSensor7C;
+      case Pids.oxygenSensor8C:
+        return PID.oxygenSensor8C;
+      case Pids.catalystTemperatureB1S1:
+        return PID.catalystTemperatureB1S1;
+      case Pids.catalystTemperatureB2S1:
+        return PID.catalystTemperatureB2S1;
+      case Pids.catalystTemperatureB1S2:
+        return PID.catalystTemperatureB1S2;
+      case Pids.catalystTemperatureB2S2:
+        return PID.catalystTemperatureB2S2;
+      case Pids.monitorStatusDriveCycle:
+        return PID.monitorStatusDriveCycle;
+      case Pids.absoluteLoadValue:
+        return PID.absoluteLoadValue;
+      case Pids.absoluteThrottlePositionB:
+        return PID.absoluteThrottlePositionB;
+      case Pids.absoluteThrottlePositionC:
+        return PID.absoluteThrottlePositionC;
+      case Pids.acceleratorPedalPositionD:
+        return PID.acceleratorPedalPositionD;
+      case Pids.acceleratorPedalPositionE:
+        return PID.acceleratorPedalPositionE;
+      case Pids.acceleratorPedalPositionF:
+        return PID.acceleratorPedalPositionF;
+      case Pids.commanededThrottleAcutator:
+        return PID.commanededThrottleAcutator;
+      case Pids.timeRunWithMIL:
+        return PID.timeRunWithMIL;
+      case Pids.timeSinceTroubleCodesCleared:
+        return PID.timeSinceTroubleCodesCleared;
+      case Pids.hybridBatteryPackRemainingLife:
+        return PID.hybridBatteryPackRemainingLife;
+      case Pids.fuelType:
+        return PID.fuelType;
+      case Pids.odometer:
+        return PID.odometer;
+      case Pids.engineReferenceTorque:
+        return PID.engineReferenceTorque;
+      case Pids.ambientAirTemperature:
+        return PID.ambientAirTemperature;
+      case Pids.relativeThrottlePosition:
+        return PID.relativeThrottlePosition;
+      case Pids.fuelRailGaugePressure:
+        return PID.fuelRailGaugePressure;
       case Pids.oxygenSensor1A:
         return PID.oxygenSensor1A;
       case Pids.oxygenSensor2A:
@@ -248,6 +439,8 @@ extension PIDExtension on PID {
         return PID.runTimeSinceStart;
       case Pids.fuelInjectionTiming:
         return PID.fuelInjectionTiming;
+      case Pids.fuelRailPressure:
+        return PID.fuelRailPressure;
       default:
         return PID.unknown;
     }
@@ -255,6 +448,18 @@ extension PIDExtension on PID {
 
   ObdCommand? get command {
     switch (this) {
+      case PID.odometer:
+        return OdometerCommand();
+      case PID.engineReferenceTorque:
+        return EngineReferenceTorqueCommand();
+      case PID.ambientAirTemperature:
+        return AmbientAirTemperatureCommand();
+      case PID.relativeThrottlePosition:
+        return RelativeThrottlePositionCommand();
+      case PID.fuelRailGaugePressure:
+        return FuelRailGaugePressureCommand();
+      case PID.fuelRailPressure:
+        return FuelRailPressureCommand();
       case PID.engineFuelRate:
         return EngineFuelRateCommand();
       case PID.engineCoolant:
@@ -280,13 +485,21 @@ extension PIDExtension on PID {
       case PID.commandedAirFuelRatio:
         return CommandedAirFuelRatioCommand();
       case PID.oxygenSensor1A:
-        return OxygenSensorVolts1();
+        return OxygenSensorTrimVoltsCommand1();
       case PID.oxygenSensor2A:
-        return OxygenSensorVolts2();
+        return OxygenSensorTrimVoltsCommand2();
+      case PID.oxygenSensor3A:
+        return OxygenSensorTrimVoltsCommand3();
+      case PID.oxygenSensor4A:
+        return OxygenSensorTrimVoltsCommand4();
       case PID.oxygenSensor5A:
-        return OxygenSensorVolts5();
+        return OxygenSensorTrimVoltsCommand5();
       case PID.oxygenSensor6A:
-        return OxygenSensorVolts6();
+        return OxygenSensorTrimVoltsCommand6();
+      case PID.oxygenSensor7A:
+        return OxygenSensorTrimVoltsCommand7();
+      case PID.oxygenSensor8A:
+        return OxygenSensorTrimVoltsCommand8();
       case PID.STFTB1:
         return ShortTermFuelTrimBank1();
       case PID.LTFTB1:
@@ -309,20 +522,101 @@ extension PIDExtension on PID {
         return null;
       case PID.intakeManifoldAbsolutePressure:
         return MapCommand();
-      case PID.oxygenSensor3A:
-        return OxygenSensorVolts3();
-      case PID.oxygenSensor4A:
-        return OxygenSensorVolts4();
-      case PID.oxygenSensor7A:
-        return OxygenSensorVolts7();
-      case PID.oxygenSensor8A:
-        return OxygenSensorVolts8();
       case PID.fuelPressure:
         return FuelPressureCommand();
       case PID.runTimeSinceStart:
         return RunTimeSinceStartCommand();
       case PID.fuelInjectionTiming:
         return FuelInjectionTime();
+      case PID.commandedSecondaryAirStatus:
+        return CommandedSecondaryAirStatusCommand();
+      case PID.oxygenSensorsPresents2B:
+        // TODO: Handle this case.
+        break;
+      case PID.oxygenSensorsPresents4B:
+        // TODO: Handle this case.
+        break;
+      case PID.auxiliaryInputStatus:
+        return AuxiliaryInputStatus();
+      case PID.oxygenSensor1B:
+        return OxygenSensorLambdaVoltsCommand1();
+      case PID.oxygenSensor2B:
+        return OxygenSensorLambdaVoltsCommand2();
+      case PID.oxygenSensor3B:
+        return OxygenSensorLambdaVoltsCommand3();
+      case PID.oxygenSensor4B:
+        return OxygenSensorLambdaVoltsCommand4();
+      case PID.oxygenSensor5B:
+        return OxygenSensorLambdaVoltsCommand5();
+      case PID.oxygenSensor6B:
+        return OxygenSensorLambdaVoltsCommand6();
+      case PID.oxygenSensor7B:
+        return OxygenSensorLambdaVoltsCommand7();
+      case PID.oxygenSensor8B:
+        return OxygenSensorLambdaVoltsCommand8();
+      case PID.commandedEGR:
+        return CommandedEGRCommand();
+      case PID.egrError:
+        return EGRErrorCommand();
+      case PID.warmUpsSinceCodeCleared:
+        return WarmupsSinceCodesClearedCommand();
+      case PID.distanceTraveledSinceCodesCleared:
+        return DistanceTraveledSinceCodesCleared();
+      case PID.evapSystemVaporPressure:
+        return EvapSystemVaporPressureCommand();
+      case PID.absoluteBarometricPressure:
+        return AbsoluteBarometricPressureCommand();
+      case PID.oxygenSensor1C:
+        return OxygenSensorLambdaCurrentCommand1();
+      case PID.oxygenSensor2C:
+        return OxygenSensorLambdaCurrentCommand2();
+      case PID.oxygenSensor3C:
+        return OxygenSensorLambdaCurrentCommand3();
+      case PID.oxygenSensor4C:
+        return OxygenSensorLambdaCurrentCommand4();
+      case PID.oxygenSensor5C:
+        return OxygenSensorLambdaCurrentCommand5();
+      case PID.oxygenSensor6C:
+        return OxygenSensorLambdaCurrentCommand6();
+      case PID.oxygenSensor7C:
+        return OxygenSensorLambdaCurrentCommand7();
+      case PID.oxygenSensor8C:
+        return OxygenSensorLambdaCurrentCommand8();
+      case PID.catalystTemperatureB1S1:
+        return CatalystTemperatureB1S1Command();
+      case PID.catalystTemperatureB2S1:
+        return CatalystTemperatureB2S1Command();
+      case PID.catalystTemperatureB1S2:
+        return CatalystTemperatureB1S2Command();
+      case PID.catalystTemperatureB2S2:
+        return CatalystTemperatureB2S2Command();
+      case PID.monitorStatusDriveCycle:
+        // TODO: Handle this case.
+        break;
+      case PID.absoluteLoadValue:
+        return AbsoluteLoadValueCommand();
+      case PID.absoluteThrottlePositionB:
+        return AbsoluteThrottlePositionBCommand();
+      case PID.absoluteThrottlePositionC:
+        return AbsoluteThrottlePositionCCommand();
+      case PID.acceleratorPedalPositionD:
+        return AcceleratorPedalPositionDCommand();
+      case PID.acceleratorPedalPositionE:
+        return AcceleratorPedalPositionECommand();
+      case PID.acceleratorPedalPositionF:
+        return AcceleratorPedalPositionFCommand();
+      case PID.commanededThrottleAcutator:
+        return CommandedThrottleActuatorCommand();
+      case PID.timeRunWithMIL:
+        return TimeRunWithMILOn();
+      case PID.timeSinceTroubleCodesCleared:
+        return TimeSinceTroublesCodesClearedCommands();
+      case PID.hybridBatteryPackRemainingLife:
+        return HybridBatteryPackRemainingLife();
+      case PID.fuelType:
+        return FuelTypeCommand();
+      case PID.cylinderFuelRate:
+        return CylinderFuelRateCommand();
     }
   }
 }

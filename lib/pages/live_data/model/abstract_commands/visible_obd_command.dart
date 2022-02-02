@@ -25,7 +25,6 @@ abstract class VisibleObdCommand extends ObdCommand {
   String get formattedResult => '-.- $unit';
   String get formattedReactionTime => '$responseTime ms';
   Trending trending = Trending.constant;
-  IconData get icon;
 
   IconData get trendingIcon => trending.icon;
   double range;
@@ -47,6 +46,8 @@ abstract class VisibleObdCommand extends ObdCommand {
       // trending = historyData.trending(range: range);
     }
   }
+
+  IconData get icon => Icons.bar_chart;
 
   Color get trendingColor {
     switch (trending) {

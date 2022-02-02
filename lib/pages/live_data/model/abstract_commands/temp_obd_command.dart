@@ -5,8 +5,8 @@ abstract class TempObdCommand extends VisibleObdCommand {
   TempObdCommand(
     String command, {
     required int prio,
-    int min = -40,
-    int max = 215,
+    double min = -40,
+    double max = 215,
   }) : super(command, min: min, max: max, prio: prio);
 
   @override
