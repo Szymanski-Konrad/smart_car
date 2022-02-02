@@ -90,7 +90,7 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateSeconds(num speed, bool isLocalMode) {
-    final addSeconds = isLocalMode ? Constants.liveModeSpeedUp : 1;
+    const addSeconds = 1;
     if (speed > 0) {
       return copyWith(tripSeconds: tripSeconds + addSeconds);
     } else {

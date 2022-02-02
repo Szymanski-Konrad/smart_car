@@ -52,20 +52,21 @@ abstract class ObdCommand {
     if (lastTime != null) {
       differenceMiliseconds = now.difference(lastTime).inMilliseconds.abs();
     }
-    if (isLocalMode) {
-      differenceMiliseconds *= Constants.liveModeSpeedUp;
-    }
     lastReciveTime = now;
     performCalculations(data);
   }
 
-  String? sendCommand() {
-    if (waitTimes >= priority) {
-      waitTimes = 0;
+  String? sendCommand({bool isLocalMode = false}) {
+    if (isLocalMode) {
       sendTime = DateTime.now();
-      return command;
     } else {
-      waitTimes++;
+      if (waitTimes >= priority) {
+        waitTimes = 0;
+        sendTime = DateTime.now();
+        return command;
+      } else {
+        waitTimes++;
+      }
     }
   }
 

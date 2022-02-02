@@ -27,4 +27,12 @@ extension ListExtension<T> on List<T> {
     if (results.isEmpty) return null;
     return results.first;
   }
+
+  T? safeFirstWhere(bool test(T element)) {
+    for (T element in this) {
+      if (test(element)) return element;
+    }
+
+    return null;
+  }
 }

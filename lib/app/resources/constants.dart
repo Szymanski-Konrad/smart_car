@@ -5,7 +5,6 @@ abstract class Constants {
   static const rapidBreaking = -1.5; // acceleration in m/s2
   static const rapidAcceleration = 2.0; // acceleration in m/s2
   static const minRapidSpeedTimeThreshold = 30; // s
-  static const liveModeSpeedUp = 1;
   static const co2GenerationRatio = 11 / 3;
   static const throttlePositionIdle = 18;
   static const minModuleVoltage = 13.3;
@@ -19,6 +18,7 @@ abstract class Constants {
     'trip2022-01-23 kolno-nwd',
     'very_long',
     'work',
+    'trip2022-02-02 10_52_59.920311',
   ];
 }
 

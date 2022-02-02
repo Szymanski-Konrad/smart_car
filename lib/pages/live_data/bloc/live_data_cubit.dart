@@ -242,8 +242,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     int index = 0;
     final percentyl = testCommands.length ~/ 10000; // 0.01%
     for (final testCommand in testCommands) {
-      await Future.delayed(Duration(
-          milliseconds: testCommand.responseTime ~/ Constants.liveModeSpeedUp));
+      commands
+          .safeFirstWhere((element) => element.command == testCommand.command)
+          ?.sendCommand(isLocalMode: true);
+      if (testCommand.responseTime > 0) {
+        await Future.delayed(Duration(milliseconds: testCommand.responseTime));
+      } else {
+        await Future.delayed(const Duration(milliseconds: 10));
+      }
       _onDataReceived(testCommand.data);
       index++;
       if (index % percentyl == 0) {
@@ -277,7 +283,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (address != null) {
       BluetoothConnection.toAddress(address).then((connection) {
         _connection = connection;
-        print(connection);
         emit(state.copyWith(
           isConnecting: false,
           isDisconnecting: false,
@@ -355,7 +360,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> motorOff() async {
-    print('Live data closing');
     _connection?.close();
     saveCommands();
     Navigation.instance.pop();
@@ -379,6 +383,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
     _sendNextCommand();
   }
+
+  DateTime lastTestCommandTime = DateTime.now();
 
   void _onDataReceived(Uint8List data) {
     lastReciveCommandTime = DateTime.now();
@@ -408,8 +414,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         final specialPid = SpecialPIDExtension.code(splitted[1]);
         final now = DateTime.now();
         final difference =
-            now.difference(lastReciveCommandTime).inMilliseconds.abs();
-        lastReciveCommandTime = now;
+            now.difference(lastTestCommandTime).inMilliseconds.abs();
+        lastTestCommandTime = now;
 
         // Create test commands
         if (!state.isLocalMode) {
@@ -507,6 +513,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
             case PID.speed:
               if (command is SpeedCommand) {
+                print(command.result);
                 final distance = command.distanceTraveled;
                 final acceleration = command.acceleration();
                 emit(state.copyWith(

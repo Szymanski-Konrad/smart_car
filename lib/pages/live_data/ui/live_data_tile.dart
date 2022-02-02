@@ -71,16 +71,14 @@ class LiveDataTile extends StatelessWidget {
                   maxLines: 1,
                   style: textTheme,
                 ),
+                Text(command.formattedResult, style: textTheme),
                 Row(
                   children: [
                     Icon(command.icon),
                     const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(command.formattedResult, style: textTheme),
-                    ),
+                    Text(command.formattedReactionTime, style: textTheme),
                   ],
                 ),
-                Text(command.formattedReactionTime, style: textTheme),
               ],
             ),
           ),
