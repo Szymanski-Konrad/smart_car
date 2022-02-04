@@ -12,16 +12,7 @@ abstract class Constants {
   static const defaultLocalFile = 'work';
 
   static const localFiles = [
-    'legionowo_trip',
-    'long_trip',
-    'trip_12_01_2022',
-    'trip2022-01-22 nwd-kolno',
-    'trip2022-01-23 kolno-nwd',
-    'very_long',
     'work',
-    'trip2022-02-02 10_52_59.920311',
-    'zsiatki',
-    'nasiatke',
   ];
 }
 

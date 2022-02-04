@@ -251,10 +251,10 @@ class LiveDataPage extends StatelessWidget
                     final pid = pids[index].substring(pids[index].length - 2);
                     final value = cubit.commands
                         .any((command) => command.command == pids[index]);
-                    print(value);
+                    final isUntouchable = untouchableCommads.contains(pid);
                     return CheckboxListTile(
                       value: value,
-                      onChanged: !state.isLocalMode
+                      onChanged: state.isLocalMode && !isUntouchable
                           ? (value) {
                               if (value != null) {
                                 cubit.editCommandList(value, pids[index]);

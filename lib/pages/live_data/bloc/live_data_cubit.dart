@@ -273,7 +273,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final percentyl = testCommands.length ~/ 10000; // 0.01%
     for (final testCommand in testCommands) {
       commands
-          .safeFirstWhere((element) => element.command == testCommand.command)
+          .safeFirstWhere((element) =>
+              element.command == testCommand.command.replaceAll(' ', ''))
           ?.sendCommand(isLocalMode: true);
       if (testCommand.responseTime > 0) {
         await Future.delayed(Duration(milliseconds: testCommand.responseTime));
@@ -477,14 +478,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
         // Create test commands
         if (!state.isLocalMode) {
-          final testCommand =
-              TestCommand('01 ${splitted[1]}', difference, data);
+          final testCommand = TestCommand('01${splitted[1]}', difference, data);
           testCommands.add(testCommand);
         }
 
         if (pid != PID.unknown && commands.isNotEmpty) {
           final dataIndex = commands.lastIndexWhere(
-              (element) => element.command.split(' ').last == splitted[1]);
+              (element) => element.command.substring(2) == splitted[1]);
+          if (dataIndex == -1) return;
           commands[dataIndex].commandBack(converted, state.isLocalMode);
 
           final tripRecord = state.tripRecord;
