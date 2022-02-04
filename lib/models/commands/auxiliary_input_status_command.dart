@@ -11,6 +11,5 @@ class AuxiliaryInputStatus extends ObdCommand {
     }
   }
 
-  //TODO: Check if this is correct
   bool get isActive => result == 1;
 }

@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class CommandedAirFuelRatioCommand extends VisibleObdCommand {
-  CommandedAirFuelRatioCommand() : super('01 44', max: 2, min: 0, prio: 0);
+  CommandedAirFuelRatioCommand()
+      : super('01 44', max: 2, min: 0, prio: 0, enableHistory: false);
 
   @override
   Color get color {
-    //TODO: Fix this to take ranges
     if (max * 0.9 < result) return dangerColor;
     if (max * 0.8 < result) return warningColor;
     return normalColor;

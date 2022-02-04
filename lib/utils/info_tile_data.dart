@@ -1,4 +1,6 @@
-class InfoTileData<T> {
+import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
+
+abstract class InfoTileData<T> {
   InfoTileData({
     required this.value,
     required this.digits,
@@ -25,4 +27,52 @@ class InfoTileData<T> {
 
     throw ArgumentError.value(val, 'Unsupported type of value');
   }
+}
+
+class FuelTileData<T> extends InfoTileData<T> {
+  FuelTileData({
+    required T value,
+    required int digits,
+    required String title,
+    required String unit,
+    required this.tripStatus,
+  }) : super(
+          value: value,
+          digits: digits,
+          title: title,
+          unit: unit,
+        );
+
+  final TripStatus tripStatus;
+}
+
+class TimeTileData<T> extends InfoTileData<T> {
+  TimeTileData({
+    required T value,
+    required int digits,
+    required String title,
+    required String unit,
+    required this.isCurrent,
+  }) : super(
+          value: value,
+          digits: digits,
+          title: title,
+          unit: unit,
+        );
+
+  final bool isCurrent;
+}
+
+class OtherTileData<T> extends InfoTileData<T> {
+  OtherTileData({
+    required T value,
+    required int digits,
+    required String title,
+    required String unit,
+  }) : super(
+          value: value,
+          digits: digits,
+          title: title,
+          unit: unit,
+        );
 }

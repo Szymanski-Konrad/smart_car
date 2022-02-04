@@ -48,7 +48,12 @@ dependencies:
 
   # Foreground service
   flutter_foreground_task: ^3.5.5
-  flutter_background: ^1.1.0  
+  flutter_background: ^1.1.0
+
+  # Toast
+  fluttertoast: ^8.0.8
+  fl_toast: ^3.1.0
+  another_flushbar: ^1.10.28 
 
   cupertino_icons: ^1.0.2
 

@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 abstract class TermFuelTrim extends VisibleObdCommand {
-  TermFuelTrim(String command) : super(command, prio: 1, max: 99.2, min: -100);
+  TermFuelTrim(String command)
+      : super(
+          command,
+          prio: 1,
+          max: 99.2,
+          min: -100,
+        );
 
   @override
   Color get color {

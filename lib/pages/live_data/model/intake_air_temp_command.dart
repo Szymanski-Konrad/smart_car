@@ -6,8 +6,9 @@ class IntakeAirTempCommand extends TempObdCommand {
 
   @override
   Color get color {
-    //TODO: Return color depends on temperature, if is cold - blue, if hot - red itd.
-    return normalColor;
+    if (result < 10) return Colors.blue;
+    if (result < 25) return Colors.green;
+    return Colors.red;
   }
 
   @override

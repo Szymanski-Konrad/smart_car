@@ -1,5 +1,3 @@
-import 'package:smart_car/utils/trending.dart';
-
 extension DoubleListExtension<T> on List<double> {
   /// Add [value] to list, max to count of [max]
   void addWithMax(double value, int max) {
@@ -7,17 +5,6 @@ extension DoubleListExtension<T> on List<double> {
       removeAt(0);
     }
     add(value);
-  }
-
-  /// Calcute trending based on values in list with [range] tolerance
-  Trending trending({double range = 0.0}) {
-    if (length < 2) return Trending.constant;
-    final mean = reduce((value, element) => value + element) / length;
-
-    final diff = mean - first;
-    if (diff.abs() <= range) return Trending.constant;
-    if (diff > 0) return Trending.up;
-    return Trending.down;
   }
 }
 
@@ -28,7 +15,7 @@ extension ListExtension<T> on List<T> {
     return results.first;
   }
 
-  T? safeFirstWhere(bool test(T element)) {
+  T? safeFirstWhere(bool Function(T element) test) {
     for (T element in this) {
       if (test(element)) return element;
     }

@@ -35,10 +35,14 @@ class _$LiveDataStateTearOff {
       bool isConnecting = true,
       bool isDisconnecting = false,
       bool isConnnectingError = false,
+      bool isTripEnded = false,
+      bool isTripClosing = false,
       List<String> supportedPids = const [],
       required PidsChecker pidsChecker,
       String vin = '',
       FuelSystemStatus fuelSystemStatus = FuelSystemStatus.motorOff,
+      int averageResponseTime = 0,
+      int totalResponseTime = 0,
       String userAccelerometer = '',
       double temperature = 0.0,
       bool isTemperatureAvaliable = false,
@@ -61,10 +65,14 @@ class _$LiveDataStateTearOff {
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
       isConnnectingError: isConnnectingError,
+      isTripEnded: isTripEnded,
+      isTripClosing: isTripClosing,
       supportedPids: supportedPids,
       pidsChecker: pidsChecker,
       vin: vin,
       fuelSystemStatus: fuelSystemStatus,
+      averageResponseTime: averageResponseTime,
+      totalResponseTime: totalResponseTime,
       userAccelerometer: userAccelerometer,
       temperature: temperature,
       isTemperatureAvaliable: isTemperatureAvaliable,
@@ -96,12 +104,15 @@ mixin _$LiveDataState {
   String get localData => throw _privateConstructorUsedError; // Bluetooth
   bool get isConnecting => throw _privateConstructorUsedError;
   bool get isDisconnecting => throw _privateConstructorUsedError;
-  bool get isConnnectingError => throw _privateConstructorUsedError; // Pids
+  bool get isConnnectingError => throw _privateConstructorUsedError;
+  bool get isTripEnded => throw _privateConstructorUsedError;
+  bool get isTripClosing => throw _privateConstructorUsedError; // Pids
   List<String> get supportedPids => throw _privateConstructorUsedError;
   PidsChecker get pidsChecker => throw _privateConstructorUsedError;
   String get vin => throw _privateConstructorUsedError;
-  FuelSystemStatus get fuelSystemStatus =>
-      throw _privateConstructorUsedError; // Sensors
+  FuelSystemStatus get fuelSystemStatus => throw _privateConstructorUsedError;
+  int get averageResponseTime => throw _privateConstructorUsedError;
+  int get totalResponseTime => throw _privateConstructorUsedError; // Sensors
   String get userAccelerometer => throw _privateConstructorUsedError;
   double get temperature => throw _privateConstructorUsedError;
   bool get isTemperatureAvaliable =>
@@ -136,10 +147,14 @@ abstract class $LiveDataStateCopyWith<$Res> {
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
+      bool isTripEnded,
+      bool isTripClosing,
       List<String> supportedPids,
       PidsChecker pidsChecker,
       String vin,
       FuelSystemStatus fuelSystemStatus,
+      int averageResponseTime,
+      int totalResponseTime,
       String userAccelerometer,
       double temperature,
       bool isTemperatureAvaliable,
@@ -177,10 +192,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
+    Object? isTripEnded = freezed,
+    Object? isTripClosing = freezed,
     Object? supportedPids = freezed,
     Object? pidsChecker = freezed,
     Object? vin = freezed,
     Object? fuelSystemStatus = freezed,
+    Object? averageResponseTime = freezed,
+    Object? totalResponseTime = freezed,
     Object? userAccelerometer = freezed,
     Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
@@ -255,6 +274,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.isConnnectingError
           : isConnnectingError // ignore: cast_nullable_to_non_nullable
               as bool,
+      isTripEnded: isTripEnded == freezed
+          ? _value.isTripEnded
+          : isTripEnded // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isTripClosing: isTripClosing == freezed
+          ? _value.isTripClosing
+          : isTripClosing // ignore: cast_nullable_to_non_nullable
+              as bool,
       supportedPids: supportedPids == freezed
           ? _value.supportedPids
           : supportedPids // ignore: cast_nullable_to_non_nullable
@@ -271,6 +298,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.fuelSystemStatus
           : fuelSystemStatus // ignore: cast_nullable_to_non_nullable
               as FuelSystemStatus,
+      averageResponseTime: averageResponseTime == freezed
+          ? _value.averageResponseTime
+          : averageResponseTime // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalResponseTime: totalResponseTime == freezed
+          ? _value.totalResponseTime
+          : totalResponseTime // ignore: cast_nullable_to_non_nullable
+              as int,
       userAccelerometer: userAccelerometer == freezed
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
@@ -330,10 +365,14 @@ abstract class _$LiveDataStateCopyWith<$Res>
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
+      bool isTripEnded,
+      bool isTripClosing,
       List<String> supportedPids,
       PidsChecker pidsChecker,
       String vin,
       FuelSystemStatus fuelSystemStatus,
+      int averageResponseTime,
+      int totalResponseTime,
       String userAccelerometer,
       double temperature,
       bool isTemperatureAvaliable,
@@ -375,10 +414,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
+    Object? isTripEnded = freezed,
+    Object? isTripClosing = freezed,
     Object? supportedPids = freezed,
     Object? pidsChecker = freezed,
     Object? vin = freezed,
     Object? fuelSystemStatus = freezed,
+    Object? averageResponseTime = freezed,
+    Object? totalResponseTime = freezed,
     Object? userAccelerometer = freezed,
     Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
@@ -453,6 +496,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.isConnnectingError
           : isConnnectingError // ignore: cast_nullable_to_non_nullable
               as bool,
+      isTripEnded: isTripEnded == freezed
+          ? _value.isTripEnded
+          : isTripEnded // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isTripClosing: isTripClosing == freezed
+          ? _value.isTripClosing
+          : isTripClosing // ignore: cast_nullable_to_non_nullable
+              as bool,
       supportedPids: supportedPids == freezed
           ? _value.supportedPids
           : supportedPids // ignore: cast_nullable_to_non_nullable
@@ -469,6 +520,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.fuelSystemStatus
           : fuelSystemStatus // ignore: cast_nullable_to_non_nullable
               as FuelSystemStatus,
+      averageResponseTime: averageResponseTime == freezed
+          ? _value.averageResponseTime
+          : averageResponseTime // ignore: cast_nullable_to_non_nullable
+              as int,
+      totalResponseTime: totalResponseTime == freezed
+          ? _value.totalResponseTime
+          : totalResponseTime // ignore: cast_nullable_to_non_nullable
+              as int,
       userAccelerometer: userAccelerometer == freezed
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
@@ -510,10 +569,14 @@ class _$_LiveDataState implements _LiveDataState {
       this.isConnecting = true,
       this.isDisconnecting = false,
       this.isConnnectingError = false,
+      this.isTripEnded = false,
+      this.isTripClosing = false,
       this.supportedPids = const [],
       required this.pidsChecker,
       this.vin = '',
       this.fuelSystemStatus = FuelSystemStatus.motorOff,
+      this.averageResponseTime = 0,
+      this.totalResponseTime = 0,
       this.userAccelerometer = '',
       this.temperature = 0.0,
       this.isTemperatureAvaliable = false,
@@ -568,6 +631,12 @@ class _$_LiveDataState implements _LiveDataState {
   @override
   final bool isConnnectingError;
   @JsonKey()
+  @override
+  final bool isTripEnded;
+  @JsonKey()
+  @override
+  final bool isTripClosing;
+  @JsonKey()
   @override // Pids
   final List<String> supportedPids;
   @override
@@ -578,6 +647,12 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey()
   @override
   final FuelSystemStatus fuelSystemStatus;
+  @JsonKey()
+  @override
+  final int averageResponseTime;
+  @JsonKey()
+  @override
+  final int totalResponseTime;
   @JsonKey()
   @override // Sensors
   final String userAccelerometer;
@@ -593,7 +668,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, fuelPrice: $fuelPrice, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, fuelPrice: $fuelPrice, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -632,12 +707,20 @@ class _$_LiveDataState implements _LiveDataState {
             const DeepCollectionEquality()
                 .equals(other.isConnnectingError, isConnnectingError) &&
             const DeepCollectionEquality()
+                .equals(other.isTripEnded, isTripEnded) &&
+            const DeepCollectionEquality()
+                .equals(other.isTripClosing, isTripClosing) &&
+            const DeepCollectionEquality()
                 .equals(other.supportedPids, supportedPids) &&
             const DeepCollectionEquality()
                 .equals(other.pidsChecker, pidsChecker) &&
             const DeepCollectionEquality().equals(other.vin, vin) &&
             const DeepCollectionEquality()
                 .equals(other.fuelSystemStatus, fuelSystemStatus) &&
+            const DeepCollectionEquality()
+                .equals(other.averageResponseTime, averageResponseTime) &&
+            const DeepCollectionEquality()
+                .equals(other.totalResponseTime, totalResponseTime) &&
             const DeepCollectionEquality()
                 .equals(other.userAccelerometer, userAccelerometer) &&
             const DeepCollectionEquality()
@@ -667,10 +750,14 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(isConnecting),
         const DeepCollectionEquality().hash(isDisconnecting),
         const DeepCollectionEquality().hash(isConnnectingError),
+        const DeepCollectionEquality().hash(isTripEnded),
+        const DeepCollectionEquality().hash(isTripClosing),
         const DeepCollectionEquality().hash(supportedPids),
         const DeepCollectionEquality().hash(pidsChecker),
         const DeepCollectionEquality().hash(vin),
         const DeepCollectionEquality().hash(fuelSystemStatus),
+        const DeepCollectionEquality().hash(averageResponseTime),
+        const DeepCollectionEquality().hash(totalResponseTime),
         const DeepCollectionEquality().hash(userAccelerometer),
         const DeepCollectionEquality().hash(temperature),
         const DeepCollectionEquality().hash(isTemperatureAvaliable),
@@ -702,10 +789,14 @@ abstract class _LiveDataState implements LiveDataState {
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
+      bool isTripEnded,
+      bool isTripClosing,
       List<String> supportedPids,
       required PidsChecker pidsChecker,
       String vin,
       FuelSystemStatus fuelSystemStatus,
+      int averageResponseTime,
+      int totalResponseTime,
       String userAccelerometer,
       double temperature,
       bool isTemperatureAvaliable,
@@ -745,6 +836,10 @@ abstract class _LiveDataState implements LiveDataState {
   bool get isDisconnecting;
   @override
   bool get isConnnectingError;
+  @override
+  bool get isTripEnded;
+  @override
+  bool get isTripClosing;
   @override // Pids
   List<String> get supportedPids;
   @override
@@ -753,6 +848,10 @@ abstract class _LiveDataState implements LiveDataState {
   String get vin;
   @override
   FuelSystemStatus get fuelSystemStatus;
+  @override
+  int get averageResponseTime;
+  @override
+  int get totalResponseTime;
   @override // Sensors
   String get userAccelerometer;
   @override

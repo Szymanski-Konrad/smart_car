@@ -13,7 +13,9 @@ import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
-import 'package:smart_car/utils/ui/fuel_stats_tile.dart';
+import 'package:smart_car/utils/ui/fuel_stats_section.dart';
+import 'package:smart_car/utils/ui/info_stats_section.dart';
+import 'package:smart_car/utils/ui/time_stats_section.dart';
 
 class LiveDataPageArguments {
   LiveDataPageArguments({this.isLocalMode = false});
@@ -125,39 +127,98 @@ class LiveDataPage extends StatelessWidget
                   ],
                 ),
                 body: SafeArea(
-                  child: SingleChildScrollView(
-                    child: Wrap(
-                      runSpacing: 8.0,
-                      spacing: 8.0,
+                  child: DefaultTabController(
+                    length: 2,
+                    child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(state.fuelSystemStatus.description),
+                        const TabBar(
+                          tabs: [
+                            Tab(
+                              icon: Icon(Icons.time_to_leave_outlined),
+                              text: 'Live data',
+                            ),
+                            Tab(
+                              icon: Icon(Icons.bar_chart),
+                              text: 'Trip stats',
+                            ),
+                          ],
                         ),
-                        Text('Pedal pressed: ${state.throttlePressed}'),
-                        Icon(
-                          state.throttlePressed ? Icons.upload : Icons.download,
-                          color: !state.throttlePressed
-                              ? Colors.green
-                              : Colors.amber,
-                        ),
-                        const SizedBox(width: 16),
-                        if (state.isTemperatureAvaliable)
-                          Text('Indoor temp: ${state.getTemperature} °C'),
-                        FuelStatsTile(records: state.tripRecord.timeSection),
-                        FuelStatsTile(records: state.tripRecord.fuelSection),
-                        FuelStatsTile(records: state.tripRecord.tripSection),
-                        // SupportedPidsTile(checker: state.pidsChecker),
-                        if (cubit.commands.isEmpty)
-                          const Text('Loading pids...'),
-                        if (cubit.commands.isNotEmpty)
-                          ...cubit.commands
-                              .whereType<VisibleObdCommand>()
-                              .map((command) => LiveDataTile(command: command))
-                              .toList(),
-
-                        const SizedBox(height: 20.0),
-                        ...state.errors.map((e) => ListTile(title: Text(e))),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              SingleChildScrollView(
+                                child: Wrap(
+                                  runSpacing: 8.0,
+                                  spacing: 8.0,
+                                  children: [
+                                    Text(
+                                        'Pedal pressed: ${state.throttlePressed}'),
+                                    Icon(
+                                      state.throttlePressed
+                                          ? Icons.upload
+                                          : Icons.download,
+                                      color: !state.throttlePressed
+                                          ? Colors.green
+                                          : Colors.amber,
+                                    ),
+                                    Text(
+                                        'Avg response: ${state.averageResponseTime}'),
+                                    Text(
+                                        'Total response: ${state.totalResponseTime}'),
+                                    if (cubit.commands.isEmpty)
+                                      const Text('Loading pids...'),
+                                    if (cubit.commands.isNotEmpty)
+                                      ...cubit.commands
+                                          .whereType<VisibleObdCommand>()
+                                          .map((command) =>
+                                              LiveDataTile(command: command))
+                                          .toList(),
+                                    const SizedBox(height: 20.0),
+                                    ...state.errors
+                                        .map((e) => ListTile(title: Text(e))),
+                                  ],
+                                ),
+                              ),
+                              SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(
+                                          state.fuelSystemStatus.description),
+                                    ),
+                                    if (state.isTemperatureAvaliable)
+                                      Text(
+                                          'Indoor temp: ${state.getTemperature} °C'),
+                                    TimeStatsSection(
+                                      records: state.tripRecord.timeSection,
+                                      currentInterval:
+                                          state.tripRecord.currentDriveInterval,
+                                    ),
+                                    const SizedBox(height: 20.0),
+                                    FuelStatsSection(
+                                      records: state.tripRecord.fuelUsedSection,
+                                      tripStatus: state.tripStatus,
+                                    ),
+                                    const SizedBox(height: 20.0),
+                                    InfoStatsSection(
+                                      records: state.tripRecord.fuelSection,
+                                    ),
+                                    const SizedBox(height: 20.0),
+                                    InfoStatsSection(
+                                      records: state.tripRecord.tripSection,
+                                    ),
+                                    const SizedBox(height: 20.0),
+                                    InfoStatsSection(
+                                      records: state.tripRecord.carboSection,
+                                    ),
+                                    // SupportedPidsTile(checker: state.pidsChecker),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),

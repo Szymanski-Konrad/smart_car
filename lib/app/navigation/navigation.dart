@@ -44,4 +44,8 @@ class Navigation {
     }
     return currentState;
   }
+
+  bool canPop() {
+    return _currentState.canPop();
+  }
 }

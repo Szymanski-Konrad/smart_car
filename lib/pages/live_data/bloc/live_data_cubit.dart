@@ -5,7 +5,9 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
+import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,6 +34,7 @@ import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/list_extension.dart';
+import 'package:smart_car/utils/ui/countdown_text.dart';
 
 class LiveDataCubit extends Cubit<LiveDataState> {
   LiveDataCubit({
@@ -169,13 +172,23 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final now = DateTime.now();
       if (now.difference(lastReciveCommandTime).inSeconds >
-          Durations.maxNoDataReciveSeconds) {
+              Durations.maxNoDataReciveSeconds &&
+          !state.isTripClosing) {
         motorOff();
       }
-      final speed = commands.safeFirst<SpeedCommand>()?.result;
+      final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
+      final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>()?.status;
+      final tripStatus = speed < Constants.idleSpeedLimit
+          ? TripStatus.idle
+          : fuelStatus == FuelSystemStatus.fuelCut
+              ? TripStatus.savingFuel
+              : TripStatus.driving;
       emit(state.copyWith(
+        totalResponseTime: totalResponseTime,
+        averageResponseTime: averageResponseTime,
+        tripStatus: tripStatus,
         tripRecord:
-            state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode),
+            state.tripRecord.updateSeconds(speed).updateTripStatus(tripStatus),
       ));
     });
 
@@ -219,6 +232,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
   }
 
+  int get totalResponseTime => commands.isEmpty
+      ? 0
+      : commands.fold<int>(
+          0, (previousValue, element) => previousValue + element.responseTime);
+
+  int get averageResponseTime =>
+      commands.isEmpty ? 0 : (totalResponseTime / commands.length).ceil();
+
   Future<void> _runTest() async {
     final json =
         await rootBundle.loadString('assets/json/${state.localData}.json');
@@ -229,13 +250,22 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _everySecondTimer = Timer.periodic(
       const Duration(seconds: 1),
       (timer) {
-        final speed = commands.safeFirst<SpeedCommand>()?.result;
+        final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
         final fuelStatus =
             commands.safeFirst<FuelSystemStatusCommand>()?.status;
-        //TODO: Recoginize current trip status to show subValues down to main values
-        emit(state.copyWith(
-            tripRecord:
-                state.tripRecord.updateSeconds(speed ?? 0, state.isLocalMode)));
+        final tripStatus = speed < Constants.idleSpeedLimit
+            ? TripStatus.idle
+            : fuelStatus == FuelSystemStatus.fuelCut
+                ? TripStatus.savingFuel
+                : TripStatus.driving;
+        emit(
+          state.copyWith(
+            tripStatus: tripStatus,
+            tripRecord: state.tripRecord
+                .updateSeconds(speed)
+                .updateTripStatus(tripStatus),
+          ),
+        );
       },
     );
 
@@ -360,9 +390,25 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> motorOff() async {
+    emit(state.copyWith(
+      isTripClosing: true,
+      isTripEnded: true,
+    ));
     _connection?.close();
     saveCommands();
-    Navigation.instance.pop();
+    await goBackWithDelay();
+  }
+
+  Future<void> goBackWithDelay() async {
+    await showAndroidToast(
+      backgroundColor: Colors.green,
+      alignment: Alignment.center,
+      child: const CountDownText(duration: Durations.closingTripDuration),
+      duration: Durations.closingTripDuration,
+      context: ToastProvider.context,
+    );
+    // await Future.delayed(Duration(seconds: 10));
+    if (Navigation.instance.canPop()) Navigation.instance.pop();
   }
 
   Future<void> saveCommands() async {
@@ -513,7 +559,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
             case PID.speed:
               if (command is SpeedCommand) {
-                print(command.result);
                 final distance = command.distanceTraveled;
                 final acceleration = command.acceleration();
                 emit(state.copyWith(

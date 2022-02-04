@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class ControlModuleVoltageCommand extends VisibleObdCommand {
-  ControlModuleVoltageCommand() : super('01 42', min: 0, max: 20, prio: 5);
+  ControlModuleVoltageCommand()
+      : super('01 42', min: 0, max: 20, prio: 5, enableHistory: false);
 
   @override
   Color get color {

@@ -36,6 +36,10 @@ class _$TripRecordTearOff {
       int tripSeconds = 0,
       int idleTripSeconds = 0,
       double fuelCosts = 0,
+      TripStatus tripStatus = TripStatus.idle,
+      Map<String, DateTime> updateTime = const {},
+      int currentDriveInterval = 0,
+      double currentDriveIntervalFuel = 0.0,
       int rapidAccelerations = 0,
       int rapidBreakings = 0,
       int lastAccelerationTime = 0,
@@ -60,6 +64,10 @@ class _$TripRecordTearOff {
       tripSeconds: tripSeconds,
       idleTripSeconds: idleTripSeconds,
       fuelCosts: fuelCosts,
+      tripStatus: tripStatus,
+      updateTime: updateTime,
+      currentDriveInterval: currentDriveInterval,
+      currentDriveIntervalFuel: currentDriveIntervalFuel,
       rapidAccelerations: rapidAccelerations,
       rapidBreakings: rapidBreakings,
       lastAccelerationTime: lastAccelerationTime,
@@ -91,7 +99,12 @@ mixin _$TripRecord {
   double get tankSize => throw _privateConstructorUsedError;
   int get tripSeconds => throw _privateConstructorUsedError;
   int get idleTripSeconds => throw _privateConstructorUsedError;
-  double get fuelCosts => throw _privateConstructorUsedError; // Rapid driving
+  double get fuelCosts => throw _privateConstructorUsedError;
+  TripStatus get tripStatus => throw _privateConstructorUsedError;
+  Map<String, DateTime> get updateTime => throw _privateConstructorUsedError;
+  int get currentDriveInterval => throw _privateConstructorUsedError;
+  double get currentDriveIntervalFuel =>
+      throw _privateConstructorUsedError; // Rapid driving
   int get rapidAccelerations => throw _privateConstructorUsedError;
   int get rapidBreakings => throw _privateConstructorUsedError;
   int get lastAccelerationTime => throw _privateConstructorUsedError;
@@ -127,6 +140,10 @@ abstract class $TripRecordCopyWith<$Res> {
       int tripSeconds,
       int idleTripSeconds,
       double fuelCosts,
+      TripStatus tripStatus,
+      Map<String, DateTime> updateTime,
+      int currentDriveInterval,
+      double currentDriveIntervalFuel,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -162,6 +179,10 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
     Object? fuelCosts = freezed,
+    Object? tripStatus = freezed,
+    Object? updateTime = freezed,
+    Object? currentDriveInterval = freezed,
+    Object? currentDriveIntervalFuel = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -241,6 +262,22 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.fuelCosts
           : fuelCosts // ignore: cast_nullable_to_non_nullable
               as double,
+      tripStatus: tripStatus == freezed
+          ? _value.tripStatus
+          : tripStatus // ignore: cast_nullable_to_non_nullable
+              as TripStatus,
+      updateTime: updateTime == freezed
+          ? _value.updateTime
+          : updateTime // ignore: cast_nullable_to_non_nullable
+              as Map<String, DateTime>,
+      currentDriveInterval: currentDriveInterval == freezed
+          ? _value.currentDriveInterval
+          : currentDriveInterval // ignore: cast_nullable_to_non_nullable
+              as int,
+      currentDriveIntervalFuel: currentDriveIntervalFuel == freezed
+          ? _value.currentDriveIntervalFuel
+          : currentDriveIntervalFuel // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -290,6 +327,10 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       int tripSeconds,
       int idleTripSeconds,
       double fuelCosts,
+      TripStatus tripStatus,
+      Map<String, DateTime> updateTime,
+      int currentDriveInterval,
+      double currentDriveIntervalFuel,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -327,6 +368,10 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
     Object? fuelCosts = freezed,
+    Object? tripStatus = freezed,
+    Object? updateTime = freezed,
+    Object? currentDriveInterval = freezed,
+    Object? currentDriveIntervalFuel = freezed,
     Object? rapidAccelerations = freezed,
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
@@ -406,6 +451,22 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.fuelCosts
           : fuelCosts // ignore: cast_nullable_to_non_nullable
               as double,
+      tripStatus: tripStatus == freezed
+          ? _value.tripStatus
+          : tripStatus // ignore: cast_nullable_to_non_nullable
+              as TripStatus,
+      updateTime: updateTime == freezed
+          ? _value.updateTime
+          : updateTime // ignore: cast_nullable_to_non_nullable
+              as Map<String, DateTime>,
+      currentDriveInterval: currentDriveInterval == freezed
+          ? _value.currentDriveInterval
+          : currentDriveInterval // ignore: cast_nullable_to_non_nullable
+              as int,
+      currentDriveIntervalFuel: currentDriveIntervalFuel == freezed
+          ? _value.currentDriveIntervalFuel
+          : currentDriveIntervalFuel // ignore: cast_nullable_to_non_nullable
+              as double,
       rapidAccelerations: rapidAccelerations == freezed
           ? _value.rapidAccelerations
           : rapidAccelerations // ignore: cast_nullable_to_non_nullable
@@ -452,6 +513,10 @@ class _$_TripRecord implements _TripRecord {
       this.tripSeconds = 0,
       this.idleTripSeconds = 0,
       this.fuelCosts = 0,
+      this.tripStatus = TripStatus.idle,
+      this.updateTime = const {},
+      this.currentDriveInterval = 0,
+      this.currentDriveIntervalFuel = 0.0,
       this.rapidAccelerations = 0,
       this.rapidBreakings = 0,
       this.lastAccelerationTime = 0,
@@ -513,6 +578,18 @@ class _$_TripRecord implements _TripRecord {
   @override
   final double fuelCosts;
   @JsonKey()
+  @override
+  final TripStatus tripStatus;
+  @JsonKey()
+  @override
+  final Map<String, DateTime> updateTime;
+  @JsonKey()
+  @override
+  final int currentDriveInterval;
+  @JsonKey()
+  @override
+  final double currentDriveIntervalFuel;
+  @JsonKey()
   @override // Rapid driving
   final int rapidAccelerations;
   @JsonKey()
@@ -530,7 +607,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, fuelCosts: $fuelCosts, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, fuelCosts: $fuelCosts, tripStatus: $tripStatus, updateTime: $updateTime, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -567,6 +644,14 @@ class _$_TripRecord implements _TripRecord {
                 .equals(other.idleTripSeconds, idleTripSeconds) &&
             const DeepCollectionEquality().equals(other.fuelCosts, fuelCosts) &&
             const DeepCollectionEquality()
+                .equals(other.tripStatus, tripStatus) &&
+            const DeepCollectionEquality()
+                .equals(other.updateTime, updateTime) &&
+            const DeepCollectionEquality()
+                .equals(other.currentDriveInterval, currentDriveInterval) &&
+            const DeepCollectionEquality().equals(
+                other.currentDriveIntervalFuel, currentDriveIntervalFuel) &&
+            const DeepCollectionEquality()
                 .equals(other.rapidAccelerations, rapidAccelerations) &&
             const DeepCollectionEquality()
                 .equals(other.rapidBreakings, rapidBreakings) &&
@@ -599,6 +684,10 @@ class _$_TripRecord implements _TripRecord {
         const DeepCollectionEquality().hash(tripSeconds),
         const DeepCollectionEquality().hash(idleTripSeconds),
         const DeepCollectionEquality().hash(fuelCosts),
+        const DeepCollectionEquality().hash(tripStatus),
+        const DeepCollectionEquality().hash(updateTime),
+        const DeepCollectionEquality().hash(currentDriveInterval),
+        const DeepCollectionEquality().hash(currentDriveIntervalFuel),
         const DeepCollectionEquality().hash(rapidAccelerations),
         const DeepCollectionEquality().hash(rapidBreakings),
         const DeepCollectionEquality().hash(lastAccelerationTime),
@@ -632,6 +721,10 @@ abstract class _TripRecord implements TripRecord {
       int tripSeconds,
       int idleTripSeconds,
       double fuelCosts,
+      TripStatus tripStatus,
+      Map<String, DateTime> updateTime,
+      int currentDriveInterval,
+      double currentDriveIntervalFuel,
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
@@ -674,6 +767,14 @@ abstract class _TripRecord implements TripRecord {
   int get idleTripSeconds;
   @override
   double get fuelCosts;
+  @override
+  TripStatus get tripStatus;
+  @override
+  Map<String, DateTime> get updateTime;
+  @override
+  int get currentDriveInterval;
+  @override
+  double get currentDriveIntervalFuel;
   @override // Rapid driving
   int get rapidAccelerations;
   @override

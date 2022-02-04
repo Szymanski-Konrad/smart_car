@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class RpmCommand extends VisibleObdCommand {
-  RpmCommand() : super('01 0C', min: 0, max: 7000, prio: 0);
+  RpmCommand()
+      : super('01 0C', min: 0, max: 7000, prio: 0, enableHistory: false);
 
   @override
   Color get color {

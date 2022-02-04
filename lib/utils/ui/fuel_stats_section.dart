@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
 import 'package:smart_car/utils/ui/info_tile.dart';
 
-class FuelStatsTile extends StatelessWidget {
-  const FuelStatsTile({
+class FuelStatsSection extends StatelessWidget {
+  const FuelStatsSection({
     Key? key,
     required this.records,
+    required this.tripStatus,
   }) : super(key: key);
 
-  final List<InfoTileData> records;
+  final List<FuelTileData> records;
+  final TripStatus tripStatus;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +34,10 @@ class FuelStatsTile extends StatelessWidget {
           children: records
               .map((data) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: InfoTile(data: data),
+                    child: FuelInfoTile(
+                      data: data,
+                      status: tripStatus,
+                    ),
                   ))
               .toList(),
         ),

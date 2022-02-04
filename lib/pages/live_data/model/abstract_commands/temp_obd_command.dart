@@ -7,7 +7,9 @@ abstract class TempObdCommand extends VisibleObdCommand {
     required int prio,
     double min = -40,
     double max = 215,
-  }) : super(command, min: min, max: max, prio: prio);
+    bool enableHistory = false,
+  }) : super(command,
+            min: min, max: max, prio: prio, enableHistory: enableHistory);
 
   @override
   IconData get icon => Icons.thermostat;

@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/utils/date_extension.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
@@ -27,6 +28,10 @@ class TripRecord with _$TripRecord {
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
     @Default(0) double fuelCosts,
+    @Default(TripStatus.idle) TripStatus tripStatus,
+    @Default({}) Map<String, DateTime> updateTime,
+    @Default(0) int currentDriveInterval,
+    @Default(0.0) double currentDriveIntervalFuel,
 
     // Rapid driving
     @Default(0) int rapidAccelerations,
@@ -49,8 +54,18 @@ extension TripRecordExtension on TripRecord {
     final currDistance = distance + value;
     return copyWith(
       distance: currDistance,
-      averageSpeed: currDistance / (totalTripSeconds / 3600),
       currentSpeed: speed,
+    );
+  }
+
+  TripRecord updateTripStatus(TripStatus status) {
+    final driveInterval =
+        status != tripStatus && status != TripStatus.savingFuel
+            ? 0
+            : currentDriveInterval;
+    return copyWith(
+      tripStatus: status,
+      currentDriveInterval: driveInterval,
     );
   }
 
@@ -89,13 +104,13 @@ extension TripRecordExtension on TripRecord {
     }
   }
 
-  TripRecord updateSeconds(num speed, bool isLocalMode) {
-    const addSeconds = 1;
-    if (speed > 0) {
-      return copyWith(tripSeconds: tripSeconds + addSeconds);
-    } else {
-      return copyWith(idleTripSeconds: idleTripSeconds + addSeconds);
-    }
+  TripRecord updateSeconds(num speed) {
+    return copyWith(
+      tripSeconds: tripSeconds + (speed > 0 ? 1 : 0),
+      idleTripSeconds: idleTripSeconds + (speed > 0 ? 0 : 1),
+      currentDriveInterval: currentDriveInterval + 1,
+      averageSpeed: distance / ((totalTripSeconds + 1) / 3600),
+    );
   }
 
   TripRecord updateRapidAcceleration({required double acceleration}) {
@@ -119,139 +134,175 @@ extension TripRecordExtension on TripRecord {
     return this;
   }
 
-  List<InfoTileData> get fuelSection => [
-        avgFuelDetails,
-        instFuelDetails,
+  List<FuelTileData> get fuelUsedSection => [
         usedFuelDetails,
         idleUsedFuelDetails,
         savedFuelDetails,
+      ];
+
+  List<OtherTileData> get fuelSection => [
+        avgFuelDetails,
+        instFuelDetails,
         fuelCostsDetails,
       ];
 
-  List<InfoTileData> get timeSection => [
-        tripTimeDetails,
+  List<OtherTileData> get carboSection => [
+        carboPerKmDetails,
+        producedCarboDetails,
+        savedCarboDetails,
+      ];
+
+  List<TimeTileData> get timeSection => [
+        totalTripTimeDetails,
+        driveTimeDetails,
         idleTripTimeDetails,
+      ];
+
+  List<OtherTileData> get tripSection => [
+        avgSpeedDetails,
+        distanceDetails,
+        rangeDetails,
+        gpsDistanceDetails,
+        gpsSpeedDetails,
         rapidAccelerationsDetails,
         rapidBrakingDetails,
       ];
 
-  List<InfoTileData> get tripSection => [
-        avgSpeedDetails,
-        distanceDetails,
-        rangeDetails,
-        carboPerKmDetails,
-        gpsDistanceDetails,
-        producedCarboDetails,
-        savedCarboDetails,
-        gpsSpeedDetails,
-      ];
-
-  InfoTileData get fuelCostsDetails => InfoTileData(
+  OtherTileData get fuelCostsDetails => OtherTileData(
         value: fuelCosts,
         title: 'Fuel costs',
         unit: 'PLN',
         digits: 2,
       );
 
-  InfoTileData get savedFuelDetails => InfoTileData(
-        value: savedFuel,
-        title: 'Saved fuel',
+  FuelTileData get savedFuelDetails {
+    return FuelTileData(
+      value: savedFuel,
+      title: 'Saved fuel',
+      unit: 'l',
+      digits: 3,
+      tripStatus: TripStatus.savingFuel,
+    );
+  }
+
+  FuelTileData get usedFuelDetails => FuelTileData(
+        value: usedFuel,
+        title: 'Used fuel',
         unit: 'l',
-        digits: 3,
+        digits: 2,
+        tripStatus: TripStatus.driving,
       );
 
-  InfoTileData get distanceDetails => InfoTileData(
+  FuelTileData get idleUsedFuelDetails => FuelTileData(
+        value: idleUsedFuel,
+        title: 'Idle used fuel',
+        unit: 'l',
+        digits: 3,
+        tripStatus: TripStatus.idle,
+      );
+
+  OtherTileData get distanceDetails => OtherTileData(
         value: distance,
         title: 'Distance',
         unit: 'km',
         digits: 1,
       );
-  InfoTileData get instFuelDetails => InfoTileData(
+
+  OtherTileData get instFuelDetails => OtherTileData(
         value: instFuelConsumption,
         title: 'Inst Fuel cons.',
         unit: 'l/100km',
         digits: 1,
       );
-  InfoTileData get avgFuelDetails => InfoTileData(
+
+  OtherTileData get avgFuelDetails => OtherTileData(
         value: averageFuelConsumption,
         title: 'Avg fuel cons.',
         unit: 'l/100km',
         digits: 1,
       );
-  InfoTileData get avgKmPerL => InfoTileData(
+
+  OtherTileData get avgKmPerL => OtherTileData(
         value: 100 / averageFuelConsumption,
         title: 'Avg fuel cons.',
         unit: 'km/l',
         digits: 1,
       );
 
-  InfoTileData get instKmPerL => InfoTileData(
+  OtherTileData get instKmPerL => OtherTileData(
         value: kmPerL,
         title: 'Inst fuel cons.',
         unit: 'km/l',
         digits: 1,
       );
-  InfoTileData get rangeDetails => InfoTileData(
+
+  OtherTileData get rangeDetails => OtherTileData(
         value: range,
         title: 'Range',
         unit: 'km',
         digits: 0,
       );
-  InfoTileData get usedFuelDetails => InfoTileData(
-        value: usedFuel,
-        title: 'Used fuel',
-        unit: 'l',
-        digits: 2,
-      );
-  InfoTileData get idleUsedFuelDetails => InfoTileData(
-        value: idleUsedFuel,
-        title: 'Idle used fuel',
-        unit: 'l',
-        digits: 3,
-      );
-  InfoTileData get gpsSpeedDetails => InfoTileData(
+
+  OtherTileData get gpsSpeedDetails => OtherTileData(
         value: gpsSpeed,
         title: 'GPS Speed',
         unit: 'km/h',
         digits: 1,
       );
-  InfoTileData get gpsDistanceDetails => InfoTileData(
+
+  OtherTileData get gpsDistanceDetails => OtherTileData(
         value: gpsDistance,
         title: 'GPS Distance',
         unit: 'km',
         digits: 1,
       );
-  InfoTileData get tripTimeDetails => InfoTileData(
+
+  TimeTileData get totalTripTimeDetails => TimeTileData(
+        value: Duration(seconds: totalTripSeconds),
+        digits: 0,
+        title: 'Total duration',
+        unit: '',
+        isCurrent: false,
+      );
+
+  TimeTileData get driveTimeDetails => TimeTileData(
         value: Duration(seconds: tripSeconds),
         digits: 0,
-        title: 'Duration',
+        title: 'Drive duration',
         unit: '',
+        isCurrent: tripStatus != TripStatus.idle,
       );
-  InfoTileData get idleTripTimeDetails => InfoTileData(
+
+  TimeTileData get idleTripTimeDetails => TimeTileData(
         value: Duration(seconds: idleTripSeconds),
         digits: 0,
         title: 'Idle duration',
         unit: '',
+        isCurrent: tripStatus == TripStatus.idle,
       );
-  InfoTileData get avgSpeedDetails => InfoTileData(
+
+  OtherTileData get avgSpeedDetails => OtherTileData(
         value: averageSpeed,
         title: 'Avg. speed',
         unit: 'km/h',
         digits: 1,
       );
-  InfoTileData get rapidAccelerationsDetails => InfoTileData(
+
+  OtherTileData get rapidAccelerationsDetails => OtherTileData(
         value: rapidAccelerations,
         digits: 0,
         title: 'Acc.',
         unit: '',
       );
-  InfoTileData get rapidBrakingDetails => InfoTileData(
+
+  OtherTileData get rapidBrakingDetails => OtherTileData(
         value: rapidBreakings,
         digits: 0,
         title: 'Braking',
         unit: '',
       );
-  InfoTileData get producedCarboDetails => InfoTileData(
+
+  OtherTileData get producedCarboDetails => OtherTileData(
         value: (usedFuel + idleUsedFuel) *
             0.75 *
             0.87 *
@@ -260,14 +311,15 @@ extension TripRecordExtension on TripRecord {
         title: 'Burnt CO2',
         unit: 'kg',
       );
-  InfoTileData get savedCarboDetails => InfoTileData(
+
+  OtherTileData get savedCarboDetails => OtherTileData(
         value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio,
         digits: 2,
         title: 'Saved CO2',
         unit: 'kg',
       );
 
-  InfoTileData get carboPerKmDetails => InfoTileData(
+  OtherTileData get carboPerKmDetails => OtherTileData(
         value: (averageFuelConsumption / 100) *
             0.75 *
             0.87 *

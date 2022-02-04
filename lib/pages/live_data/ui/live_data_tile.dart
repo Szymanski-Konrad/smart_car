@@ -13,6 +13,8 @@ class LiveDataTile extends StatelessWidget {
 
   Widget chart() {
     return Sparkline(
+      lineWidth: 0,
+      useCubicSmoothing: true,
       fallbackHeight: Constants.tileHeight,
       data: command.lastHistoryData,
       lineColor: Colors.blueGrey,
@@ -57,10 +59,11 @@ class LiveDataTile extends StatelessWidget {
   Widget commandInfo(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-        border: Border.all(color: command.trendingColor),
-        borderRadius: const BorderRadius.all(Radius.circular(10.0)),
-      ),
+      decoration: !command.enableHistorical
+          ? BoxDecoration(
+              border: Border.all(color: Colors.blueGrey, width: 1.0),
+            )
+          : null,
       child: Row(
         children: [
           Expanded(

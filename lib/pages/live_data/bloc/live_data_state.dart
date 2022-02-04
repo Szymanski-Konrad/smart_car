@@ -35,12 +35,16 @@ class LiveDataState with _$LiveDataState {
     @Default(true) bool isConnecting,
     @Default(false) bool isDisconnecting,
     @Default(false) bool isConnnectingError,
+    @Default(false) bool isTripEnded,
+    @Default(false) bool isTripClosing,
 
     // Pids
     @Default([]) List<String> supportedPids,
     required PidsChecker pidsChecker,
     @Default('') String vin,
     @Default(FuelSystemStatus.motorOff) FuelSystemStatus fuelSystemStatus,
+    @Default(0) int averageResponseTime,
+    @Default(0) int totalResponseTime,
 
     // Sensors
     @Default('') String userAccelerometer,

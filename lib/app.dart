@@ -142,7 +142,7 @@ class _AppState extends State<App> {
                       await sendTripsToMail(files);
                     },
                   ),
-                )
+                ),
             ],
           ),
         );
