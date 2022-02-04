@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class EngineReferenceTorqueCommand extends VisibleObdCommand {
-  EngineReferenceTorqueCommand() : super('01 63', min: 0, max: 65535, prio: 1);
+  EngineReferenceTorqueCommand() : super('0163', min: 0, max: 65535, prio: 1);
 
   @override
   void performCalculations(List<int> data) {

@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class CylinderFuelRateCommand extends VisibleObdCommand {
-  CylinderFuelRateCommand() : super('01 A2', prio: 0, min: 0, max: 2047);
+  CylinderFuelRateCommand() : super('01A2', prio: 0, min: 0, max: 2047);
 
   @override
   void performCalculations(List<int> data) {

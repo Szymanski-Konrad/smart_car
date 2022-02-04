@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 class AuxiliaryInputStatus extends ObdCommand {
-  AuxiliaryInputStatus() : super('01 1E', prio: 1000);
+  AuxiliaryInputStatus() : super('011E', prio: 1000);
 
   @override
   void performCalculations(List<int> data) {

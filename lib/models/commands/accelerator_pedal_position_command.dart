@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class AcceleratorPedalPositionDCommand extends PercentObdCommand {
-  AcceleratorPedalPositionDCommand() : super('01 49', prio: 1);
+  AcceleratorPedalPositionDCommand() : super('0149', prio: 1);
 
   @override
   String get description => 'Accelerator pedal positon D';
@@ -11,7 +11,7 @@ class AcceleratorPedalPositionDCommand extends PercentObdCommand {
 }
 
 class AcceleratorPedalPositionECommand extends PercentObdCommand {
-  AcceleratorPedalPositionECommand() : super('01 4A', prio: 1);
+  AcceleratorPedalPositionECommand() : super('014A', prio: 1);
 
   @override
   String get description => 'Accelerator pedal positon E';
@@ -21,7 +21,7 @@ class AcceleratorPedalPositionECommand extends PercentObdCommand {
 }
 
 class AcceleratorPedalPositionFCommand extends PercentObdCommand {
-  AcceleratorPedalPositionFCommand() : super('01 4B', prio: 1);
+  AcceleratorPedalPositionFCommand() : super('014B', prio: 1);
 
   @override
   String get description => 'Accelerator pedal positon F';

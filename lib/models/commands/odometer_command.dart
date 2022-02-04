@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class OdometerCommand extends VisibleObdCommand {
-  OdometerCommand() : super('01 A6', min: 0, max: 2000000, prio: 10);
+  OdometerCommand() : super('01A6', min: 0, max: 2000000, prio: 10);
 
   static const A = 16777216;
   static const B = 65536;

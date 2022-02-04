@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class FuelRailGaugePressureCommand extends VisibleObdCommand {
-  FuelRailGaugePressureCommand() : super('01 23', min: 0, max: 655350, prio: 1);
+  FuelRailGaugePressureCommand() : super('0123', min: 0, max: 655350, prio: 1);
 
   @override
   void performCalculations(List<int> data) {

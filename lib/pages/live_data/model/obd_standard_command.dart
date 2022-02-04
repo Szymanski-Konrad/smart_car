@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 class ObdStandardCommand extends ObdCommand {
-  ObdStandardCommand() : super('01 1C', prio: 1000);
+  ObdStandardCommand() : super('011C', prio: 1000);
 
   @override
   void performCalculations(List<int> data) {

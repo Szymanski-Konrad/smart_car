@@ -303,6 +303,18 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     commands.add(obdCommand);
   }
 
+  void removeCommand(String command) {
+    commands.removeWhere((element) => element.command == command);
+  }
+
+  void editCommandList(bool value, String pid) {
+    if (value) {
+      addCommand(pid);
+    } else {
+      removeCommand(pid);
+    }
+  }
+
   void init() async {
     emit(state.copyWith(isConnnectingError: false));
     // userAccelerometerEvents.listen((UserAccelerometerEvent event) {

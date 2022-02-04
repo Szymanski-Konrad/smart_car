@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class FuelLevelCommand extends PercentObdCommand {
-  FuelLevelCommand() : super('01 2F', prio: 100, enableHistory: false);
+  FuelLevelCommand() : super('012F', prio: 100, enableHistory: false);
 
   @override
   int get priority => 100;

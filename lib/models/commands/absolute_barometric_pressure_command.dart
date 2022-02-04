@@ -2,7 +2,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class AbsoluteBarometricPressureCommand extends VisibleObdCommand {
   AbsoluteBarometricPressureCommand()
-      : super('01 33', prio: 1, min: 0, max: 255);
+      : super('0133', prio: 1, min: 0, max: 255);
 
   @override
   void performCalculations(List<int> data) {

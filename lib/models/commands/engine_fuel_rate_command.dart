@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class EngineFuelRateCommand extends VisibleObdCommand {
-  EngineFuelRateCommand() : super('01 5E', min: 0, max: 7000, prio: 1);
+  EngineFuelRateCommand() : super('015E', min: 0, max: 7000, prio: 1);
 
   @override
   void performCalculations(List<int> data) {

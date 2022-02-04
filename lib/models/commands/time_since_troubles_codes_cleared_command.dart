@@ -2,7 +2,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class TimeSinceTroublesCodesClearedCommands extends VisibleObdCommand {
   TimeSinceTroublesCodesClearedCommands()
-      : super('01 4E', prio: 60, min: 0, max: 65535);
+      : super('014E', prio: 60, min: 0, max: 65535);
 
   @override
   void performCalculations(List<int> data) {

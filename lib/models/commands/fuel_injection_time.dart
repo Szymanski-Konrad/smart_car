@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class FuelInjectionTime extends VisibleObdCommand {
-  FuelInjectionTime() : super('01 5D', min: -210, max: 302, prio: 0);
+  FuelInjectionTime() : super('015D', min: -210, max: 302, prio: 0);
 
   @override
   Color get color {

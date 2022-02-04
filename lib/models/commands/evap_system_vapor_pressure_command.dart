@@ -2,7 +2,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class EvapSystemVaporPressureCommand extends VisibleObdCommand {
   EvapSystemVaporPressureCommand()
-      : super('01 32', prio: 1, min: -8192, max: 8192);
+      : super('0132', prio: 1, min: -8192, max: 8192);
 
   @override
   void performCalculations(List<int> data) {

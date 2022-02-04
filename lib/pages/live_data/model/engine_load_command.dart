@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class EngineLoadCommand extends PercentObdCommand {
-  EngineLoadCommand() : super('01 04', prio: 0);
+  EngineLoadCommand() : super('0104', prio: 0);
 
   @override
   Color get color {

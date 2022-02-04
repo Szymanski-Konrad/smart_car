@@ -14,7 +14,7 @@ abstract class CatalystTemperatureBankCommand extends TempObdCommand {
 }
 
 class CatalystTemperatureB1S1Command extends CatalystTemperatureBankCommand {
-  CatalystTemperatureB1S1Command() : super('01 3C');
+  CatalystTemperatureB1S1Command() : super('013C');
 
   @override
   String get description => '	Catalyst Temperature: Bank 1, Sensor 1';
@@ -24,7 +24,7 @@ class CatalystTemperatureB1S1Command extends CatalystTemperatureBankCommand {
 }
 
 class CatalystTemperatureB2S1Command extends CatalystTemperatureBankCommand {
-  CatalystTemperatureB2S1Command() : super('01 3D');
+  CatalystTemperatureB2S1Command() : super('013D');
 
   @override
   String get description => '	Catalyst Temperature: Bank 2, Sensor 1';
@@ -34,7 +34,7 @@ class CatalystTemperatureB2S1Command extends CatalystTemperatureBankCommand {
 }
 
 class CatalystTemperatureB1S2Command extends CatalystTemperatureBankCommand {
-  CatalystTemperatureB1S2Command() : super('01 3E');
+  CatalystTemperatureB1S2Command() : super('013E');
 
   @override
   String get description => '	Catalyst Temperature: Bank 1, Sensor 2';
@@ -44,7 +44,7 @@ class CatalystTemperatureB1S2Command extends CatalystTemperatureBankCommand {
 }
 
 class CatalystTemperatureB2S2Command extends CatalystTemperatureBankCommand {
-  CatalystTemperatureB2S2Command() : super('01 3F');
+  CatalystTemperatureB2S2Command() : super('013F');
 
   @override
   String get description => '	Catalyst Temperature: Bank 2, Sensor 2';

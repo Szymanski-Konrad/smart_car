@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class AbsoluteLoadValueCommand extends PercentObdCommand {
-  AbsoluteLoadValueCommand() : super('01 43', prio: 1, min: 0, max: 25700);
+  AbsoluteLoadValueCommand() : super('0143', prio: 1, min: 0, max: 25700);
 
   @override
   void performCalculations(List<int> data) {

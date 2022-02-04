@@ -37,7 +37,7 @@ abstract class TermFuelTrim extends VisibleObdCommand {
 }
 
 class ShortTermFuelTrimBank1 extends TermFuelTrim {
-  ShortTermFuelTrimBank1() : super('01 06');
+  ShortTermFuelTrimBank1() : super('0106');
 
   @override
   String get name => 'STFT - Bank 1';
@@ -47,7 +47,7 @@ class ShortTermFuelTrimBank1 extends TermFuelTrim {
 }
 
 class LongTermFuelTrimBank1 extends TermFuelTrim {
-  LongTermFuelTrimBank1() : super('01 07');
+  LongTermFuelTrimBank1() : super('0107');
 
   @override
   String get name => 'LTFT - Bank 1';
@@ -57,7 +57,7 @@ class LongTermFuelTrimBank1 extends TermFuelTrim {
 }
 
 class ShortTermFuelTrimBank2 extends TermFuelTrim {
-  ShortTermFuelTrimBank2() : super('01 08');
+  ShortTermFuelTrimBank2() : super('0108');
 
   @override
   String get name => 'STFT - Bank 2';
@@ -67,7 +67,7 @@ class ShortTermFuelTrimBank2 extends TermFuelTrim {
 }
 
 class LongTermFuelTrimBank2 extends TermFuelTrim {
-  LongTermFuelTrimBank2() : super('01 09');
+  LongTermFuelTrimBank2() : super('0109');
 
   @override
   String get name => 'LTFT - Bank 2';

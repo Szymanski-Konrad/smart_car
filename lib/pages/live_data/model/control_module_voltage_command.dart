@@ -3,7 +3,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class ControlModuleVoltageCommand extends VisibleObdCommand {
   ControlModuleVoltageCommand()
-      : super('01 42', min: 0, max: 20, prio: 5, enableHistory: false);
+      : super('0142', min: 0, max: 20, prio: 5, enableHistory: false);
 
   @override
   Color get color {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class MapCommand extends VisibleObdCommand {
-  MapCommand() : super('01 0B', min: 0, max: 255, prio: 0);
+  MapCommand() : super('010B', min: 0, max: 255, prio: 0);
 
   @override
   Color get color {

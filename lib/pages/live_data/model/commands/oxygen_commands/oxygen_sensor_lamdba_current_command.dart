@@ -50,7 +50,7 @@ abstract class OxygenSensorLambdaCurrentCommand extends VisibleObdCommand
 
 class OxygenSensorLambdaCurrentCommand1
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand1() : super('01 34');
+  OxygenSensorLambdaCurrentCommand1() : super('0134');
 
   @override
   String get description =>
@@ -62,7 +62,7 @@ class OxygenSensorLambdaCurrentCommand1
 
 class OxygenSensorLambdaCurrentCommand2
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand2() : super('01 35');
+  OxygenSensorLambdaCurrentCommand2() : super('0135');
 
   @override
   String get description =>
@@ -74,7 +74,7 @@ class OxygenSensorLambdaCurrentCommand2
 
 class OxygenSensorLambdaCurrentCommand3
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand3() : super('01 36');
+  OxygenSensorLambdaCurrentCommand3() : super('0136');
 
   @override
   String get description =>
@@ -86,7 +86,7 @@ class OxygenSensorLambdaCurrentCommand3
 
 class OxygenSensorLambdaCurrentCommand4
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand4() : super('01 37');
+  OxygenSensorLambdaCurrentCommand4() : super('0137');
 
   @override
   String get description =>
@@ -98,7 +98,7 @@ class OxygenSensorLambdaCurrentCommand4
 
 class OxygenSensorLambdaCurrentCommand5
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand5() : super('01 38');
+  OxygenSensorLambdaCurrentCommand5() : super('0138');
 
   @override
   String get description =>
@@ -110,7 +110,7 @@ class OxygenSensorLambdaCurrentCommand5
 
 class OxygenSensorLambdaCurrentCommand6
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand6() : super('01 39');
+  OxygenSensorLambdaCurrentCommand6() : super('0139');
 
   @override
   String get description =>
@@ -122,7 +122,7 @@ class OxygenSensorLambdaCurrentCommand6
 
 class OxygenSensorLambdaCurrentCommand7
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand7() : super('01 3A');
+  OxygenSensorLambdaCurrentCommand7() : super('013A');
 
   @override
   String get description =>
@@ -134,7 +134,7 @@ class OxygenSensorLambdaCurrentCommand7
 
 class OxygenSensorLambdaCurrentCommand8
     extends OxygenSensorLambdaCurrentCommand {
-  OxygenSensorLambdaCurrentCommand8() : super('01 3B');
+  OxygenSensorLambdaCurrentCommand8() : super('013B');
 
   @override
   String get description =>

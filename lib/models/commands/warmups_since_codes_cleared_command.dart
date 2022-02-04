@@ -2,7 +2,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class WarmupsSinceCodesClearedCommand extends VisibleObdCommand {
   WarmupsSinceCodesClearedCommand()
-      : super('01 30', prio: 1000, min: 0, max: 255);
+      : super('0130', prio: 1000, min: 0, max: 255);
 
   @override
   void performCalculations(List<int> data) {

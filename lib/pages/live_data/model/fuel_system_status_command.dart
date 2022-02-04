@@ -32,7 +32,7 @@ extension FuelSystemStatusExtension on FuelSystemStatus {
 }
 
 class FuelSystemStatusCommand extends ObdCommand {
-  FuelSystemStatusCommand() : super('01 03', prio: 0);
+  FuelSystemStatusCommand() : super('0103', prio: 0);
 
   @override
   void performCalculations(List<int> data) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class CommandedEvaporativePurgeCommand extends PercentObdCommand {
-  CommandedEvaporativePurgeCommand() : super('01 2E', prio: 2);
+  CommandedEvaporativePurgeCommand() : super('012E', prio: 2);
 
   @override
   Color get color {

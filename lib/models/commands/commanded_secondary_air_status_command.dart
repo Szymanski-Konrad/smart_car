@@ -26,7 +26,7 @@ extension SecondaryAirStatusExtension on SecondaryAirStatus {
 }
 
 class CommandedSecondaryAirStatusCommand extends ObdCommand {
-  CommandedSecondaryAirStatusCommand() : super('01 12', prio: 1000);
+  CommandedSecondaryAirStatusCommand() : super('0112', prio: 1000);
 
   @override
   void performCalculations(List<int> data) {

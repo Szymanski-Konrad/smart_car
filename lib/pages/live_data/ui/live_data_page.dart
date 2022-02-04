@@ -121,7 +121,7 @@ class LiveDataPage extends StatelessWidget
                     if (state.supportedPids.isNotEmpty)
                       IconButton(
                         onPressed: () => showSupportedCommandsDialog(
-                            context, state.supportedPids, cubit),
+                            context, state.supportedPids, cubit, state),
                         icon: const Icon(Icons.list),
                       )
                   ],
@@ -229,35 +229,50 @@ class LiveDataPage extends StatelessWidget
   }
 
   void showSupportedCommandsDialog(
-      BuildContext context, List<String> pids, LiveDataCubit cubit) {
+    BuildContext context,
+    List<String> pids,
+    LiveDataCubit cubit,
+    LiveDataState state,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          title: Text('List of supported commands: ${pids.length}'),
-          actions: [
-            ElevatedButton(
-              onPressed: () => cubit.pidsQueue.addAll(pids),
-              child: const Text('Listen for this pids'),
-            ),
-          ],
-          content: SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            width: MediaQuery.of(context).size.width * 0.4,
-            child: ListView.builder(
-              itemCount: pids.length,
-              itemBuilder: (context, index) {
-                final pid = pids[index].substring(pids[index].length - 2);
-                return ListTile(
-                  title: Text(pid),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(pidsDescription[pid] ?? 'no-description'),
-                  ),
-                );
-              },
-            ),
-          ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(
+                  'List of supported commands: ${cubit.commands.length} / ${pids.length}'),
+              content: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.6,
+                width: MediaQuery.of(context).size.width * 0.5,
+                child: ListView.builder(
+                  itemCount: pids.length,
+                  itemBuilder: (context, index) {
+                    final pid = pids[index].substring(pids[index].length - 2);
+                    final value = cubit.commands
+                        .any((command) => command.command == pids[index]);
+                    print(value);
+                    return CheckboxListTile(
+                      value: value,
+                      onChanged: !state.isLocalMode
+                          ? (value) {
+                              if (value != null) {
+                                cubit.editCommandList(value, pids[index]);
+                                setState.call(() {});
+                              }
+                            }
+                          : null,
+                      title: Text(pid),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(pidsDescription[pid] ?? 'no-description'),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
         );
       },
     );

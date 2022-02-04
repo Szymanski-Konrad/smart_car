@@ -3,7 +3,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class CommandedAirFuelRatioCommand extends VisibleObdCommand {
   CommandedAirFuelRatioCommand()
-      : super('01 44', max: 2, min: 0, prio: 0, enableHistory: false);
+      : super('0144', max: 2, min: 0, prio: 0, enableHistory: false);
 
   @override
   Color get color {

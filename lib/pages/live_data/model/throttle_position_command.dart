@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class ThrottlePositionCommand extends PercentObdCommand {
-  ThrottlePositionCommand() : super('01 11', prio: 0);
+  ThrottlePositionCommand() : super('0111', prio: 0);
 
   @override
   Color get color {

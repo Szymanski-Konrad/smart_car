@@ -50,7 +50,7 @@ abstract class OxygenSensorLambdaVoltsCommand extends VisibleObdCommand
 }
 
 class OxygenSensorLambdaVoltsCommand1 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand1() : super('01 24');
+  OxygenSensorLambdaVoltsCommand1() : super('0124');
 
   @override
   String get description =>
@@ -61,7 +61,7 @@ class OxygenSensorLambdaVoltsCommand1 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand2 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand2() : super('01 25');
+  OxygenSensorLambdaVoltsCommand2() : super('0125');
 
   @override
   String get description =>
@@ -72,7 +72,7 @@ class OxygenSensorLambdaVoltsCommand2 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand3 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand3() : super('01 26');
+  OxygenSensorLambdaVoltsCommand3() : super('0126');
 
   @override
   String get description =>
@@ -83,7 +83,7 @@ class OxygenSensorLambdaVoltsCommand3 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand4 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand4() : super('01 27');
+  OxygenSensorLambdaVoltsCommand4() : super('0127');
 
   @override
   String get description =>
@@ -94,7 +94,7 @@ class OxygenSensorLambdaVoltsCommand4 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand5 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand5() : super('01 28');
+  OxygenSensorLambdaVoltsCommand5() : super('0128');
 
   @override
   String get description =>
@@ -105,7 +105,7 @@ class OxygenSensorLambdaVoltsCommand5 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand6 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand6() : super('01 29');
+  OxygenSensorLambdaVoltsCommand6() : super('0129');
 
   @override
   String get description =>
@@ -116,7 +116,7 @@ class OxygenSensorLambdaVoltsCommand6 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand7 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand7() : super('01 2A');
+  OxygenSensorLambdaVoltsCommand7() : super('012A');
 
   @override
   String get description =>
@@ -127,7 +127,7 @@ class OxygenSensorLambdaVoltsCommand7 extends OxygenSensorLambdaVoltsCommand {
 }
 
 class OxygenSensorLambdaVoltsCommand8 extends OxygenSensorLambdaVoltsCommand {
-  OxygenSensorLambdaVoltsCommand8() : super('01 2B');
+  OxygenSensorLambdaVoltsCommand8() : super('012B');
 
   @override
   String get description =>

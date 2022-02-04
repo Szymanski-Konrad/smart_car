@@ -188,6 +188,19 @@ const List<String> checkPidsCommands = [
   '01C0',
 ];
 
+const List<String> untouchableCommads = [
+  Pids.maf,
+  Pids.fuelSystemStatus,
+  Pids.engineCoolant,
+  Pids.rpm,
+  Pids.speed,
+  Pids.intakeAirTemp,
+  Pids.throttlePosition,
+  Pids.fuelLevel,
+  Pids.controlModuleVoltage,
+  Pids.commandedAirFuelRatio,
+];
+
 enum PID {
   engineCoolant,
   engineLoad,

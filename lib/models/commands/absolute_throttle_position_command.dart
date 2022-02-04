@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/percent_obd_command.dart';
 
 class AbsoluteThrottlePositionBCommand extends PercentObdCommand {
-  AbsoluteThrottlePositionBCommand() : super('01 47', prio: 1);
+  AbsoluteThrottlePositionBCommand() : super('0147', prio: 1);
 
   @override
   String get description => 'Absolute throttle position B';
@@ -11,7 +11,7 @@ class AbsoluteThrottlePositionBCommand extends PercentObdCommand {
 }
 
 class AbsoluteThrottlePositionCCommand extends PercentObdCommand {
-  AbsoluteThrottlePositionCCommand() : super('01 48', prio: 1);
+  AbsoluteThrottlePositionCCommand() : super('0148', prio: 1);
 
   @override
   String get description => 'Absolute throttle position C';

@@ -83,7 +83,7 @@ extension FuelTypeExtension on FuelType {
 }
 
 class FuelTypeCommand extends ObdCommand {
-  FuelTypeCommand() : super('01 51', prio: 1000);
+  FuelTypeCommand() : super('0151', prio: 1000);
 
   @override
   void performCalculations(List<int> data) {

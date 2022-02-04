@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class MafCommand extends VisibleObdCommand {
-  MafCommand()
-      : super('01 10', min: 0, max: 100, prio: 0, enableHistory: false);
+  MafCommand() : super('0110', min: 0, max: 100, prio: 0, enableHistory: false);
 
   @override
   Color get color {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class FuelRailPressureCommand extends VisibleObdCommand {
-  FuelRailPressureCommand() : super('01 22', prio: 1, min: 0, max: 5000);
+  FuelRailPressureCommand() : super('0122', prio: 1, min: 0, max: 5000);
 
   @override
   void performCalculations(List<int> data) {

@@ -47,7 +47,7 @@ abstract class OxygenSensorTrimVoltsCommand extends VisibleObdCommand
 }
 
 class OxygenSensorTrimVoltsCommand1 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand1() : super('01 14');
+  OxygenSensorTrimVoltsCommand1() : super('0114');
 
   @override
   String get description => 'Oxygen sensor 1';
@@ -57,7 +57,7 @@ class OxygenSensorTrimVoltsCommand1 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand2 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand2() : super('01 15');
+  OxygenSensorTrimVoltsCommand2() : super('0115');
 
   @override
   String get description => 'Oxygen sensor 2';
@@ -67,7 +67,7 @@ class OxygenSensorTrimVoltsCommand2 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand3 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand3() : super('01 16');
+  OxygenSensorTrimVoltsCommand3() : super('0116');
 
   @override
   String get description => 'Oxygen sensor 3';
@@ -77,7 +77,7 @@ class OxygenSensorTrimVoltsCommand3 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand4 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand4() : super('01 17');
+  OxygenSensorTrimVoltsCommand4() : super('0117');
 
   @override
   String get description => 'Oxygen sensor 4';
@@ -87,7 +87,7 @@ class OxygenSensorTrimVoltsCommand4 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand5 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand5() : super('01 18');
+  OxygenSensorTrimVoltsCommand5() : super('0118');
 
   @override
   String get description => 'Oxygen sensor 5';
@@ -97,7 +97,7 @@ class OxygenSensorTrimVoltsCommand5 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand6 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand6() : super('01 19');
+  OxygenSensorTrimVoltsCommand6() : super('0119');
 
   @override
   String get description => 'Oxygen sensor 6';
@@ -107,7 +107,7 @@ class OxygenSensorTrimVoltsCommand6 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand7 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand7() : super('01 1A');
+  OxygenSensorTrimVoltsCommand7() : super('011A');
 
   @override
   String get description => 'Oxygen sensor 7';
@@ -117,7 +117,7 @@ class OxygenSensorTrimVoltsCommand7 extends OxygenSensorTrimVoltsCommand {
 }
 
 class OxygenSensorTrimVoltsCommand8 extends OxygenSensorTrimVoltsCommand {
-  OxygenSensorTrimVoltsCommand8() : super('01 1B');
+  OxygenSensorTrimVoltsCommand8() : super('011B');
 
   @override
   String get description => 'Oxygen sensor 8';

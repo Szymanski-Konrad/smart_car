@@ -1,7 +1,7 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class TimeRunWithMILOn extends VisibleObdCommand {
-  TimeRunWithMILOn() : super('01 4D', prio: 10, min: 0, max: 65535);
+  TimeRunWithMILOn() : super('014D', prio: 10, min: 0, max: 65535);
 
   @override
   void performCalculations(List<int> data) {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/temp_obd_command.dart';
 
 class EngineCoolantCommand extends TempObdCommand {
-  EngineCoolantCommand() : super('01 05', min: -40, max: 120, prio: 20);
+  EngineCoolantCommand() : super('0105', min: -40, max: 120, prio: 20);
 
   @override
   Color get color {
