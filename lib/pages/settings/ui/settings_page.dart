@@ -6,6 +6,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -18,7 +19,7 @@ class SettingsPage extends StatelessWidget {
     return BlocConsumer<SettingsCubit, SettingsState>(
       listener: (context, state) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Ustawienia zapisane'),
+          content: Text(Strings.settingsSaved),
         ));
         context.read<SettingsCubit>().changeSaved(false);
       },
@@ -28,7 +29,7 @@ class SettingsPage extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Settings'),
+            title: const Text(Strings.settings),
           ),
           body: _buildBody(context, state),
         );
@@ -42,7 +43,7 @@ class SettingsPage extends StatelessWidget {
       children: [
         ListTile(
           title: ElevatedButton(
-            child: const Text('Select default OBDII device'),
+            child: const Text(Strings.selectDefaultDevice),
             onPressed: () async {
               final BluetoothDevice device = await Navigation.instance
                   .push(SharedRoutes.selectBoundedDevice);
@@ -52,11 +53,11 @@ class SettingsPage extends StatelessWidget {
         ),
         ListTile(
           title: Text(state.settings.deviceDescription),
-          subtitle: const Text('Selected device'),
+          subtitle: const Text(Strings.selectedDevice),
         ),
         if (kDebugMode)
           ListTile(
-            leading: const Text('Select file: '),
+            leading: const Text(Strings.selectFile),
             title: DropdownButton(
               value: state.settings.selectedJson,
               onChanged: cubit.updateJson,
@@ -70,13 +71,13 @@ class SettingsPage extends StatelessWidget {
           ),
         _buildSettingsTile(
           value: state.settings.engineCapacity.toString(),
-          leading: 'Pojemność silnika',
+          leading: Strings.engineCapacity,
           suffix: 'cm3',
           onEdit: cubit.updateEngineCapacity,
         ),
         _buildSettingsTile(
           value: state.settings.fuelPrice.toString(),
-          leading: 'Cena paliwa',
+          leading: Strings.fuelPrice,
           suffix: 'zł',
           onEdit: cubit.updateFuelPrice,
           keyboardType: const TextInputType.numberWithOptions(
@@ -84,12 +85,12 @@ class SettingsPage extends StatelessWidget {
         ),
         _buildSettingsTile(
             value: state.settings.horsepower.toString(),
-            leading: 'Moc silnika',
+            leading: Strings.enginePower,
             suffix: 'KM',
             onEdit: cubit.updateHorsepower),
         _buildSettingsTile(
           value: state.settings.tankSize.toString(),
-          leading: 'Pojemność baku',
+          leading: Strings.tankCapacity,
           suffix: 'l',
           onEdit: cubit.updateTankSize,
         ),
@@ -98,7 +99,7 @@ class SettingsPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
-              const Text('Rodzaj paliwa: '),
+              const Text(Strings.fuelType),
               const SizedBox(width: 32),
               Expanded(
                 child: DropdownButton<FuelType>(

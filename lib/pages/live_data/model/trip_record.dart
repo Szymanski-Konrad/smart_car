@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/utils/date_extension.dart';
@@ -105,9 +106,11 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateSeconds(num speed) {
+    final _speed = speed.isNaN ? 0 : speed;
     return copyWith(
-      tripSeconds: tripSeconds + (speed > 0 ? 1 : 0),
-      idleTripSeconds: idleTripSeconds + (speed > 0 ? 0 : 1),
+      tripSeconds: tripSeconds + (_speed > Constants.idleSpeedLimit ? 1 : 0),
+      idleTripSeconds:
+          idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
       currentDriveInterval: currentDriveInterval + 1,
       averageSpeed: distance / ((totalTripSeconds + 1) / 3600),
     );
@@ -170,7 +173,7 @@ extension TripRecordExtension on TripRecord {
 
   OtherTileData get fuelCostsDetails => OtherTileData(
         value: fuelCosts,
-        title: 'Fuel costs',
+        title: Strings.fuelCosts,
         unit: 'PLN',
         digits: 2,
       );
@@ -178,7 +181,7 @@ extension TripRecordExtension on TripRecord {
   FuelTileData get savedFuelDetails {
     return FuelTileData(
       value: savedFuel,
-      title: 'Saved fuel',
+      title: Strings.savedFuel,
       unit: 'l',
       digits: 3,
       tripStatus: TripStatus.savingFuel,
@@ -187,7 +190,7 @@ extension TripRecordExtension on TripRecord {
 
   FuelTileData get usedFuelDetails => FuelTileData(
         value: usedFuel,
-        title: 'Used fuel',
+        title: Strings.usedFuel,
         unit: 'l',
         digits: 2,
         tripStatus: TripStatus.driving,
@@ -195,7 +198,7 @@ extension TripRecordExtension on TripRecord {
 
   FuelTileData get idleUsedFuelDetails => FuelTileData(
         value: idleUsedFuel,
-        title: 'Idle used fuel',
+        title: Strings.idleUsedFuel,
         unit: 'l',
         digits: 3,
         tripStatus: TripStatus.idle,
@@ -203,56 +206,42 @@ extension TripRecordExtension on TripRecord {
 
   OtherTileData get distanceDetails => OtherTileData(
         value: distance,
-        title: 'Distance',
+        title: Strings.distance,
         unit: 'km',
         digits: 1,
       );
 
   OtherTileData get instFuelDetails => OtherTileData(
         value: instFuelConsumption,
-        title: 'Inst Fuel cons.',
+        title: Strings.instantFuelConsumption,
         unit: 'l/100km',
         digits: 1,
       );
 
   OtherTileData get avgFuelDetails => OtherTileData(
         value: averageFuelConsumption,
-        title: 'Avg fuel cons.',
+        title: Strings.averageFuelConsumption,
         unit: 'l/100km',
-        digits: 1,
-      );
-
-  OtherTileData get avgKmPerL => OtherTileData(
-        value: 100 / averageFuelConsumption,
-        title: 'Avg fuel cons.',
-        unit: 'km/l',
-        digits: 1,
-      );
-
-  OtherTileData get instKmPerL => OtherTileData(
-        value: kmPerL,
-        title: 'Inst fuel cons.',
-        unit: 'km/l',
         digits: 1,
       );
 
   OtherTileData get rangeDetails => OtherTileData(
         value: range,
-        title: 'Range',
+        title: Strings.range,
         unit: 'km',
         digits: 0,
       );
 
   OtherTileData get gpsSpeedDetails => OtherTileData(
         value: gpsSpeed,
-        title: 'GPS Speed',
+        title: Strings.gpsSpeed,
         unit: 'km/h',
         digits: 1,
       );
 
   OtherTileData get gpsDistanceDetails => OtherTileData(
         value: gpsDistance,
-        title: 'GPS Distance',
+        title: Strings.gpsDistance,
         unit: 'km',
         digits: 1,
       );
@@ -260,7 +249,7 @@ extension TripRecordExtension on TripRecord {
   TimeTileData get totalTripTimeDetails => TimeTileData(
         value: Duration(seconds: totalTripSeconds),
         digits: 0,
-        title: 'Total duration',
+        title: Strings.totalDuration,
         unit: '',
         isCurrent: false,
       );
@@ -268,7 +257,7 @@ extension TripRecordExtension on TripRecord {
   TimeTileData get driveTimeDetails => TimeTileData(
         value: Duration(seconds: tripSeconds),
         digits: 0,
-        title: 'Drive duration',
+        title: Strings.driveDuration,
         unit: '',
         isCurrent: tripStatus != TripStatus.idle,
       );
@@ -276,14 +265,14 @@ extension TripRecordExtension on TripRecord {
   TimeTileData get idleTripTimeDetails => TimeTileData(
         value: Duration(seconds: idleTripSeconds),
         digits: 0,
-        title: 'Idle duration',
+        title: Strings.idleDuration,
         unit: '',
         isCurrent: tripStatus == TripStatus.idle,
       );
 
   OtherTileData get avgSpeedDetails => OtherTileData(
         value: averageSpeed,
-        title: 'Avg. speed',
+        title: Strings.averageSpeed,
         unit: 'km/h',
         digits: 1,
       );
@@ -291,14 +280,14 @@ extension TripRecordExtension on TripRecord {
   OtherTileData get rapidAccelerationsDetails => OtherTileData(
         value: rapidAccelerations,
         digits: 0,
-        title: 'Acc.',
+        title: Strings.rapidAcceleration,
         unit: '',
       );
 
   OtherTileData get rapidBrakingDetails => OtherTileData(
         value: rapidBreakings,
         digits: 0,
-        title: 'Braking',
+        title: Strings.rapidBraking,
         unit: '',
       );
 
@@ -308,14 +297,14 @@ extension TripRecordExtension on TripRecord {
             0.87 *
             Constants.co2GenerationRatio,
         digits: 2,
-        title: 'Burnt CO2',
+        title: Strings.burntCO2,
         unit: 'kg',
       );
 
   OtherTileData get savedCarboDetails => OtherTileData(
         value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio,
         digits: 2,
-        title: 'Saved CO2',
+        title: Strings.savedCO2,
         unit: 'kg',
       );
 
@@ -326,7 +315,7 @@ extension TripRecordExtension on TripRecord {
             Constants.co2GenerationRatio *
             1000,
         digits: 0,
-        title: 'avg CO2',
+        title: Strings.averageCO2,
         unit: 'g/km',
       );
 }

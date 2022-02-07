@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/app/resources/strings.dart';
 
 part 'settings.freezed.dart';
 part 'settings.g.dart';
@@ -29,6 +30,6 @@ class Settings with _$Settings {
 
 extension SettingsExtension on Settings {
   String get deviceDescription => deviceAddress == null
-      ? 'No selected default device'
-      : '${deviceName ?? 'no-name'} - $deviceAddress';
+      ? Strings.noSelectedDevice
+      : '${deviceName ?? Strings.noName} - $deviceAddress';
 }

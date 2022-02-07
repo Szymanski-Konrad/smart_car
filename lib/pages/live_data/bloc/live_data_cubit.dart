@@ -273,8 +273,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final percentyl = testCommands.length ~/ 10000; // 0.01%
     for (final testCommand in testCommands) {
       commands
-          .safeFirstWhere((element) =>
-              element.command == testCommand.command.replaceAll(' ', ''))
+          .safeFirstWhere((element) => element.command == testCommand.command)
           ?.sendCommand(isLocalMode: true);
       if (testCommand.responseTime > 0) {
         await Future.delayed(Duration(milliseconds: testCommand.responseTime));
@@ -403,13 +402,13 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> motorOff() async {
-    emit(state.copyWith(
-      isTripClosing: true,
-      isTripEnded: true,
-    ));
-    _connection?.close();
-    saveCommands();
-    await goBackWithDelay();
+    // emit(state.copyWith(
+    //   isTripClosing: true,
+    //   isTripEnded: true,
+    // ));
+    // _connection?.close();
+    // saveCommands();
+    // await goBackWithDelay();
   }
 
   Future<void> goBackWithDelay() async {
@@ -496,9 +495,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               if (command is ControlModuleVoltageCommand) {
                 if (command.result < Constants.minModuleVoltage) {
                   // Probably motor is off already
-                  emit(state.copyWith(
-                      fuelSystemStatus: FuelSystemStatus.motorOff));
-                  _connection?.close();
+                  // emit(state.copyWith(
+                  //     fuelSystemStatus: FuelSystemStatus.motorOff));
+                  // _connection?.close();
                 }
               }
               break;
@@ -641,6 +640,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         logMessage: '${data.toString()}\n',
       );
     }
+  }
+
+  void listenAllPids(List<String> pids) {
+    pidsQueue.addAll(pids);
   }
 
   @override

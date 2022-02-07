@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/repositories/storage.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
 
@@ -15,7 +16,10 @@ class SettingsCubit extends Cubit<SettingsState> {
   Future<void> loadSettings() async {
     final json = await Storage.getSettingsJson();
     if (json == null) return;
-    final settings = Settings.fromJson(jsonDecode(json));
+    Settings settings = Settings.fromJson(jsonDecode(json));
+    if (!Constants.localFiles.contains(settings.selectedJson)) {
+      settings = settings.copyWith(selectedJson: Constants.localFiles.first);
+    }
     emit(state.copyWith(settings: settings));
   }
 

@@ -58,6 +58,7 @@ class LiveDataTile extends StatelessWidget {
 
   Widget commandInfo(BuildContext context) {
     return Container(
+      height: Constants.tileHeight,
       padding: const EdgeInsets.all(8.0),
       decoration: !command.enableHistorical
           ? BoxDecoration(
@@ -68,11 +69,13 @@ class LiveDataTile extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  command.name,
-                  maxLines: 1,
+                  command.namePL ?? command.name,
+                  maxLines: 2,
                   style: textTheme,
+                  textAlign: TextAlign.center,
                 ),
                 Text(command.formattedResult, style: textTheme),
                 Row(

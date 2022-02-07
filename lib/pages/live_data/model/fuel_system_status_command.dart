@@ -1,3 +1,4 @@
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 enum FuelSystemStatus {
@@ -14,19 +15,19 @@ extension FuelSystemStatusExtension on FuelSystemStatus {
   String get description {
     switch (this) {
       case FuelSystemStatus.motorOff:
-        return 'Vehicle motor is off';
+        return Strings.fuelSystemMotofOff;
       case FuelSystemStatus.insufficientEngineTemp:
-        return 'Engine temperature is low, drive carefully';
+        return Strings.fuelSystemInsufficientEngineTemp;
       case FuelSystemStatus.good:
-        return 'Engine is in good temperature. Do your best ;)';
+        return Strings.fuelSystemGood;
       case FuelSystemStatus.fuelCut:
-        return 'Car not use fuel. You are saving world (and money) ;)';
+        return Strings.fuelSystemCut;
       case FuelSystemStatus.systemFailure:
-        return 'Something wrong with car. Slow down and visit mechanic';
+        return Strings.fuelSystemFailure;
       case FuelSystemStatus.oxygenSensorFailure:
-        return 'Oxygen sensor failure. Please contact with mechanic';
+        return Strings.fuelSystemOxygenSensorFailure;
       case FuelSystemStatus.unknown:
-        return 'Unknown fuel system status';
+        return Strings.fuelSystemUnknown;
     }
   }
 }

@@ -4,11 +4,13 @@ import 'package:provider/src/provider.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/pids.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_tile.dart';
+import 'package:smart_car/pages/live_data/ui/supported_pids_tile.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
@@ -56,18 +58,17 @@ class LiveDataPage extends StatelessWidget
             ? Scaffold(
                 appBar: AppBar(),
                 body: const Center(
-                  child: Text(
-                      'Nie można połączyć. Urządzenie jest zajęte lub nie odpowiada.'),
+                  child: Text(Strings.cannotConnect),
                 ),
               )
             : Scaffold(
                 appBar: AppBar(
                   title: Text(
                     state.isLocalMode
-                        ? 'Local mode ${state.localTripProgress.toStringAsFixed(2)} %'
+                        ? Strings.progress(state.localTripProgress)
                         : state.isConnecting
-                            ? 'Connecting...'
-                            : 'Connected! :D',
+                            ? Strings.connecting
+                            : Strings.connected,
                   ),
                   actions: [
                     if (!state.isLocalMode) ...[
@@ -76,12 +77,12 @@ class LiveDataPage extends StatelessWidget
                             Navigation.instance.push(SharedRoutes.settings),
                         icon: const Icon(Icons.settings),
                       ),
-                      IconButton(
-                          onPressed: cubit.sendVinCommand,
-                          icon: const Icon(Icons.villa_rounded)),
-                      IconButton(
-                          onPressed: cubit.sendCheck9Command,
-                          icon: const Icon(Icons.check)),
+                      // IconButton(
+                      //     onPressed: cubit.sendVinCommand,
+                      //     icon: const Icon(Icons.villa_rounded)),
+                      // IconButton(
+                      //     onPressed: cubit.sendCheck9Command,
+                      //     icon: const Icon(Icons.check)),
                       if (cubit.testCommands.isNotEmpty)
                         IconButton(
                           onPressed: cubit.saveCommands,
@@ -95,13 +96,13 @@ class LiveDataPage extends StatelessWidget
                             context: context,
                             builder: (ctx) {
                               return AlertDialog(
-                                title:
-                                    Text('Files in directory: ${files.length}'),
+                                title: Text(
+                                    Strings.filesInDirectory(files.length)),
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
                                         cubit.sendTripsToMail(files),
-                                    child: const Text('Send files'),
+                                    child: const Text(Strings.sendFiles),
                                   ),
                                 ],
                                 content: SingleChildScrollView(
@@ -135,11 +136,11 @@ class LiveDataPage extends StatelessWidget
                           tabs: [
                             Tab(
                               icon: Icon(Icons.time_to_leave_outlined),
-                              text: 'Live data',
+                              text: Strings.liveData,
                             ),
                             Tab(
                               icon: Icon(Icons.bar_chart),
-                              text: 'Trip stats',
+                              text: Strings.tripStats,
                             ),
                           ],
                         ),
@@ -151,29 +152,46 @@ class LiveDataPage extends StatelessWidget
                                   runSpacing: 8.0,
                                   spacing: 8.0,
                                   children: [
-                                    Text(
-                                        'Pedal pressed: ${state.throttlePressed}'),
-                                    Icon(
-                                      state.throttlePressed
-                                          ? Icons.upload
-                                          : Icons.download,
-                                      color: !state.throttlePressed
-                                          ? Colors.green
-                                          : Colors.amber,
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(
+                                          Strings.pedalPressed(
+                                              state.throttlePressed),
+                                        ),
+                                        Icon(
+                                          state.throttlePressed
+                                              ? Icons.upload
+                                              : Icons.download,
+                                          color: !state.throttlePressed
+                                              ? Colors.green
+                                              : Colors.amber,
+                                        ),
+                                        if (cubit.commands.isEmpty)
+                                          const Text(Strings.loadingPids),
+                                      ],
                                     ),
-                                    Text(
-                                        'Avg response: ${state.averageResponseTime}'),
-                                    Text(
-                                        'Total response: ${state.totalResponseTime}'),
-                                    if (cubit.commands.isEmpty)
-                                      const Text('Loading pids...'),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Text(Strings.avgResponse(
+                                            state.averageResponseTime)),
+                                        Text(Strings.totalResponse(
+                                            state.totalResponseTime)),
+                                      ],
+                                    ),
                                     if (cubit.commands.isNotEmpty)
                                       ...cubit.commands
                                           .whereType<VisibleObdCommand>()
                                           .map((command) =>
                                               LiveDataTile(command: command))
                                           .toList(),
-                                    const SizedBox(height: 20.0),
+                                    const SizedBox(
+                                      height: 20.0,
+                                      width: double.infinity,
+                                    ),
                                     ...state.errors
                                         .map((e) => ListTile(title: Text(e))),
                                   ],
@@ -188,8 +206,8 @@ class LiveDataPage extends StatelessWidget
                                           state.fuelSystemStatus.description),
                                     ),
                                     if (state.isTemperatureAvaliable)
-                                      Text(
-                                          'Indoor temp: ${state.getTemperature} °C'),
+                                      Text(Strings.indoorTemp(
+                                          state.getTemperature)),
                                     TimeStatsSection(
                                       records: state.tripRecord.timeSection,
                                       currentInterval:
@@ -212,7 +230,8 @@ class LiveDataPage extends StatelessWidget
                                     InfoStatsSection(
                                       records: state.tripRecord.carboSection,
                                     ),
-                                    // SupportedPidsTile(checker: state.pidsChecker),
+                                    SupportedPidsTile(
+                                        checker: state.pidsChecker),
                                   ],
                                 ),
                               )
@@ -240,8 +259,15 @@ class LiveDataPage extends StatelessWidget
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
+              actions: [
+                ElevatedButton(
+                    onPressed: () => cubit.listenAllPids(pids),
+                    child: Text('Send')),
+              ],
               title: Text(
-                  'List of supported commands: ${cubit.commands.length} / ${pids.length}'),
+                Strings.supportedCommandsCount(
+                    cubit.commands.length, pids.length),
+              ),
               content: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.6,
                 width: MediaQuery.of(context).size.width * 0.5,
@@ -254,7 +280,7 @@ class LiveDataPage extends StatelessWidget
                     final isUntouchable = untouchableCommads.contains(pid);
                     return CheckboxListTile(
                       value: value,
-                      onChanged: state.isLocalMode && !isUntouchable
+                      onChanged: !isUntouchable //&& state.isLocalMode
                           ? (value) {
                               if (value != null) {
                                 cubit.editCommandList(value, pids[index]);
@@ -265,7 +291,8 @@ class LiveDataPage extends StatelessWidget
                       title: Text(pid),
                       subtitle: Padding(
                         padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(pidsDescription[pid] ?? 'no-description'),
+                        child:
+                            Text(pidsDescription[pid] ?? Strings.noDescription),
                       ),
                     );
                   },

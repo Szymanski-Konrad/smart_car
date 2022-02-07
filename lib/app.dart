@@ -9,6 +9,7 @@ import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -66,7 +67,7 @@ class _AppState extends State<App> {
           body: ListView(
             children: [
               SwitchListTile(
-                title: const Text('Enable Bluetooth'),
+                title: const Text(Strings.enableBluetooth),
                 value: _bluetoothState.isEnabled,
                 onChanged: (bool value) {
                   future() async {
@@ -86,7 +87,7 @@ class _AppState extends State<App> {
               if (_bluetoothState.isEnabled)
                 ListTile(
                   title: ElevatedButton(
-                    child: const Text('Connect to OBDII'),
+                    child: const Text(Strings.connectToObd),
                     onPressed: () async {
                       final address = context
                           .read<SettingsCubit>()
@@ -100,8 +101,7 @@ class _AppState extends State<App> {
                       }
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content:
-                              Text('Firstly choose default device in settings'),
+                          content: Text(Strings.firstlyChooseDevice),
                         ),
                       );
                     },
@@ -110,7 +110,7 @@ class _AppState extends State<App> {
               if (kDebugMode)
                 ListTile(
                   title: ElevatedButton(
-                    child: const Text('Local data'),
+                    child: const Text(Strings.localMode),
                     onPressed: () async {
                       _showLiveData(context, true);
                     },
@@ -129,7 +129,7 @@ class _AppState extends State<App> {
               const Divider(color: Colors.yellow),
               ListTile(
                 title: ElevatedButton(
-                  child: const Text('Settings'),
+                  child: const Text(Strings.settings),
                   onPressed: () =>
                       Navigation.instance.push(SharedRoutes.settings),
                 ),
@@ -137,7 +137,7 @@ class _AppState extends State<App> {
               if (files.isNotEmpty)
                 ListTile(
                   title: ElevatedButton(
-                    child: Text('Send saved trips (${files.length})'),
+                    child: Text(Strings.sendSavedTrips(files.length)),
                     onPressed: () async {
                       await sendTripsToMail(files);
                     },
@@ -168,7 +168,8 @@ class _AppState extends State<App> {
 
   Future<void> sendTripsToMail(List<String> files) async {
     final mailOptions = MailOptions(
-      body: 'Sending my last trips',
+      body: 'Wysyłam moje zapisane przejazdy',
+      subject: 'Moje zapisane przejazdy',
       recipients: ['hunteelar.programowanie@gmail.com'],
       isHTML: true,
       attachments: files,
