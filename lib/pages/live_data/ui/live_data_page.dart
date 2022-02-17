@@ -7,17 +7,11 @@ import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
-import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
-import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
-import 'package:smart_car/pages/live_data/ui/live_data_tile.dart';
-import 'package:smart_car/pages/live_data/ui/supported_pids_tile.dart';
+import 'package:smart_car/pages/live_data/ui/live_stats_section.dart';
+import 'package:smart_car/pages/live_data/ui/trip_stats_section.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
-import 'package:smart_car/pages/live_data/model/trip_record.dart';
-import 'package:smart_car/utils/ui/fuel_stats_section.dart';
-import 'package:smart_car/utils/ui/info_stats_section.dart';
-import 'package:smart_car/utils/ui/time_stats_section.dart';
 
 class LiveDataPageArguments {
   LiveDataPageArguments({this.isLocalMode = false});
@@ -77,17 +71,6 @@ class LiveDataPage extends StatelessWidget
                             Navigation.instance.push(SharedRoutes.settings),
                         icon: const Icon(Icons.settings),
                       ),
-                      // IconButton(
-                      //     onPressed: cubit.sendVinCommand,
-                      //     icon: const Icon(Icons.villa_rounded)),
-                      // IconButton(
-                      //     onPressed: cubit.sendCheck9Command,
-                      //     icon: const Icon(Icons.check)),
-                      if (cubit.testCommands.isNotEmpty)
-                        IconButton(
-                          onPressed: cubit.saveCommands,
-                          icon: const Icon(Icons.send_and_archive_outlined),
-                        ),
                     ],
                     IconButton(
                       onPressed: () async {
@@ -144,97 +127,12 @@ class LiveDataPage extends StatelessWidget
                             ),
                           ],
                         ),
+                        const SizedBox(height: 20.0),
                         Expanded(
                           child: TabBarView(
                             children: [
-                              SingleChildScrollView(
-                                child: Wrap(
-                                  runSpacing: 8.0,
-                                  spacing: 8.0,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(
-                                          Strings.pedalPressed(
-                                              state.throttlePressed),
-                                        ),
-                                        Icon(
-                                          state.throttlePressed
-                                              ? Icons.upload
-                                              : Icons.download,
-                                          color: !state.throttlePressed
-                                              ? Colors.green
-                                              : Colors.amber,
-                                        ),
-                                        if (cubit.commands.isEmpty)
-                                          const Text(Strings.loadingPids),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Text(Strings.avgResponse(
-                                            state.averageResponseTime)),
-                                        Text(Strings.totalResponse(
-                                            state.totalResponseTime)),
-                                      ],
-                                    ),
-                                    if (cubit.commands.isNotEmpty)
-                                      ...cubit.commands
-                                          .whereType<VisibleObdCommand>()
-                                          .map((command) =>
-                                              LiveDataTile(command: command))
-                                          .toList(),
-                                    const SizedBox(
-                                      height: 20.0,
-                                      width: double.infinity,
-                                    ),
-                                    ...state.errors
-                                        .map((e) => ListTile(title: Text(e))),
-                                  ],
-                                ),
-                              ),
-                              SingleChildScrollView(
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Text(
-                                          state.fuelSystemStatus.description),
-                                    ),
-                                    if (state.isTemperatureAvaliable)
-                                      Text(Strings.indoorTemp(
-                                          state.getTemperature)),
-                                    TimeStatsSection(
-                                      records: state.tripRecord.timeSection,
-                                      currentInterval:
-                                          state.tripRecord.currentDriveInterval,
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    FuelStatsSection(
-                                      records: state.tripRecord.fuelUsedSection,
-                                      tripStatus: state.tripStatus,
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    InfoStatsSection(
-                                      records: state.tripRecord.fuelSection,
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    InfoStatsSection(
-                                      records: state.tripRecord.tripSection,
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    InfoStatsSection(
-                                      records: state.tripRecord.carboSection,
-                                    ),
-                                    SupportedPidsTile(
-                                        checker: state.pidsChecker),
-                                  ],
-                                ),
-                              )
+                              LiveStatsSection(state: state, cubit: cubit),
+                              TripStatsSection(state: state, cubit: cubit),
                             ],
                           ),
                         )
@@ -262,7 +160,7 @@ class LiveDataPage extends StatelessWidget
               actions: [
                 ElevatedButton(
                     onPressed: () => cubit.listenAllPids(pids),
-                    child: Text('Send')),
+                    child: const Text('Send')),
               ],
               title: Text(
                 Strings.supportedCommandsCount(

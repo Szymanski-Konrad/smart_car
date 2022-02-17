@@ -16,19 +16,19 @@ dependencies:
   flutter_bluetooth_serial: ^0.4.0
 
   # Charts
-  fl_chart: ^0.40.2
-  charts_painter: ^1.1.0
+  fl_chart: ^0.45.0
+  charts_painter: ^2.0.0
   chart_sparkline: ^1.0.7
 
   # Logging
   flutter_logs: ^2.1.4
 
   # GPS
-  geolocator: ^7.6.2
+  geolocator: ^8.2.0
 
   # Bloc
-  bloc: ^7.2.1
-  flutter_bloc: ^7.3.3
+  bloc: ^8.0.2
+  flutter_bloc: ^8.0.1
 
   # Mailer
   flutter_mailer: ^2.0.1
@@ -36,6 +36,7 @@ dependencies:
   # Sensors
   sensors: ^2.0.3
   environment_sensors: ^0.2.0
+  flutter_sensors: ^1.0.1
 
   # Storage
   shared_preferences: ^2.0.11
@@ -55,6 +56,9 @@ dependencies:
   fl_toast: ^3.1.0
   another_flushbar: ^1.10.28 
 
+  # Icons
+  line_icons: ^2.0.1
+  ionicons: ^0.1.2
   cupertino_icons: ^1.0.2
 
 dev_dependencies:

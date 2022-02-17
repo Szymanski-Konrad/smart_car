@@ -10,6 +10,7 @@ import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
+import 'package:smart_car/utils/validators.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -127,6 +128,7 @@ class SettingsPage extends StatelessWidget {
     required String suffix,
     required String leading,
     Function(String)? onEdit,
+    String? Function(String?)? validator,
     TextInputType keyboardType = TextInputType.number,
   }) {
     return ListTile(
@@ -140,6 +142,7 @@ class SettingsPage extends StatelessWidget {
               initalValue: value,
               onEdit: onEdit,
               keyboardType: keyboardType,
+              validator: validator,
             ),
       trailing: Text(suffix),
     );
@@ -165,8 +168,6 @@ class SettingsTextField extends StatefulWidget {
 }
 
 class _SettingsTextFieldState extends State<SettingsTextField> {
-  bool validated = false;
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -179,18 +180,9 @@ class _SettingsTextFieldState extends State<SettingsTextField> {
           FilteringTextInputFormatter.deny(RegExp(r','),
               replacementString: '.'),
       ],
-      validator: widget.validator ?? _defaultValidator,
+      validator: widget.validator ?? Validators.positiveNumberValidator,
       onChanged: widget.onEdit,
       autovalidateMode: AutovalidateMode.onUserInteraction,
     );
-  }
-
-  String? _defaultValidator(String? input) {
-    validated = false;
-    if (input == null || input.isEmpty) return 'Wartość nie może być pusta';
-    final value = double.tryParse(input);
-    if (value == null) return 'Wartość nie jest liczbą';
-    validated = true;
-    return null;
   }
 }

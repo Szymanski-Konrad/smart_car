@@ -31,7 +31,7 @@ class InfoStatsSection extends StatelessWidget {
           children: records
               .map((data) => Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: InfoTile(
+                    child: OtherInfoTile(
                       data: data,
                     ),
                   ))

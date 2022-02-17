@@ -2,6 +2,9 @@ abstract class Constants {
   static const minGpsDistance = 50; // m
   static const historyDataLength = 20; // number of history data to show
   static const tileHeight = 120.0;
+  static const infoTileHeight = 80.0;
+  static const infoTileWidthFactor = 0.48;
+  static const largeInfoTileWidthFactor = 0.31;
   static const rapidBreaking = -1.5; // acceleration in m/s2
   static const rapidAcceleration = 1.5; // acceleration in m/s2
   static const minRapidSpeedTimeThreshold = 30; // s
@@ -10,16 +13,20 @@ abstract class Constants {
   static const minModuleVoltage = 13.3;
   static const idleSpeedLimit = 1;
   static const defaultLocalFile = 'work';
+  static const largeScreenWidth = 400.0;
 
   static const localFiles = [
     'work',
     'ford1',
+    'gizycko-kolno',
+    'nowiak-mikolajki',
     'nowiakKolno',
     'passat1',
     'passat2',
     'passat3',
     'passat4',
     'passat5',
+    'praca',
     'toyota1',
     'toyota2',
     'toyota3',

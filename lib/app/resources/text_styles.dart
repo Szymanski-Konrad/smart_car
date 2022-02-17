@@ -4,7 +4,7 @@ abstract class TextStyles {
   TextStyles._();
 
   static const valueTextStyle = TextStyle(
-    fontSize: 20.0,
+    fontSize: 18.0,
     fontWeight: FontWeight.bold,
   );
 

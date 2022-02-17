@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
@@ -12,7 +15,7 @@ enum FuelSystemStatus {
 }
 
 extension FuelSystemStatusExtension on FuelSystemStatus {
-  String get description {
+  String get fullDescription {
     switch (this) {
       case FuelSystemStatus.motorOff:
         return Strings.fuelSystemMotofOff;
@@ -28,6 +31,43 @@ extension FuelSystemStatusExtension on FuelSystemStatus {
         return Strings.fuelSystemOxygenSensorFailure;
       case FuelSystemStatus.unknown:
         return Strings.fuelSystemUnknown;
+    }
+  }
+
+  String get description {
+    switch (this) {
+      case FuelSystemStatus.motorOff:
+        return Strings.fuelSystemMotofOffShort;
+      case FuelSystemStatus.insufficientEngineTemp:
+        return Strings.fuelSystemInsufficientEngineTempShort;
+      case FuelSystemStatus.good:
+        return Strings.fuelSystemGoodShort;
+      case FuelSystemStatus.fuelCut:
+        return Strings.fuelSystemCutShort;
+      case FuelSystemStatus.systemFailure:
+        return Strings.fuelSystemFailureShort;
+      case FuelSystemStatus.oxygenSensorFailure:
+        return Strings.fuelSystemOxygenSensorFailureShort;
+      case FuelSystemStatus.unknown:
+        return Strings.fuelSystemUnknownShort;
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case FuelSystemStatus.motorOff:
+        return LineIcons.powerOff;
+      case FuelSystemStatus.insufficientEngineTemp:
+        return LineIcons.thermometerEmpty;
+      case FuelSystemStatus.good:
+        return LineIcons.thermometerFull;
+      case FuelSystemStatus.fuelCut:
+        return LineIcons.handHoldingUsDollar;
+      case FuelSystemStatus.systemFailure:
+      case FuelSystemStatus.oxygenSensorFailure:
+        return LineIcons.carCrash;
+      case FuelSystemStatus.unknown:
+        return LineIcons.question;
     }
   }
 }

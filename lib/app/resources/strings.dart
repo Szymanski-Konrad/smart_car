@@ -25,15 +25,16 @@ abstract class Strings {
   static const String tripStats = 'Statystki przejazdu';
   static String pedalPressed(bool isPressed) =>
       isPressed ? 'Gaz wciśnięty' : 'Gaz puszczony';
-  static String avgResponse(int time) => 'Średni czas podpowiedzi: $time';
-  static String totalResponse(int time) =>
-      'Łączny czas odpowiedzi czujników: $time';
+  static String avgResponse(int time) => 'Średni czas odpowiedzi: $time';
+  static String totalResponse(int time) => 'Łączny czas odpowiedzi: $time';
   static const String loadingPids = 'Wyszukiwanie dostępnych czujników...';
-  static String indoorTemp(String temperature) =>
-      'Temperatura wewnątrz: $temperature °C';
+  static const String indoorTemp = 'Temperatura wewnątrz';
   static String supportedCommandsCount(int selected, int total) =>
       'Dostępne czujniki: $selected/$total';
   static const String noDescription = 'brak opisu';
+  static const String roadTilt = 'Nachylenie';
+  static const String gForce = 'Przeciążenie';
+  static const String fuelSystemStatus = 'Układ paliwowy';
 
   /// Settings
   static const String noSelectedDevice = 'Nie wybranego urządzenia';
@@ -63,6 +64,15 @@ abstract class Strings {
       'Problem z sondą lambda. Skontaktuj się z mechanikiem';
   static const String fuelSystemUnknown = 'Nieznany stan systemu paliwowego';
 
+  static const String fuelSystemMotofOffShort = 'Silnik wyłączony';
+  static const String fuelSystemInsufficientEngineTempShort = 'Zimny';
+  static const String fuelSystemGoodShort = 'Rozgrzany';
+  static const String fuelSystemCutShort = 'Oszczędzanie paliwa';
+  static const String fuelSystemFailureShort = 'Nieznany problem';
+  static const String fuelSystemOxygenSensorFailureShort =
+      'Problem z sondą lambda';
+  static const String fuelSystemUnknownShort = 'Nieznany stan';
+
   /// Trip record
   static const String fuelCosts = 'Cena paliwa';
   static const String savedFuel = 'Zaoszczędzone paliwo';
@@ -70,17 +80,17 @@ abstract class Strings {
   static const String idleUsedFuel = 'Postojowe paliwo';
   static const String distance = 'Dystans';
   static const String instantFuelConsumption = 'Chwilowe spalanie';
-  static const String averageFuelConsumption = 'Średnie spalanie';
+  static const String averageFuelConsumption = 'Śr. spalanie';
   static const String range = 'Zasięg';
   static const String gpsSpeed = 'Prędkość GPS';
   static const String gpsDistance = 'Dystans GPS';
-  static const String totalDuration = 'Całkowity czas';
+  static const String totalDuration = 'Czas';
   static const String driveDuration = 'Czas jazdy';
   static const String idleDuration = 'Czas postoju';
-  static const String averageSpeed = 'Średnia prędkość';
+  static const String averageSpeed = 'Śr. prędkość';
   static const String rapidAcceleration = 'Przysp.';
-  static const String rapidBraking = 'Hamowanie';
+  static const String rapidBraking = 'Hamowania';
   static const String burntCO2 = 'Wyemitowane CO2';
   static const String savedCO2 = 'Uratowane CO2';
-  static const String averageCO2 = 'Średnie CO2';
+  static const String averageCO2 = 'Śr. CO2';
 }

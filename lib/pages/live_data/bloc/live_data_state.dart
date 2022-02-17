@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/utils/info_tile_data.dart';
 
 part 'live_data_state.freezed.dart';
 
@@ -47,7 +51,9 @@ class LiveDataState with _$LiveDataState {
     @Default(0) int totalResponseTime,
 
     // Sensors
-    @Default('') String userAccelerometer,
+    @Default(0) double xAccelerometer,
+    @Default(0) double yAccelerometer,
+    @Default(0) double zAccelerometer,
     @Default(0.0) double temperature,
     @Default(false) bool isTemperatureAvaliable,
 
@@ -139,6 +145,35 @@ extension LiveDataStateExtension on LiveDataState {
     }
   }
 
+  OtherTileData get tiltData => OtherTileData(
+        digits: 1,
+        unit: '%',
+        title: Strings.roadTilt,
+        value: tilt,
+      );
+
+  OtherTileData get gForceData => OtherTileData(
+        digits: 2,
+        unit: 'g',
+        title: Strings.gForce,
+        value: gForce,
+      );
+
+  OtherTileData get indoorTempData => OtherTileData(
+        digits: 1,
+        unit: '°C',
+        title: Strings.indoorTemp,
+        value: gForce,
+      );
+
+  OtherTileData get fuelStatusData => OtherTileData(
+        digits: 0,
+        unit: '',
+        title: Strings.fuelSystemStatus,
+        value: fuelSystemStatus.description,
+        iconData: fuelSystemStatus.icon,
+      );
+
   String get nextReadPidsPart {
     if (shouldRead1_20) return '01' + Pids.pidsList1;
     if (shouldRead21_40) return '01' + Pids.pidsList2;
@@ -163,4 +198,14 @@ extension LiveDataStateExtension on LiveDataState {
       pidsChecker.pidsSupportedA1_C0 && !pidsChecker.pidsReadedA1_C0;
 
   String get getTemperature => temperature.toStringAsFixed(1);
+
+  double get _accelerationSum =>
+      (pow(xAccelerometer, 2) + pow(yAccelerometer, 2) + pow(zAccelerometer, 2))
+          .toDouble();
+
+  double get gForce => sqrt(_accelerationSum) / 9.8;
+
+  double get _yAngle => atan2(yAccelerometer, zAccelerometer) / (pi / 180);
+
+  double get tilt => _yAngle - 90;
 }

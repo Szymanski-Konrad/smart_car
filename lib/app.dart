@@ -25,6 +25,7 @@ class _AppState extends State<App> {
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
 
   List<String> files = [];
+  List<String> canFiles = [];
 
   @override
   void initState() {
@@ -116,15 +117,6 @@ class _AppState extends State<App> {
                     },
                   ),
                 ),
-              if (kDebugMode)
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text('CAN testing'),
-                    onPressed: () {
-                      Navigation.instance.push(SharedRoutes.canTest);
-                    },
-                  ),
-                ),
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
               ListTile(
@@ -140,6 +132,15 @@ class _AppState extends State<App> {
                     child: Text(Strings.sendSavedTrips(files.length)),
                     onPressed: () async {
                       await sendTripsToMail(files);
+                    },
+                  ),
+                ),
+              if (canFiles.isNotEmpty)
+                ListTile(
+                  title: ElevatedButton(
+                    child: Text(Strings.sendSavedTrips(files.length)),
+                    onPressed: () async {
+                      await sendTripsToMail(canFiles);
                     },
                   ),
                 ),
@@ -163,6 +164,7 @@ class _AppState extends State<App> {
     final paths = list.map((e) => e.path).toList();
     setState(() {
       files = paths.where((element) => element.contains('trip')).toList();
+      canFiles = paths.where((element) => element.contains('CAN')).toList();
     });
   }
 

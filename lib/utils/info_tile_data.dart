@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 
 abstract class InfoTileData<T> {
@@ -6,12 +7,14 @@ abstract class InfoTileData<T> {
     required this.digits,
     required this.title,
     required this.unit,
+    this.iconData,
   });
 
   final T value;
   final int digits;
   final String title;
   final String unit;
+  IconData? iconData;
 
   String get formattedValue {
     final val = value;
@@ -69,10 +72,12 @@ class OtherTileData<T> extends InfoTileData<T> {
     required int digits,
     required String title,
     required String unit,
+    IconData? iconData,
   }) : super(
           value: value,
           digits: digits,
           title: title,
           unit: unit,
+          iconData: iconData,
         );
 }

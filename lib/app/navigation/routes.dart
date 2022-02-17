@@ -5,6 +5,4 @@ abstract class SharedRoutes {
   static const settings = '/settings';
   static const selectBoundedDevice = '/selectBoundedDevice';
   static const liveData = '/liveData';
-
-  static const canTest = '/canTest';
 }

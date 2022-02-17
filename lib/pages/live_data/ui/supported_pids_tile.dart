@@ -21,7 +21,7 @@ class SupportedPidsTile extends StatelessWidget {
         border: Border.all(color: Colors.blue),
         borderRadius: const BorderRadius.all(Radius.circular(5.0)),
       ),
-      height: Constants.tileHeight,
+      height: Constants.tileHeight + 20,
       width: MediaQuery.of(context).size.width * 0.31,
       child: Column(
         children: [

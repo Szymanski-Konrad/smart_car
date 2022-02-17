@@ -14,9 +14,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
+import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/resources/configs.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -48,29 +50,18 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     init();
   }
 
-  static const _backgroundConfig = FlutterBackgroundAndroidConfig(
-    notificationTitle: 'Jestem połączony :)',
-    notificationText: 'Jedź, a ja się wszystkim zajmę :)',
-    notificationIcon: AndroidResource(name: 'background_icon'),
-    notificationImportance: AndroidNotificationImportance.Default,
-    enableWifiLock: false,
-  );
-
-  // Commands to create test data to work without OBD
-  List<TestCommand> testCommands = [];
-
   // list of commands to send
+  List<TestCommand> testCommands = [];
   List<ObdCommand> commands = [];
   Queue<String> specialCommands = Queue();
   Queue<String> pidsQueue = Queue<String>();
 
-  final String? address;
   int _commandIndex = 0;
   DateTime? lastDataReciveTime;
 
   // Bluetooth
+  final String? address;
   BluetoothConnection? _connection;
-  bool get isConnected => (_connection?.isConnected ?? false);
 
   // Timers
   Timer? _everySecondTimer;
@@ -79,8 +70,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription<Position>? positionSub;
 
   Future<void> _initBackgroundWorking() async {
-    final hasPermissions =
-        await FlutterBackground.initialize(androidConfig: _backgroundConfig);
+    final hasPermissions = await FlutterBackground.initialize(
+        androidConfig: Configs.backgroundConfig);
     if (hasPermissions) {
       await FlutterBackground.enableBackgroundExecution();
     }
@@ -270,7 +261,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
 
     int index = 0;
-    final percentyl = testCommands.length ~/ 10000; // 0.01%
+    final percentyl =
+        testCommands.length > 10000 ? testCommands.length ~/ 10000 : 1; // 0.01%
     for (final testCommand in testCommands) {
       commands
           .safeFirstWhere((element) => element.command == testCommand.command)
@@ -315,12 +307,23 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
   }
 
+  StreamSubscription<SensorEvent>? _accSubscription;
+
   void init() async {
     emit(state.copyWith(isConnnectingError: false));
-    // userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-    //   emit(state.copyWith(
-    //       userAccelerometer: '\n${event.x}\n${event.y}\n${event.z}'));
-    // });
+
+    final stream = await SensorManager().sensorUpdates(
+      sensorId: Sensors.ACCELEROMETER,
+      interval: Sensors.SENSOR_DELAY_UI,
+    );
+
+    _accSubscription = stream.listen((event) {
+      emit(state.copyWith(
+        xAccelerometer: event.data[0],
+        yAccelerometer: event.data[1],
+        zAccelerometer: event.data[2],
+      ));
+    });
 
     if (address != null) {
       BluetoothConnection.toAddress(address).then((connection) {
@@ -355,7 +358,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
 
     positionSub = Geolocator.getPositionStream(
-      intervalDuration: const Duration(milliseconds: 500),
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.bestForNavigation,
+        distanceFilter: 50,
+      ),
     ).listen(onGpsPositionChange);
   }
 
@@ -648,9 +654,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   @override
   Future<void> close() async {
+    _everySecondTimer?.cancel();
+    _accSubscription?.cancel();
     await saveCommands();
     await _connection?.finish();
-    _everySecondTimer?.cancel();
     await positionSub?.cancel();
     if (FlutterBackground.isBackgroundExecutionEnabled) {
       await FlutterBackground.disableBackgroundExecution();

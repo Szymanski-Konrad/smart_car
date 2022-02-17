@@ -143,25 +143,19 @@ extension TripRecordExtension on TripRecord {
         savedFuelDetails,
       ];
 
-  List<OtherTileData> get fuelSection => [
-        avgFuelDetails,
-        instFuelDetails,
-        fuelCostsDetails,
-      ];
-
-  List<OtherTileData> get carboSection => [
-        carboPerKmDetails,
-        producedCarboDetails,
-        savedCarboDetails,
-      ];
-
   List<TimeTileData> get timeSection => [
         totalTripTimeDetails,
         driveTimeDetails,
         idleTripTimeDetails,
       ];
 
-  List<OtherTileData> get tripSection => [
+  List<OtherTileData> get otherInfoSection => [
+        avgFuelDetails,
+        instFuelDetails,
+        fuelCostsDetails,
+        carboPerKmDetails,
+        producedCarboDetails,
+        savedCarboDetails,
         avgSpeedDetails,
         distanceDetails,
         rangeDetails,

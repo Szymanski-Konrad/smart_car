@@ -44,6 +44,12 @@ class _$LiveDataStateTearOff {
       int averageResponseTime = 0,
       int totalResponseTime = 0,
       String userAccelerometer = '',
+      double xAccelerometer = 0,
+      double yAccelerometer = 0,
+      double zAccelerometer = 0,
+      double xGyroscope = 0,
+      double yGyroscope = 0,
+      double zGyroscope = 0,
       double temperature = 0.0,
       bool isTemperatureAvaliable = false,
       List<String> errors = const []}) {
@@ -74,6 +80,12 @@ class _$LiveDataStateTearOff {
       averageResponseTime: averageResponseTime,
       totalResponseTime: totalResponseTime,
       userAccelerometer: userAccelerometer,
+      xAccelerometer: xAccelerometer,
+      yAccelerometer: yAccelerometer,
+      zAccelerometer: zAccelerometer,
+      xGyroscope: xGyroscope,
+      yGyroscope: yGyroscope,
+      zGyroscope: zGyroscope,
       temperature: temperature,
       isTemperatureAvaliable: isTemperatureAvaliable,
       errors: errors,
@@ -114,6 +126,12 @@ mixin _$LiveDataState {
   int get averageResponseTime => throw _privateConstructorUsedError;
   int get totalResponseTime => throw _privateConstructorUsedError; // Sensors
   String get userAccelerometer => throw _privateConstructorUsedError;
+  double get xAccelerometer => throw _privateConstructorUsedError;
+  double get yAccelerometer => throw _privateConstructorUsedError;
+  double get zAccelerometer => throw _privateConstructorUsedError;
+  double get xGyroscope => throw _privateConstructorUsedError;
+  double get yGyroscope => throw _privateConstructorUsedError;
+  double get zGyroscope => throw _privateConstructorUsedError;
   double get temperature => throw _privateConstructorUsedError;
   bool get isTemperatureAvaliable =>
       throw _privateConstructorUsedError; // Errors
@@ -156,6 +174,12 @@ abstract class $LiveDataStateCopyWith<$Res> {
       int averageResponseTime,
       int totalResponseTime,
       String userAccelerometer,
+      double xAccelerometer,
+      double yAccelerometer,
+      double zAccelerometer,
+      double xGyroscope,
+      double yGyroscope,
+      double zGyroscope,
       double temperature,
       bool isTemperatureAvaliable,
       List<String> errors});
@@ -201,6 +225,12 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? averageResponseTime = freezed,
     Object? totalResponseTime = freezed,
     Object? userAccelerometer = freezed,
+    Object? xAccelerometer = freezed,
+    Object? yAccelerometer = freezed,
+    Object? zAccelerometer = freezed,
+    Object? xGyroscope = freezed,
+    Object? yGyroscope = freezed,
+    Object? zGyroscope = freezed,
     Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
     Object? errors = freezed,
@@ -310,6 +340,30 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
               as String,
+      xAccelerometer: xAccelerometer == freezed
+          ? _value.xAccelerometer
+          : xAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      yAccelerometer: yAccelerometer == freezed
+          ? _value.yAccelerometer
+          : yAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      zAccelerometer: zAccelerometer == freezed
+          ? _value.zAccelerometer
+          : zAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      xGyroscope: xGyroscope == freezed
+          ? _value.xGyroscope
+          : xGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
+      yGyroscope: yGyroscope == freezed
+          ? _value.yGyroscope
+          : yGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
+      zGyroscope: zGyroscope == freezed
+          ? _value.zGyroscope
+          : zGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
       temperature: temperature == freezed
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
@@ -374,6 +428,12 @@ abstract class _$LiveDataStateCopyWith<$Res>
       int averageResponseTime,
       int totalResponseTime,
       String userAccelerometer,
+      double xAccelerometer,
+      double yAccelerometer,
+      double zAccelerometer,
+      double xGyroscope,
+      double yGyroscope,
+      double zGyroscope,
       double temperature,
       bool isTemperatureAvaliable,
       List<String> errors});
@@ -423,6 +483,12 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? averageResponseTime = freezed,
     Object? totalResponseTime = freezed,
     Object? userAccelerometer = freezed,
+    Object? xAccelerometer = freezed,
+    Object? yAccelerometer = freezed,
+    Object? zAccelerometer = freezed,
+    Object? xGyroscope = freezed,
+    Object? yGyroscope = freezed,
+    Object? zGyroscope = freezed,
     Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
     Object? errors = freezed,
@@ -532,6 +598,30 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.userAccelerometer
           : userAccelerometer // ignore: cast_nullable_to_non_nullable
               as String,
+      xAccelerometer: xAccelerometer == freezed
+          ? _value.xAccelerometer
+          : xAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      yAccelerometer: yAccelerometer == freezed
+          ? _value.yAccelerometer
+          : yAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      zAccelerometer: zAccelerometer == freezed
+          ? _value.zAccelerometer
+          : zAccelerometer // ignore: cast_nullable_to_non_nullable
+              as double,
+      xGyroscope: xGyroscope == freezed
+          ? _value.xGyroscope
+          : xGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
+      yGyroscope: yGyroscope == freezed
+          ? _value.yGyroscope
+          : yGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
+      zGyroscope: zGyroscope == freezed
+          ? _value.zGyroscope
+          : zGyroscope // ignore: cast_nullable_to_non_nullable
+              as double,
       temperature: temperature == freezed
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
@@ -578,6 +668,12 @@ class _$_LiveDataState implements _LiveDataState {
       this.averageResponseTime = 0,
       this.totalResponseTime = 0,
       this.userAccelerometer = '',
+      this.xAccelerometer = 0,
+      this.yAccelerometer = 0,
+      this.zAccelerometer = 0,
+      this.xGyroscope = 0,
+      this.yGyroscope = 0,
+      this.zGyroscope = 0,
       this.temperature = 0.0,
       this.isTemperatureAvaliable = false,
       this.errors = const []});
@@ -658,6 +754,24 @@ class _$_LiveDataState implements _LiveDataState {
   final String userAccelerometer;
   @JsonKey()
   @override
+  final double xAccelerometer;
+  @JsonKey()
+  @override
+  final double yAccelerometer;
+  @JsonKey()
+  @override
+  final double zAccelerometer;
+  @JsonKey()
+  @override
+  final double xGyroscope;
+  @JsonKey()
+  @override
+  final double yGyroscope;
+  @JsonKey()
+  @override
+  final double zGyroscope;
+  @JsonKey()
+  @override
   final double temperature;
   @JsonKey()
   @override
@@ -668,7 +782,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, fuelPrice: $fuelPrice, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, userAccelerometer: $userAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, throttlePressed: $throttlePressed, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, fuelPrice: $fuelPrice, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, userAccelerometer: $userAccelerometer, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, xGyroscope: $xGyroscope, yGyroscope: $yGyroscope, zGyroscope: $zGyroscope, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
   }
 
   @override
@@ -724,6 +838,18 @@ class _$_LiveDataState implements _LiveDataState {
             const DeepCollectionEquality()
                 .equals(other.userAccelerometer, userAccelerometer) &&
             const DeepCollectionEquality()
+                .equals(other.xAccelerometer, xAccelerometer) &&
+            const DeepCollectionEquality()
+                .equals(other.yAccelerometer, yAccelerometer) &&
+            const DeepCollectionEquality()
+                .equals(other.zAccelerometer, zAccelerometer) &&
+            const DeepCollectionEquality()
+                .equals(other.xGyroscope, xGyroscope) &&
+            const DeepCollectionEquality()
+                .equals(other.yGyroscope, yGyroscope) &&
+            const DeepCollectionEquality()
+                .equals(other.zGyroscope, zGyroscope) &&
+            const DeepCollectionEquality()
                 .equals(other.temperature, temperature) &&
             const DeepCollectionEquality()
                 .equals(other.isTemperatureAvaliable, isTemperatureAvaliable) &&
@@ -759,6 +885,12 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(averageResponseTime),
         const DeepCollectionEquality().hash(totalResponseTime),
         const DeepCollectionEquality().hash(userAccelerometer),
+        const DeepCollectionEquality().hash(xAccelerometer),
+        const DeepCollectionEquality().hash(yAccelerometer),
+        const DeepCollectionEquality().hash(zAccelerometer),
+        const DeepCollectionEquality().hash(xGyroscope),
+        const DeepCollectionEquality().hash(yGyroscope),
+        const DeepCollectionEquality().hash(zGyroscope),
         const DeepCollectionEquality().hash(temperature),
         const DeepCollectionEquality().hash(isTemperatureAvaliable),
         const DeepCollectionEquality().hash(errors)
@@ -798,6 +930,12 @@ abstract class _LiveDataState implements LiveDataState {
       int averageResponseTime,
       int totalResponseTime,
       String userAccelerometer,
+      double xAccelerometer,
+      double yAccelerometer,
+      double zAccelerometer,
+      double xGyroscope,
+      double yGyroscope,
+      double zGyroscope,
       double temperature,
       bool isTemperatureAvaliable,
       List<String> errors}) = _$_LiveDataState;
@@ -854,6 +992,18 @@ abstract class _LiveDataState implements LiveDataState {
   int get totalResponseTime;
   @override // Sensors
   String get userAccelerometer;
+  @override
+  double get xAccelerometer;
+  @override
+  double get yAccelerometer;
+  @override
+  double get zAccelerometer;
+  @override
+  double get xGyroscope;
+  @override
+  double get yGyroscope;
+  @override
+  double get zGyroscope;
   @override
   double get temperature;
   @override
