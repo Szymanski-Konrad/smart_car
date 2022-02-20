@@ -173,29 +173,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _sendCommand('AT E0'); // Echo off
     await Future.delayed(const Duration(milliseconds: 200));
     emit(state.copyWith(isRunning: true));
-
-    _everySecondTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      final now = DateTime.now();
-      if (now.difference(lastReciveCommandTime).inSeconds >
-              Durations.maxNoDataReciveSeconds &&
-          !state.isTripClosing) {
-        motorOff();
-      }
-      final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
-      final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>()?.status;
-      final tripStatus = speed < Constants.idleSpeedLimit
-          ? TripStatus.idle
-          : fuelStatus == FuelSystemStatus.fuelCut
-              ? TripStatus.savingFuel
-              : TripStatus.driving;
-      emit(state.copyWith(
-        totalResponseTime: totalResponseTime,
-        averageResponseTime: averageResponseTime,
-        tripStatus: tripStatus,
-        tripRecord:
-            state.tripRecord.updateSeconds(speed).updateTripStatus(tripStatus),
-      ));
-    });
+    _startSecondTimer();
 
     await _determinePosition();
     lastReciveCommandTime = DateTime.now();
@@ -233,6 +211,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _everySecondTimer = Timer.periodic(
       const Duration(seconds: 1),
       (timer) {
+        final now = DateTime.now();
+        if (now.difference(lastReciveCommandTime).inSeconds >=
+                Durations.maxNoDataReciveSeconds &&
+            !state.isTripClosing) {
+          motorOff();
+        }
         final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
         final fuelStatus =
             commands.safeFirst<FuelSystemStatusCommand>()?.status;
