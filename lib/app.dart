@@ -67,6 +67,7 @@ class _AppState extends State<App> {
         return Scaffold(
           body: ListView(
             children: [
+              const SectionTitle(title: Strings.bluetooth),
               SwitchListTile(
                 title: const Text(Strings.enableBluetooth),
                 value: _bluetoothState.isEnabled,
@@ -85,6 +86,7 @@ class _AppState extends State<App> {
                 },
               ),
               const Divider(color: Colors.yellow),
+              const SectionTitle(title: Strings.obdSection),
               if (_bluetoothState.isEnabled)
                 ListTile(
                   title: ElevatedButton(
@@ -119,6 +121,10 @@ class _AppState extends State<App> {
                 ),
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
+              const SectionTitle(title: Strings.fuelSection),
+              const SizedBox(height: 16),
+              const Divider(color: Colors.yellow),
+              const SectionTitle(title: Strings.settings),
               ListTile(
                 title: ElevatedButton(
                   child: const Text(Strings.settings),
@@ -183,5 +189,19 @@ class _AppState extends State<App> {
       file.delete();
     }
     await showFilesInDirectory();
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  const SectionTitle({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(title);
   }
 }

@@ -25,7 +25,6 @@ class LiveDataState with _$LiveDataState {
     Position? lastPosition,
     @Default(false) bool isLocalMode,
     @Default(0) double acceleration,
-    @Default(false) bool throttlePressed,
     @Default(0) int currentTimeSpent,
     @Default(0) double currentFuelBurnt,
     @Default(TripStatus.idle) TripStatus tripStatus,
@@ -145,11 +144,25 @@ extension LiveDataStateExtension on LiveDataState {
     }
   }
 
-  OtherTileData get tiltData => OtherTileData(
+  OtherTileData get tiltXData => OtherTileData(
         digits: 1,
         unit: '%',
-        title: Strings.roadTilt,
-        value: tilt,
+        title: '${Strings.roadTilt} X',
+        value: tiltX,
+      );
+
+  OtherTileData get tiltYData => OtherTileData(
+        digits: 1,
+        unit: '%',
+        title: '${Strings.roadTilt} Y',
+        value: tiltY,
+      );
+
+  OtherTileData get tiltZData => OtherTileData(
+        digits: 1,
+        unit: '%',
+        title: '${Strings.roadTilt} Z',
+        value: tiltZ,
       );
 
   OtherTileData get gForceData => OtherTileData(
@@ -174,14 +187,14 @@ extension LiveDataStateExtension on LiveDataState {
         iconData: fuelSystemStatus.icon,
       );
 
-  String get nextReadPidsPart {
+  String? get nextReadPidsPart {
     if (shouldRead1_20) return '01' + Pids.pidsList1;
     if (shouldRead21_40) return '01' + Pids.pidsList2;
     if (shouldRead41_60) return '01' + Pids.pidsList3;
     if (shouldRead61_80) return '01' + Pids.pidsList4;
     if (shouldRead81_A0) return '01' + Pids.pidsList5;
     if (shouldReadA1_C0) return '01' + Pids.pidsList6;
-    return '';
+    return null;
   }
 
   bool get shouldRead1_20 =>
@@ -206,6 +219,10 @@ extension LiveDataStateExtension on LiveDataState {
   double get gForce => sqrt(_accelerationSum) / 9.8;
 
   double get _yAngle => atan2(yAccelerometer, zAccelerometer) / (pi / 180);
+  double get _xAngle => atan2(xAccelerometer, zAccelerometer) / (pi / 180);
+  double get _zAngle => atan2(zAccelerometer, yAccelerometer) / (pi / 180);
 
-  double get tilt => _yAngle - 90;
+  double get tiltY => _yAngle - 90;
+  double get tiltX => _xAngle - 90;
+  double get tiltZ => _zAngle - 90;
 }

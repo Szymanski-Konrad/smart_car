@@ -29,6 +29,7 @@ import 'package:smart_car/models/commands/time_run_with_mil_on_command.dart';
 import 'package:smart_car/models/commands/time_since_troubles_codes_cleared_command.dart';
 import 'package:smart_car/models/commands/warmups_since_codes_cleared_command.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
+import 'package:smart_car/pages/live_data/model/battery_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/commanded_evaporative_purge_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_senor_trim_volts.dart';
 import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_sensor_lambda_voltage_command.dart';
@@ -167,6 +168,7 @@ abstract class Pids {
   static const String pidsList5 = '80';
   static const String pidsList6 = 'A0';
   static const String pidsList7 = 'C0';
+  static const String ATRV = 'ATRV';
 }
 
 const List<String> initializeCommands = [
@@ -195,13 +197,14 @@ const List<String> untouchableCommads = [
   Pids.rpm,
   Pids.speed,
   Pids.intakeAirTemp,
-  Pids.throttlePosition,
   Pids.fuelLevel,
   Pids.controlModuleVoltage,
   Pids.commandedAirFuelRatio,
+  Pids.ATRV,
 ];
 
 enum PID {
+  atrv,
   engineCoolant,
   engineLoad,
   fuelLevel,
@@ -454,6 +457,8 @@ extension PIDExtension on PID {
         return PID.fuelInjectionTiming;
       case Pids.fuelRailPressure:
         return PID.fuelRailPressure;
+      case Pids.ATRV:
+        return PID.atrv;
       default:
         return PID.unknown;
     }
@@ -461,6 +466,8 @@ extension PIDExtension on PID {
 
   ObdCommand? get command {
     switch (this) {
+      case PID.atrv:
+        return BatteryVoltageCommand();
       case PID.odometer:
         return OdometerCommand();
       case PID.engineReferenceTorque:

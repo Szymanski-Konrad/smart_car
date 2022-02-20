@@ -19,7 +19,7 @@ abstract class InfoTileData<T> {
   String get formattedValue {
     final val = value;
     if (val is double) {
-      return val > 0 ? val.toStringAsFixed(digits) : '-.-';
+      return val.toStringAsFixed(digits);
     } else if (val is Duration) {
       return val.toString().substring(0, 7);
     } else if (val is String) {

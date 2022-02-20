@@ -30,14 +30,17 @@ class _CountDownTextState extends State<CountDownText> {
     });
   }
 
+  String get _dots => '...'.substring(leftSeconds % 3);
+
   @override
   Widget build(BuildContext context) {
+    //TODO: Improve view
     return SizedBox(
       width: double.infinity,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Text(
-          'Koniec podróży, ekran zamknie się za: $leftSeconds',
+          'Koniec podróży, ekran zamknie się za: $leftSeconds$_dots',
           style: const TextStyle(
             fontSize: 20,
           ),

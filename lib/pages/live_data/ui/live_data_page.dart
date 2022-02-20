@@ -12,6 +12,7 @@ import 'package:smart_car/pages/live_data/ui/trip_stats_section.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
+import 'package:smart_car/utils/trip_files.dart';
 
 class LiveDataPageArguments {
   LiveDataPageArguments({this.isLocalMode = false});
@@ -65,16 +66,14 @@ class LiveDataPage extends StatelessWidget
                             : Strings.connected,
                   ),
                   actions: [
-                    if (!state.isLocalMode) ...[
-                      IconButton(
-                        onPressed: () =>
-                            Navigation.instance.push(SharedRoutes.settings),
-                        icon: const Icon(Icons.settings),
-                      ),
-                    ],
+                    IconButton(
+                      onPressed: () =>
+                          Navigation.instance.push(SharedRoutes.settings),
+                      icon: const Icon(Icons.settings),
+                    ),
                     IconButton(
                       onPressed: () async {
-                        final files = await cubit.showFilesInDirectory();
+                        final files = await TripFiles.showFilesInDirectory();
                         showDialog(
                             context: context,
                             builder: (ctx) {
@@ -84,7 +83,7 @@ class LiveDataPage extends StatelessWidget
                                 actions: [
                                   TextButton(
                                     onPressed: () =>
-                                        cubit.sendTripsToMail(files),
+                                        TripFiles.sendTripsToMail(files),
                                     child: const Text(Strings.sendFiles),
                                   ),
                                 ],

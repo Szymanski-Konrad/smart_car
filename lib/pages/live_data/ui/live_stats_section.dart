@@ -25,19 +25,6 @@ class LiveStatsSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
-                Strings.pedalPressed(state.throttlePressed),
-              ),
-              Icon(
-                state.throttlePressed ? Icons.upload : Icons.download,
-                color: !state.throttlePressed ? Colors.green : Colors.amber,
-              ),
-              if (cubit.commands.isEmpty) const Text(Strings.loadingPids),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
               Text(Strings.avgResponse(state.averageResponseTime)),
               Text(Strings.totalResponse(state.totalResponseTime)),
             ],

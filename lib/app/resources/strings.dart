@@ -3,7 +3,10 @@ abstract class Strings {
   static const String promptCharacter = '>';
 
   /// Main page
+  static const String bluetooth = 'Bluetooth';
   static const String enableBluetooth = 'Włącz Bluetooth';
+  static const String obdSection = 'OBD II';
+  static const String fuelSection = 'Paliwo';
   static const String connectToObd = 'Połącz z OBD II';
   static const String firstlyChooseDevice =
       'Najpierw przejdź do ustawień, aby wybrać urządzenia do połączenia';
@@ -25,8 +28,8 @@ abstract class Strings {
   static const String tripStats = 'Statystki przejazdu';
   static String pedalPressed(bool isPressed) =>
       isPressed ? 'Gaz wciśnięty' : 'Gaz puszczony';
-  static String avgResponse(int time) => 'Średni czas odpowiedzi: $time';
-  static String totalResponse(int time) => 'Łączny czas odpowiedzi: $time';
+  static String avgResponse(int time) => 'Średni czas odpowiedzi: $time ms';
+  static String totalResponse(int time) => 'Łączny czas odpowiedzi: $time ms';
   static const String loadingPids = 'Wyszukiwanie dostępnych czujników...';
   static const String indoorTemp = 'Temperatura wewnątrz';
   static String supportedCommandsCount(int selected, int total) =>
@@ -67,7 +70,7 @@ abstract class Strings {
   static const String fuelSystemMotofOffShort = 'Silnik wyłączony';
   static const String fuelSystemInsufficientEngineTempShort = 'Zimny';
   static const String fuelSystemGoodShort = 'Rozgrzany';
-  static const String fuelSystemCutShort = 'Oszczędzanie paliwa';
+  static const String fuelSystemCutShort = 'Oszczędzanie';
   static const String fuelSystemFailureShort = 'Nieznany problem';
   static const String fuelSystemOxygenSensorFailureShort =
       'Problem z sondą lambda';
