@@ -122,6 +122,20 @@ class _AppState extends State<App> {
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
               const SectionTitle(title: Strings.fuelSection),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text(Strings.fuelLogs),
+                  onPressed: () {
+                    Navigation.instance.push(SharedRoutes.fuelLogs);
+                  },
+                ),
+              ),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text(Strings.fuelStations),
+                  onPressed: () {},
+                ),
+              ),
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
               const SectionTitle(title: Strings.settings),
@@ -202,6 +216,16 @@ class SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title);
+    return Padding(
+      padding: const EdgeInsets.only(left: 8.0),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18.0,
+          fontStyle: FontStyle.italic,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 }

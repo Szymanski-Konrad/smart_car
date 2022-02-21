@@ -1,0 +1,55 @@
+import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+
+final demoFuelLogs = [
+  FuelLog(
+    odometer: 210000,
+    fuelAmount: 32.6,
+    fuelPrice: 5.4,
+    totalPrice: 176.04,
+    fuelEfficiency: 7.7,
+    isFull: true,
+    odometerDiff: 254,
+    remainingFuel: 5,
+    logDate: DateTime.parse('2021-09-20 20:00:00'),
+  ),
+  FuelLog(
+    odometer: 210500,
+    fuelAmount: 33.6,
+    fuelPrice: 6.4,
+    totalPrice: 215.04,
+    odometerDiff: 254,
+    logDate: DateTime.parse('2021-09-21 20:00:00'),
+  ),
+  FuelLog(
+    odometer: 210500.5,
+    fuelAmount: 33.6,
+    fuelPrice: 6.4,
+    totalPrice: 215.04,
+    odometerDiff: 254,
+    logDate: DateTime.parse('2021-09-22 20:00:00'),
+  ),
+  FuelLog(
+    odometer: 210050,
+    fuelAmount: 33.6,
+    fuelPrice: 6.4,
+    totalPrice: 215.04,
+    odometerDiff: 254,
+    logDate: DateTime.parse('2021-09-23 20:00:00'),
+  ),
+  FuelLog(
+    odometer: 210500,
+    fuelAmount: 33.6,
+    fuelPrice: 6.4,
+    totalPrice: 215.04,
+    odometerDiff: 254,
+    logDate: DateTime.parse('2021-09-24 20:00:00'),
+  ),
+  FuelLog(
+    odometer: 210004,
+    fuelAmount: 33.6,
+    odometerDiff: 254,
+    fuelPrice: 6.4,
+    totalPrice: 215.04,
+    logDate: DateTime.parse('2021-09-25 20:00:00'),
+  ),
+];

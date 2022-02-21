@@ -14,6 +14,8 @@ abstract class Strings {
   static const String settings = 'Ustawienia';
   static String sendSavedTrips(int count) =>
       'Wyślij $count zapisanych przejazdów';
+  static const String fuelLogs = 'Dziennik tankowań';
+  static const String fuelStations = 'Stacje paliw';
 
   /// Live data
   static const String cannotConnect =
@@ -96,4 +98,7 @@ abstract class Strings {
   static const String burntCO2 = 'Wyemitowane CO2';
   static const String savedCO2 = 'Uratowane CO2';
   static const String averageCO2 = 'Śr. CO2';
+
+  // Fuel logs
+  static const String addYourFirstLog = 'Dodaj swój pierwszy wpis';
 }
