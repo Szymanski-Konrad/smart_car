@@ -32,7 +32,7 @@ class LiveDataPage extends StatelessWidget
         : context.read<SettingsCubit>().state.settings.deviceAddress;
     final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
     final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
-    return ScopedBlocBuilder<LiveDataCubit, LiveDataState>(
+    return ScopedListenerBlocBuilder<LiveDataCubit, LiveDataState>(
       create: (_) => LiveDataCubit(
         address: address,
         localFile: localFile,

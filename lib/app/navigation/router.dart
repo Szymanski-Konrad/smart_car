@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app.dart';
+import 'package:smart_car/pages/create_fuel_log/ui/create_fuel_log_page.dart';
 import 'package:smart_car/pages/device_search/ui/bonded_devices_page.dart';
 import 'package:smart_car/pages/fuel_logs/ui/fuel_logs_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
@@ -36,6 +37,8 @@ extension on RouteSettings {
         return const SettingsPage();
       case SharedRoutes.fuelLogs:
         return const FuelLogsPage();
+      case SharedRoutes.createFuelLog:
+        return const CreateFuelLogPage();
       default:
         return const App();
     }

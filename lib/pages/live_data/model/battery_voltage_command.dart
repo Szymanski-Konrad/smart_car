@@ -3,7 +3,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class BatteryVoltageCommand extends VisibleObdCommand {
   BatteryVoltageCommand()
-      : super('ATRV', min: 0, max: 20, prio: 0, enableHistory: false);
+      : super('ATRV', min: 0, max: 20, prio: 10, enableHistory: true);
 
   @override
   Color get color {

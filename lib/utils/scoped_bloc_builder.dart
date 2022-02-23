@@ -12,6 +12,30 @@ class ScopedBlocBuilder<C extends Cubit<S>, S> extends StatelessWidget {
     Key? key,
     required this.create,
     required this.builder,
+  }) : super(key: key);
+
+  final Create<C> create;
+  final ScopedBlocWidgetBuilder<S, C> builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: create,
+      child: BlocBuilder<C, S>(
+        builder: (context, state) {
+          final cubit = BlocProvider.of<C>(context);
+          return builder(context, state, cubit);
+        },
+      ),
+    );
+  }
+}
+
+class ScopedListenerBlocBuilder<C extends Cubit<S>, S> extends StatelessWidget {
+  const ScopedListenerBlocBuilder({
+    Key? key,
+    required this.create,
+    required this.builder,
     required this.listener,
     required this.listenWhen,
   }) : super(key: key);

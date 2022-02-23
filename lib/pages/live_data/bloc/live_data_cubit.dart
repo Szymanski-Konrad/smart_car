@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:motion_sensors/motion_sensors.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/resources/configs.dart';
 import 'package:smart_car/app/resources/constants.dart';
@@ -109,7 +111,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         emit(state.copyWith(temperature: event));
       });
     }
-
     positionSub = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.bestForNavigation,
@@ -127,8 +128,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void onGpsPositionChange(Position position) {
+    print(position);
     final lastPosition = state.lastPosition;
-
     if (lastPosition != null) {
       final distance = Geolocator.distanceBetween(
         lastPosition.latitude,
@@ -136,12 +137,15 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         position.latitude,
         position.longitude,
       );
+
       final gpsSpeed = position.speed * 3600 / 1000;
       emit(state.copyWith(
           tripRecord: state.tripRecord.copyWith(gpsSpeed: gpsSpeed)));
       if (distance > Constants.minGpsDistance) {
+        final angle = _calculateAngle(lastPosition, position, distance);
         final gpsDistance = state.tripRecord.gpsDistance + (distance / 1000);
         emit(state.copyWith(
+          roadSlope: angle,
           tripRecord: state.tripRecord.copyWith(
             gpsDistance: gpsDistance,
             gpsSpeed: gpsSpeed,
@@ -150,6 +154,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       }
     }
     emit(state.copyWith(lastPosition: position));
+  }
+
+  double _calculateAngle(Position previous, Position current, double distance) {
+    final hightDiff = previous.altitude - current.altitude;
+    final c = sqrt(pow(distance, 2) + pow(hightDiff, 2));
+    print(
+        'Distance: $distance, C: $c, Height: $hightDiff, Angle: ${asin(distance / c - 1)}');
+    return asin(distance / c - 1);
   }
 
   Future<void> initializeObd() async {

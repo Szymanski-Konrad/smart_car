@@ -4,7 +4,9 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigator.dart';
+import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 
 Future<void> main() async {
@@ -35,12 +37,7 @@ class FlutterBlueApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => SettingsCubit()..loadSettings(),
-          lazy: false,
-        ),
-      ],
+      providers: GlobalBlocs.blocs,
       child: MaterialApp(
         home: const ToastProvider(child: PageNavigator()),
         theme: ThemeData.dark(),

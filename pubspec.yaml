@@ -37,6 +37,7 @@ dependencies:
   sensors: ^2.0.3
   environment_sensors: ^0.2.0
   flutter_sensors: ^1.0.1
+  motion_sensors: ^0.1.0
 
   # Storage
   shared_preferences: ^2.0.11

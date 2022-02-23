@@ -29,6 +29,7 @@ class LiveDataState with _$LiveDataState {
     @Default(0) double currentFuelBurnt,
     @Default(TripStatus.idle) TripStatus tripStatus,
     @Default(0) double fuelPrice,
+    @Default(0) double roadSlope,
 
     // Just for testing
     @Default(0.0) double localTripProgress,
@@ -144,25 +145,11 @@ extension LiveDataStateExtension on LiveDataState {
     }
   }
 
-  OtherTileData get tiltXData => OtherTileData(
+  OtherTileData get roadSlopeData => OtherTileData(
         digits: 1,
         unit: '%',
-        title: '${Strings.roadTilt} X',
-        value: tiltX,
-      );
-
-  OtherTileData get tiltYData => OtherTileData(
-        digits: 1,
-        unit: '%',
-        title: '${Strings.roadTilt} Y',
-        value: tiltY,
-      );
-
-  OtherTileData get tiltZData => OtherTileData(
-        digits: 1,
-        unit: '%',
-        title: '${Strings.roadTilt} Z',
-        value: tiltZ,
+        title: Strings.roadTilt,
+        value: roadSlope,
       );
 
   OtherTileData get gForceData => OtherTileData(
@@ -217,12 +204,4 @@ extension LiveDataStateExtension on LiveDataState {
           .toDouble();
 
   double get gForce => sqrt(_accelerationSum) / 9.8;
-
-  double get _yAngle => atan2(yAccelerometer, zAccelerometer) / (pi / 180);
-  double get _xAngle => atan2(xAccelerometer, zAccelerometer) / (pi / 180);
-  double get _zAngle => atan2(zAccelerometer, yAccelerometer) / (pi / 180);
-
-  double get tiltY => _yAngle - 90;
-  double get tiltX => _xAngle - 90;
-  double get tiltZ => _zAngle - 90;
 }

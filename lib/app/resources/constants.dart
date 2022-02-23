@@ -5,7 +5,7 @@ abstract class Constants {
   static const infoTileHeight = 80.0;
   static const infoTileWidthFactor = 0.48;
   static const largeInfoTileWidthFactor = 0.31;
-  static const rapidBreaking = -1.5; // acceleration in m/s2
+  static const rapidBreaking = -2; // acceleration in m/s2
   static const rapidAcceleration = 1.5; // acceleration in m/s2
   static const minRapidSpeedTimeThreshold = 30; // s
   static const co2GenerationRatio = 11 / 3;
@@ -16,6 +16,9 @@ abstract class Constants {
 
   static const localFiles = [
     'work',
+    'work2',
+    'work3',
+    'work4',
     'ford1',
     'gizycko-kolno',
     'nowiak-mikolajki',

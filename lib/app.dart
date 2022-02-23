@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -63,6 +64,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     showFilesInDirectory();
     return BlocBuilder<SettingsCubit, SettingsState>(
+      bloc: GlobalBlocs.settings,
       builder: (context, state) {
         return Scaffold(
           body: ListView(

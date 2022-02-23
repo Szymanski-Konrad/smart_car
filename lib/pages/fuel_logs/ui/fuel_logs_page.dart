@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_cubit.dart';
 import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_state.dart';
-import 'package:smart_car/utils/scoped_bloc_builder.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/utils/ui/fuel_log_card.dart';
 
 class FuelLogsPage extends StatelessWidget {
@@ -10,11 +11,10 @@ class FuelLogsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBlocBuilder<FuelLogsCubit, FuelLogsState>(
-      listener: (context, state) {},
-      listenWhen: (_, __) => false,
-      create: (_) => FuelLogsCubit(),
-      builder: (context, state, cubit) {
+    return BlocBuilder<FuelLogsCubit, FuelLogsState>(
+      bloc: GlobalBlocs.fuelLogs,
+      builder: (context, state) {
+        final cubit = GlobalBlocs.fuelLogs;
         return Scaffold(
           appBar: AppBar(
             title: const Text('Dziennik tankowań'),
