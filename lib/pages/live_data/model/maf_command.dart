@@ -20,7 +20,7 @@ class MafCommand extends VisibleObdCommand {
   @override
   void performCalculations(List<int> data) {
     if (data.length >= 2) {
-      result = (256 * data[0] + data[1]) / 100;
+      result = 2 * (256 * data[0] + data[1]) / 100;
       super.performCalculations(data);
     }
   }

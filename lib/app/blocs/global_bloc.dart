@@ -7,11 +7,11 @@ class GlobalBlocs {
   static final settings = SettingsCubit();
 
   static final List<BlocProvider> blocs = [
-    BlocProvider(
+    BlocProvider<SettingsCubit>(
       create: (_) => settings..loadSettings(),
       lazy: false,
     ),
-    BlocProvider(
+    BlocProvider<FuelLogsCubit>(
       create: (_) => fuelLogs,
       lazy: false,
     ),

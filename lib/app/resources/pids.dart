@@ -172,12 +172,12 @@ abstract class Pids {
 }
 
 const List<String> initializeCommands = [
-  'AT Z',
-  'AT E0',
-  'AT L0',
-  'AT S0',
-  'AT SP 0',
-  'AT E0',
+  'AT Z', // Reset OBD
+  'AT L0', // Line feed off
+  'AT S0', // Spaces off
+  'AT ST 96', // Set timeout to 150 ms
+  'AT SP 0', // Set protocol to auto
+  'AT E0', // Echo off
 ];
 
 const List<String> checkPidsCommands = [

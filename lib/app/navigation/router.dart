@@ -7,6 +7,7 @@ import 'package:smart_car/app.dart';
 import 'package:smart_car/pages/create_fuel_log/ui/create_fuel_log_page.dart';
 import 'package:smart_car/pages/device_search/ui/bonded_devices_page.dart';
 import 'package:smart_car/pages/fuel_logs/ui/fuel_logs_page.dart';
+import 'package:smart_car/pages/fuel_stations/ui/fuel_stations_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/ui/settings_page.dart';
 
@@ -39,6 +40,8 @@ extension on RouteSettings {
         return const FuelLogsPage();
       case SharedRoutes.createFuelLog:
         return const CreateFuelLogPage();
+      case SharedRoutes.fuelStations:
+        return const FuelStationPage();
       default:
         return const App();
     }

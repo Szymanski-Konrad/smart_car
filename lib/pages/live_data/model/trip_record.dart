@@ -15,7 +15,6 @@ class TripRecord with _$TripRecord {
     @Default(-1.0) double currentFuelLvl,
     @Default(0.0) double distance,
     @Default(-1.0) double instFuelConsumption,
-    @Default(-1.0) double averageFuelConsumption,
     @Default(0.0) double kmPerL,
     @Default(0.0) double usedFuel,
     @Default(0.0) double idleUsedFuel,
@@ -44,12 +43,13 @@ class TripRecord with _$TripRecord {
 }
 
 extension TripRecordExtension on TripRecord {
+  int get totalTripSeconds => tripSeconds + idleTripSeconds;
+  double get avgFuelConsumption => 100 * usedFuel / distance;
+
   TripRecord updateFuelLvl(double value) {
     final initial = startFuelLvl < 0 ? value : startFuelLvl;
     return copyWith(startFuelLvl: initial, currentFuelLvl: value);
   }
-
-  int get totalTripSeconds => tripSeconds + idleTripSeconds;
 
   TripRecord updateDistance(double value, int speed) {
     final currDistance = distance + value;
@@ -70,13 +70,9 @@ extension TripRecordExtension on TripRecord {
     );
   }
 
-  TripRecord updateEngineLoad(double value) {
-    return copyWith(engineLoad: value);
-  }
-
   TripRecord updateRange() {
-    if (averageFuelConsumption > 0 && currentFuelLvl > 0 && tankSize > 0) {
-      final range = (tankSize * currentFuelLvl) / averageFuelConsumption;
+    if (avgFuelConsumption > 0 && currentFuelLvl > 0 && tankSize > 0) {
+      final range = (tankSize * currentFuelLvl) / avgFuelConsumption;
       return copyWith(range: range);
     }
     return this;
@@ -208,12 +204,12 @@ extension TripRecordExtension on TripRecord {
   OtherTileData get instFuelDetails => OtherTileData(
         value: instFuelConsumption,
         title: Strings.instantFuelConsumption,
-        unit: 'l/100km',
+        unit: currentSpeed > 0 ? 'l/100km' : 'l/h',
         digits: 1,
       );
 
   OtherTileData get avgFuelDetails => OtherTileData(
-        value: averageFuelConsumption,
+        value: avgFuelConsumption,
         title: Strings.averageFuelConsumption,
         unit: 'l/100km',
         digits: 1,
@@ -303,7 +299,7 @@ extension TripRecordExtension on TripRecord {
       );
 
   OtherTileData get carboPerKmDetails => OtherTileData(
-        value: (averageFuelConsumption / 100) *
+        value: (avgFuelConsumption / 100) *
             0.75 *
             0.87 *
             Constants.co2GenerationRatio *

@@ -18,20 +18,17 @@ class _$LiveDataStateTearOff {
   const _$LiveDataStateTearOff();
 
   _LiveDataState call(
-      {bool isRunning = false,
-      required DateTime tripStart,
-      int tripSeconds = 0,
-      required TripRecord tripRecord,
-      Position? lastPosition,
-      bool isLocalMode = false,
-      double acceleration = 0,
-      int currentTimeSpent = 0,
-      double currentFuelBurnt = 0,
+      {required TripRecord tripRecord,
+      LocationData? lastLocation,
       TripStatus tripStatus = TripStatus.idle,
+      bool isLocalMode = false,
       double fuelPrice = 0,
-      double roadSlope = 0,
+      double direction = 0,
+      double locationSlope = 0,
+      double locationHeight = 0,
       double localTripProgress = 0.0,
       String localData = Constants.defaultLocalFile,
+      bool isRunning = false,
       bool isConnecting = true,
       bool isDisconnecting = false,
       bool isConnnectingError = false,
@@ -46,24 +43,23 @@ class _$LiveDataStateTearOff {
       double xAccelerometer = 0,
       double yAccelerometer = 0,
       double zAccelerometer = 0,
-      double temperature = 0.0,
       bool isTemperatureAvaliable = false,
+      bool isBarometrAvaliable = false,
+      double temperature = 0.0,
+      double pressure = 0.0,
       List<String> errors = const []}) {
     return _LiveDataState(
-      isRunning: isRunning,
-      tripStart: tripStart,
-      tripSeconds: tripSeconds,
       tripRecord: tripRecord,
-      lastPosition: lastPosition,
-      isLocalMode: isLocalMode,
-      acceleration: acceleration,
-      currentTimeSpent: currentTimeSpent,
-      currentFuelBurnt: currentFuelBurnt,
+      lastLocation: lastLocation,
       tripStatus: tripStatus,
+      isLocalMode: isLocalMode,
       fuelPrice: fuelPrice,
-      roadSlope: roadSlope,
+      direction: direction,
+      locationSlope: locationSlope,
+      locationHeight: locationHeight,
       localTripProgress: localTripProgress,
       localData: localData,
+      isRunning: isRunning,
       isConnecting: isConnecting,
       isDisconnecting: isDisconnecting,
       isConnnectingError: isConnnectingError,
@@ -78,8 +74,10 @@ class _$LiveDataStateTearOff {
       xAccelerometer: xAccelerometer,
       yAccelerometer: yAccelerometer,
       zAccelerometer: zAccelerometer,
-      temperature: temperature,
       isTemperatureAvaliable: isTemperatureAvaliable,
+      isBarometrAvaliable: isBarometrAvaliable,
+      temperature: temperature,
+      pressure: pressure,
       errors: errors,
     );
   }
@@ -91,21 +89,18 @@ const $LiveDataState = _$LiveDataStateTearOff();
 /// @nodoc
 mixin _$LiveDataState {
 // Live data
-  bool get isRunning => throw _privateConstructorUsedError;
-  DateTime get tripStart => throw _privateConstructorUsedError;
-  int get tripSeconds => throw _privateConstructorUsedError;
   TripRecord get tripRecord => throw _privateConstructorUsedError;
-  Position? get lastPosition => throw _privateConstructorUsedError;
-  bool get isLocalMode => throw _privateConstructorUsedError;
-  double get acceleration => throw _privateConstructorUsedError;
-  int get currentTimeSpent => throw _privateConstructorUsedError;
-  double get currentFuelBurnt => throw _privateConstructorUsedError;
+  LocationData? get lastLocation => throw _privateConstructorUsedError;
   TripStatus get tripStatus => throw _privateConstructorUsedError;
-  double get fuelPrice => throw _privateConstructorUsedError;
-  double get roadSlope =>
+  bool get isLocalMode => throw _privateConstructorUsedError;
+  double get fuelPrice => throw _privateConstructorUsedError; // GPS
+  double get direction => throw _privateConstructorUsedError;
+  double get locationSlope => throw _privateConstructorUsedError;
+  double get locationHeight =>
       throw _privateConstructorUsedError; // Just for testing
   double get localTripProgress => throw _privateConstructorUsedError;
   String get localData => throw _privateConstructorUsedError; // Bluetooth
+  bool get isRunning => throw _privateConstructorUsedError;
   bool get isConnecting => throw _privateConstructorUsedError;
   bool get isDisconnecting => throw _privateConstructorUsedError;
   bool get isConnnectingError => throw _privateConstructorUsedError;
@@ -120,9 +115,10 @@ mixin _$LiveDataState {
   double get xAccelerometer => throw _privateConstructorUsedError;
   double get yAccelerometer => throw _privateConstructorUsedError;
   double get zAccelerometer => throw _privateConstructorUsedError;
+  bool get isTemperatureAvaliable => throw _privateConstructorUsedError;
+  bool get isBarometrAvaliable => throw _privateConstructorUsedError;
   double get temperature => throw _privateConstructorUsedError;
-  bool get isTemperatureAvaliable =>
-      throw _privateConstructorUsedError; // Errors
+  double get pressure => throw _privateConstructorUsedError; // Errors
   List<String> get errors => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -136,20 +132,17 @@ abstract class $LiveDataStateCopyWith<$Res> {
           LiveDataState value, $Res Function(LiveDataState) then) =
       _$LiveDataStateCopyWithImpl<$Res>;
   $Res call(
-      {bool isRunning,
-      DateTime tripStart,
-      int tripSeconds,
-      TripRecord tripRecord,
-      Position? lastPosition,
-      bool isLocalMode,
-      double acceleration,
-      int currentTimeSpent,
-      double currentFuelBurnt,
+      {TripRecord tripRecord,
+      LocationData? lastLocation,
       TripStatus tripStatus,
+      bool isLocalMode,
       double fuelPrice,
-      double roadSlope,
+      double direction,
+      double locationSlope,
+      double locationHeight,
       double localTripProgress,
       String localData,
+      bool isRunning,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -164,8 +157,10 @@ abstract class $LiveDataStateCopyWith<$Res> {
       double xAccelerometer,
       double yAccelerometer,
       double zAccelerometer,
-      double temperature,
       bool isTemperatureAvaliable,
+      bool isBarometrAvaliable,
+      double temperature,
+      double pressure,
       List<String> errors});
 
   $TripRecordCopyWith<$Res> get tripRecord;
@@ -183,20 +178,17 @@ class _$LiveDataStateCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? isRunning = freezed,
-    Object? tripStart = freezed,
-    Object? tripSeconds = freezed,
     Object? tripRecord = freezed,
-    Object? lastPosition = freezed,
-    Object? isLocalMode = freezed,
-    Object? acceleration = freezed,
-    Object? currentTimeSpent = freezed,
-    Object? currentFuelBurnt = freezed,
+    Object? lastLocation = freezed,
     Object? tripStatus = freezed,
+    Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
-    Object? roadSlope = freezed,
+    Object? direction = freezed,
+    Object? locationSlope = freezed,
+    Object? locationHeight = freezed,
     Object? localTripProgress = freezed,
     Object? localData = freezed,
+    Object? isRunning = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
@@ -211,58 +203,44 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? xAccelerometer = freezed,
     Object? yAccelerometer = freezed,
     Object? zAccelerometer = freezed,
-    Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
+    Object? isBarometrAvaliable = freezed,
+    Object? temperature = freezed,
+    Object? pressure = freezed,
     Object? errors = freezed,
   }) {
     return _then(_value.copyWith(
-      isRunning: isRunning == freezed
-          ? _value.isRunning
-          : isRunning // ignore: cast_nullable_to_non_nullable
-              as bool,
-      tripStart: tripStart == freezed
-          ? _value.tripStart
-          : tripStart // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      tripSeconds: tripSeconds == freezed
-          ? _value.tripSeconds
-          : tripSeconds // ignore: cast_nullable_to_non_nullable
-              as int,
       tripRecord: tripRecord == freezed
           ? _value.tripRecord
           : tripRecord // ignore: cast_nullable_to_non_nullable
               as TripRecord,
-      lastPosition: lastPosition == freezed
-          ? _value.lastPosition
-          : lastPosition // ignore: cast_nullable_to_non_nullable
-              as Position?,
-      isLocalMode: isLocalMode == freezed
-          ? _value.isLocalMode
-          : isLocalMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      acceleration: acceleration == freezed
-          ? _value.acceleration
-          : acceleration // ignore: cast_nullable_to_non_nullable
-              as double,
-      currentTimeSpent: currentTimeSpent == freezed
-          ? _value.currentTimeSpent
-          : currentTimeSpent // ignore: cast_nullable_to_non_nullable
-              as int,
-      currentFuelBurnt: currentFuelBurnt == freezed
-          ? _value.currentFuelBurnt
-          : currentFuelBurnt // ignore: cast_nullable_to_non_nullable
-              as double,
+      lastLocation: lastLocation == freezed
+          ? _value.lastLocation
+          : lastLocation // ignore: cast_nullable_to_non_nullable
+              as LocationData?,
       tripStatus: tripStatus == freezed
           ? _value.tripStatus
           : tripStatus // ignore: cast_nullable_to_non_nullable
               as TripStatus,
+      isLocalMode: isLocalMode == freezed
+          ? _value.isLocalMode
+          : isLocalMode // ignore: cast_nullable_to_non_nullable
+              as bool,
       fuelPrice: fuelPrice == freezed
           ? _value.fuelPrice
           : fuelPrice // ignore: cast_nullable_to_non_nullable
               as double,
-      roadSlope: roadSlope == freezed
-          ? _value.roadSlope
-          : roadSlope // ignore: cast_nullable_to_non_nullable
+      direction: direction == freezed
+          ? _value.direction
+          : direction // ignore: cast_nullable_to_non_nullable
+              as double,
+      locationSlope: locationSlope == freezed
+          ? _value.locationSlope
+          : locationSlope // ignore: cast_nullable_to_non_nullable
+              as double,
+      locationHeight: locationHeight == freezed
+          ? _value.locationHeight
+          : locationHeight // ignore: cast_nullable_to_non_nullable
               as double,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
@@ -272,6 +250,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.localData
           : localData // ignore: cast_nullable_to_non_nullable
               as String,
+      isRunning: isRunning == freezed
+          ? _value.isRunning
+          : isRunning // ignore: cast_nullable_to_non_nullable
+              as bool,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
           : isConnecting // ignore: cast_nullable_to_non_nullable
@@ -328,14 +310,22 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.zAccelerometer
           : zAccelerometer // ignore: cast_nullable_to_non_nullable
               as double,
-      temperature: temperature == freezed
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
       isTemperatureAvaliable: isTemperatureAvaliable == freezed
           ? _value.isTemperatureAvaliable
           : isTemperatureAvaliable // ignore: cast_nullable_to_non_nullable
               as bool,
+      isBarometrAvaliable: isBarometrAvaliable == freezed
+          ? _value.isBarometrAvaliable
+          : isBarometrAvaliable // ignore: cast_nullable_to_non_nullable
+              as bool,
+      temperature: temperature == freezed
+          ? _value.temperature
+          : temperature // ignore: cast_nullable_to_non_nullable
+              as double,
+      pressure: pressure == freezed
+          ? _value.pressure
+          : pressure // ignore: cast_nullable_to_non_nullable
+              as double,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -366,20 +356,17 @@ abstract class _$LiveDataStateCopyWith<$Res>
       __$LiveDataStateCopyWithImpl<$Res>;
   @override
   $Res call(
-      {bool isRunning,
-      DateTime tripStart,
-      int tripSeconds,
-      TripRecord tripRecord,
-      Position? lastPosition,
-      bool isLocalMode,
-      double acceleration,
-      int currentTimeSpent,
-      double currentFuelBurnt,
+      {TripRecord tripRecord,
+      LocationData? lastLocation,
       TripStatus tripStatus,
+      bool isLocalMode,
       double fuelPrice,
-      double roadSlope,
+      double direction,
+      double locationSlope,
+      double locationHeight,
       double localTripProgress,
       String localData,
+      bool isRunning,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -394,8 +381,10 @@ abstract class _$LiveDataStateCopyWith<$Res>
       double xAccelerometer,
       double yAccelerometer,
       double zAccelerometer,
-      double temperature,
       bool isTemperatureAvaliable,
+      bool isBarometrAvaliable,
+      double temperature,
+      double pressure,
       List<String> errors});
 
   @override
@@ -417,20 +406,17 @@ class __$LiveDataStateCopyWithImpl<$Res>
 
   @override
   $Res call({
-    Object? isRunning = freezed,
-    Object? tripStart = freezed,
-    Object? tripSeconds = freezed,
     Object? tripRecord = freezed,
-    Object? lastPosition = freezed,
-    Object? isLocalMode = freezed,
-    Object? acceleration = freezed,
-    Object? currentTimeSpent = freezed,
-    Object? currentFuelBurnt = freezed,
+    Object? lastLocation = freezed,
     Object? tripStatus = freezed,
+    Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
-    Object? roadSlope = freezed,
+    Object? direction = freezed,
+    Object? locationSlope = freezed,
+    Object? locationHeight = freezed,
     Object? localTripProgress = freezed,
     Object? localData = freezed,
+    Object? isRunning = freezed,
     Object? isConnecting = freezed,
     Object? isDisconnecting = freezed,
     Object? isConnnectingError = freezed,
@@ -445,58 +431,44 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? xAccelerometer = freezed,
     Object? yAccelerometer = freezed,
     Object? zAccelerometer = freezed,
-    Object? temperature = freezed,
     Object? isTemperatureAvaliable = freezed,
+    Object? isBarometrAvaliable = freezed,
+    Object? temperature = freezed,
+    Object? pressure = freezed,
     Object? errors = freezed,
   }) {
     return _then(_LiveDataState(
-      isRunning: isRunning == freezed
-          ? _value.isRunning
-          : isRunning // ignore: cast_nullable_to_non_nullable
-              as bool,
-      tripStart: tripStart == freezed
-          ? _value.tripStart
-          : tripStart // ignore: cast_nullable_to_non_nullable
-              as DateTime,
-      tripSeconds: tripSeconds == freezed
-          ? _value.tripSeconds
-          : tripSeconds // ignore: cast_nullable_to_non_nullable
-              as int,
       tripRecord: tripRecord == freezed
           ? _value.tripRecord
           : tripRecord // ignore: cast_nullable_to_non_nullable
               as TripRecord,
-      lastPosition: lastPosition == freezed
-          ? _value.lastPosition
-          : lastPosition // ignore: cast_nullable_to_non_nullable
-              as Position?,
-      isLocalMode: isLocalMode == freezed
-          ? _value.isLocalMode
-          : isLocalMode // ignore: cast_nullable_to_non_nullable
-              as bool,
-      acceleration: acceleration == freezed
-          ? _value.acceleration
-          : acceleration // ignore: cast_nullable_to_non_nullable
-              as double,
-      currentTimeSpent: currentTimeSpent == freezed
-          ? _value.currentTimeSpent
-          : currentTimeSpent // ignore: cast_nullable_to_non_nullable
-              as int,
-      currentFuelBurnt: currentFuelBurnt == freezed
-          ? _value.currentFuelBurnt
-          : currentFuelBurnt // ignore: cast_nullable_to_non_nullable
-              as double,
+      lastLocation: lastLocation == freezed
+          ? _value.lastLocation
+          : lastLocation // ignore: cast_nullable_to_non_nullable
+              as LocationData?,
       tripStatus: tripStatus == freezed
           ? _value.tripStatus
           : tripStatus // ignore: cast_nullable_to_non_nullable
               as TripStatus,
+      isLocalMode: isLocalMode == freezed
+          ? _value.isLocalMode
+          : isLocalMode // ignore: cast_nullable_to_non_nullable
+              as bool,
       fuelPrice: fuelPrice == freezed
           ? _value.fuelPrice
           : fuelPrice // ignore: cast_nullable_to_non_nullable
               as double,
-      roadSlope: roadSlope == freezed
-          ? _value.roadSlope
-          : roadSlope // ignore: cast_nullable_to_non_nullable
+      direction: direction == freezed
+          ? _value.direction
+          : direction // ignore: cast_nullable_to_non_nullable
+              as double,
+      locationSlope: locationSlope == freezed
+          ? _value.locationSlope
+          : locationSlope // ignore: cast_nullable_to_non_nullable
+              as double,
+      locationHeight: locationHeight == freezed
+          ? _value.locationHeight
+          : locationHeight // ignore: cast_nullable_to_non_nullable
               as double,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
@@ -506,6 +478,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.localData
           : localData // ignore: cast_nullable_to_non_nullable
               as String,
+      isRunning: isRunning == freezed
+          ? _value.isRunning
+          : isRunning // ignore: cast_nullable_to_non_nullable
+              as bool,
       isConnecting: isConnecting == freezed
           ? _value.isConnecting
           : isConnecting // ignore: cast_nullable_to_non_nullable
@@ -562,14 +538,22 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.zAccelerometer
           : zAccelerometer // ignore: cast_nullable_to_non_nullable
               as double,
-      temperature: temperature == freezed
-          ? _value.temperature
-          : temperature // ignore: cast_nullable_to_non_nullable
-              as double,
       isTemperatureAvaliable: isTemperatureAvaliable == freezed
           ? _value.isTemperatureAvaliable
           : isTemperatureAvaliable // ignore: cast_nullable_to_non_nullable
               as bool,
+      isBarometrAvaliable: isBarometrAvaliable == freezed
+          ? _value.isBarometrAvaliable
+          : isBarometrAvaliable // ignore: cast_nullable_to_non_nullable
+              as bool,
+      temperature: temperature == freezed
+          ? _value.temperature
+          : temperature // ignore: cast_nullable_to_non_nullable
+              as double,
+      pressure: pressure == freezed
+          ? _value.pressure
+          : pressure // ignore: cast_nullable_to_non_nullable
+              as double,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -582,20 +566,17 @@ class __$LiveDataStateCopyWithImpl<$Res>
 
 class _$_LiveDataState implements _LiveDataState {
   _$_LiveDataState(
-      {this.isRunning = false,
-      required this.tripStart,
-      this.tripSeconds = 0,
-      required this.tripRecord,
-      this.lastPosition,
-      this.isLocalMode = false,
-      this.acceleration = 0,
-      this.currentTimeSpent = 0,
-      this.currentFuelBurnt = 0,
+      {required this.tripRecord,
+      this.lastLocation,
       this.tripStatus = TripStatus.idle,
+      this.isLocalMode = false,
       this.fuelPrice = 0,
-      this.roadSlope = 0,
+      this.direction = 0,
+      this.locationSlope = 0,
+      this.locationHeight = 0,
       this.localTripProgress = 0.0,
       this.localData = Constants.defaultLocalFile,
+      this.isRunning = false,
       this.isConnecting = true,
       this.isDisconnecting = false,
       this.isConnnectingError = false,
@@ -610,43 +591,34 @@ class _$_LiveDataState implements _LiveDataState {
       this.xAccelerometer = 0,
       this.yAccelerometer = 0,
       this.zAccelerometer = 0,
-      this.temperature = 0.0,
       this.isTemperatureAvaliable = false,
+      this.isBarometrAvaliable = false,
+      this.temperature = 0.0,
+      this.pressure = 0.0,
       this.errors = const []});
 
-  @JsonKey()
   @override // Live data
-  final bool isRunning;
-  @override
-  final DateTime tripStart;
-  @JsonKey()
-  @override
-  final int tripSeconds;
-  @override
   final TripRecord tripRecord;
   @override
-  final Position? lastPosition;
-  @JsonKey()
-  @override
-  final bool isLocalMode;
-  @JsonKey()
-  @override
-  final double acceleration;
-  @JsonKey()
-  @override
-  final int currentTimeSpent;
-  @JsonKey()
-  @override
-  final double currentFuelBurnt;
+  final LocationData? lastLocation;
   @JsonKey()
   @override
   final TripStatus tripStatus;
   @JsonKey()
   @override
-  final double fuelPrice;
+  final bool isLocalMode;
   @JsonKey()
   @override
-  final double roadSlope;
+  final double fuelPrice;
+  @JsonKey()
+  @override // GPS
+  final double direction;
+  @JsonKey()
+  @override
+  final double locationSlope;
+  @JsonKey()
+  @override
+  final double locationHeight;
   @JsonKey()
   @override // Just for testing
   final double localTripProgress;
@@ -655,6 +627,9 @@ class _$_LiveDataState implements _LiveDataState {
   final String localData;
   @JsonKey()
   @override // Bluetooth
+  final bool isRunning;
+  @JsonKey()
+  @override
   final bool isConnecting;
   @JsonKey()
   @override
@@ -696,17 +671,23 @@ class _$_LiveDataState implements _LiveDataState {
   final double zAccelerometer;
   @JsonKey()
   @override
+  final bool isTemperatureAvaliable;
+  @JsonKey()
+  @override
+  final bool isBarometrAvaliable;
+  @JsonKey()
+  @override
   final double temperature;
   @JsonKey()
   @override
-  final bool isTemperatureAvaliable;
+  final double pressure;
   @JsonKey()
   @override // Errors
   final List<String> errors;
 
   @override
   String toString() {
-    return 'LiveDataState(isRunning: $isRunning, tripStart: $tripStart, tripSeconds: $tripSeconds, tripRecord: $tripRecord, lastPosition: $lastPosition, isLocalMode: $isLocalMode, acceleration: $acceleration, currentTimeSpent: $currentTimeSpent, currentFuelBurnt: $currentFuelBurnt, tripStatus: $tripStatus, fuelPrice: $fuelPrice, roadSlope: $roadSlope, localTripProgress: $localTripProgress, localData: $localData, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, temperature: $temperature, isTemperatureAvaliable: $isTemperatureAvaliable, errors: $errors)';
+    return 'LiveDataState(tripRecord: $tripRecord, lastLocation: $lastLocation, tripStatus: $tripStatus, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, isTemperatureAvaliable: $isTemperatureAvaliable, isBarometrAvaliable: $isBarometrAvaliable, temperature: $temperature, pressure: $pressure, errors: $errors)';
   }
 
   @override
@@ -714,29 +695,24 @@ class _$_LiveDataState implements _LiveDataState {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _LiveDataState &&
-            const DeepCollectionEquality().equals(other.isRunning, isRunning) &&
-            const DeepCollectionEquality().equals(other.tripStart, tripStart) &&
-            const DeepCollectionEquality()
-                .equals(other.tripSeconds, tripSeconds) &&
             const DeepCollectionEquality()
                 .equals(other.tripRecord, tripRecord) &&
             const DeepCollectionEquality()
-                .equals(other.lastPosition, lastPosition) &&
-            const DeepCollectionEquality()
-                .equals(other.isLocalMode, isLocalMode) &&
-            const DeepCollectionEquality()
-                .equals(other.acceleration, acceleration) &&
-            const DeepCollectionEquality()
-                .equals(other.currentTimeSpent, currentTimeSpent) &&
-            const DeepCollectionEquality()
-                .equals(other.currentFuelBurnt, currentFuelBurnt) &&
+                .equals(other.lastLocation, lastLocation) &&
             const DeepCollectionEquality()
                 .equals(other.tripStatus, tripStatus) &&
+            const DeepCollectionEquality()
+                .equals(other.isLocalMode, isLocalMode) &&
             const DeepCollectionEquality().equals(other.fuelPrice, fuelPrice) &&
-            const DeepCollectionEquality().equals(other.roadSlope, roadSlope) &&
+            const DeepCollectionEquality().equals(other.direction, direction) &&
+            const DeepCollectionEquality()
+                .equals(other.locationSlope, locationSlope) &&
+            const DeepCollectionEquality()
+                .equals(other.locationHeight, locationHeight) &&
             const DeepCollectionEquality()
                 .equals(other.localTripProgress, localTripProgress) &&
             const DeepCollectionEquality().equals(other.localData, localData) &&
+            const DeepCollectionEquality().equals(other.isRunning, isRunning) &&
             const DeepCollectionEquality()
                 .equals(other.isConnecting, isConnecting) &&
             const DeepCollectionEquality()
@@ -765,29 +741,29 @@ class _$_LiveDataState implements _LiveDataState {
             const DeepCollectionEquality()
                 .equals(other.zAccelerometer, zAccelerometer) &&
             const DeepCollectionEquality()
-                .equals(other.temperature, temperature) &&
-            const DeepCollectionEquality()
                 .equals(other.isTemperatureAvaliable, isTemperatureAvaliable) &&
+            const DeepCollectionEquality()
+                .equals(other.isBarometrAvaliable, isBarometrAvaliable) &&
+            const DeepCollectionEquality()
+                .equals(other.temperature, temperature) &&
+            const DeepCollectionEquality().equals(other.pressure, pressure) &&
             const DeepCollectionEquality().equals(other.errors, errors));
   }
 
   @override
   int get hashCode => Object.hashAll([
         runtimeType,
-        const DeepCollectionEquality().hash(isRunning),
-        const DeepCollectionEquality().hash(tripStart),
-        const DeepCollectionEquality().hash(tripSeconds),
         const DeepCollectionEquality().hash(tripRecord),
-        const DeepCollectionEquality().hash(lastPosition),
-        const DeepCollectionEquality().hash(isLocalMode),
-        const DeepCollectionEquality().hash(acceleration),
-        const DeepCollectionEquality().hash(currentTimeSpent),
-        const DeepCollectionEquality().hash(currentFuelBurnt),
+        const DeepCollectionEquality().hash(lastLocation),
         const DeepCollectionEquality().hash(tripStatus),
+        const DeepCollectionEquality().hash(isLocalMode),
         const DeepCollectionEquality().hash(fuelPrice),
-        const DeepCollectionEquality().hash(roadSlope),
+        const DeepCollectionEquality().hash(direction),
+        const DeepCollectionEquality().hash(locationSlope),
+        const DeepCollectionEquality().hash(locationHeight),
         const DeepCollectionEquality().hash(localTripProgress),
         const DeepCollectionEquality().hash(localData),
+        const DeepCollectionEquality().hash(isRunning),
         const DeepCollectionEquality().hash(isConnecting),
         const DeepCollectionEquality().hash(isDisconnecting),
         const DeepCollectionEquality().hash(isConnnectingError),
@@ -802,8 +778,10 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(xAccelerometer),
         const DeepCollectionEquality().hash(yAccelerometer),
         const DeepCollectionEquality().hash(zAccelerometer),
-        const DeepCollectionEquality().hash(temperature),
         const DeepCollectionEquality().hash(isTemperatureAvaliable),
+        const DeepCollectionEquality().hash(isBarometrAvaliable),
+        const DeepCollectionEquality().hash(temperature),
+        const DeepCollectionEquality().hash(pressure),
         const DeepCollectionEquality().hash(errors)
       ]);
 
@@ -815,20 +793,17 @@ class _$_LiveDataState implements _LiveDataState {
 
 abstract class _LiveDataState implements LiveDataState {
   factory _LiveDataState(
-      {bool isRunning,
-      required DateTime tripStart,
-      int tripSeconds,
-      required TripRecord tripRecord,
-      Position? lastPosition,
-      bool isLocalMode,
-      double acceleration,
-      int currentTimeSpent,
-      double currentFuelBurnt,
+      {required TripRecord tripRecord,
+      LocationData? lastLocation,
       TripStatus tripStatus,
+      bool isLocalMode,
       double fuelPrice,
-      double roadSlope,
+      double direction,
+      double locationSlope,
+      double locationHeight,
       double localTripProgress,
       String localData,
+      bool isRunning,
       bool isConnecting,
       bool isDisconnecting,
       bool isConnnectingError,
@@ -843,39 +818,35 @@ abstract class _LiveDataState implements LiveDataState {
       double xAccelerometer,
       double yAccelerometer,
       double zAccelerometer,
-      double temperature,
       bool isTemperatureAvaliable,
+      bool isBarometrAvaliable,
+      double temperature,
+      double pressure,
       List<String> errors}) = _$_LiveDataState;
 
   @override // Live data
-  bool get isRunning;
-  @override
-  DateTime get tripStart;
-  @override
-  int get tripSeconds;
-  @override
   TripRecord get tripRecord;
   @override
-  Position? get lastPosition;
-  @override
-  bool get isLocalMode;
-  @override
-  double get acceleration;
-  @override
-  int get currentTimeSpent;
-  @override
-  double get currentFuelBurnt;
+  LocationData? get lastLocation;
   @override
   TripStatus get tripStatus;
   @override
-  double get fuelPrice;
+  bool get isLocalMode;
   @override
-  double get roadSlope;
+  double get fuelPrice;
+  @override // GPS
+  double get direction;
+  @override
+  double get locationSlope;
+  @override
+  double get locationHeight;
   @override // Just for testing
   double get localTripProgress;
   @override
   String get localData;
   @override // Bluetooth
+  bool get isRunning;
+  @override
   bool get isConnecting;
   @override
   bool get isDisconnecting;
@@ -904,9 +875,13 @@ abstract class _LiveDataState implements LiveDataState {
   @override
   double get zAccelerometer;
   @override
+  bool get isTemperatureAvaliable;
+  @override
+  bool get isBarometrAvaliable;
+  @override
   double get temperature;
   @override
-  bool get isTemperatureAvaliable;
+  double get pressure;
   @override // Errors
   List<String> get errors;
   @override

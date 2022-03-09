@@ -30,8 +30,8 @@ abstract class Strings {
   static const String tripStats = 'Statystki przejazdu';
   static String pedalPressed(bool isPressed) =>
       isPressed ? 'Gaz wciśnięty' : 'Gaz puszczony';
-  static String avgResponse(int time) => 'Średni czas odpowiedzi: $time ms';
-  static String totalResponse(int time) => 'Łączny czas odpowiedzi: $time ms';
+  static String avgResponse(int time) => 'Śr. czas czujników: $time ms';
+  static String totalResponse(int time) => 'Łączny czas czujników: $time ms';
   static const String loadingPids = 'Wyszukiwanie dostępnych czujników...';
   static const String indoorTemp = 'Temperatura wewnątrz';
   static String supportedCommandsCount(int selected, int total) =>

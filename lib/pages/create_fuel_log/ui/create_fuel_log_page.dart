@@ -2,17 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
+import 'package:smart_car/utils/date_extension.dart';
+import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
-import 'package:smart_car/utils/ui/standart_text_field.dart';
 import 'package:smart_car/utils/validators.dart';
 
-class CreateFuelLogPage extends StatelessWidget {
+class CreateFuelLogPageArgument {
+  CreateFuelLogPageArgument({
+    required this.currentOdometer,
+    required this.lastFuelPrice,
+  });
+
+  final double currentOdometer;
+  final double lastFuelPrice;
+}
+
+class CreateFuelLogPage extends StatelessWidget
+    with RouteArgument<CreateFuelLogPageArgument> {
   const CreateFuelLogPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final argument = getArgument(context);
     return ScopedBlocBuilder<CreateFuelLogCubit, CreateFuelLogState>(
-      create: (_) => CreateFuelLogCubit(),
+      create: (_) => CreateFuelLogCubit(
+        fuelPrice: argument.lastFuelPrice,
+        odometer: argument.currentOdometer,
+      ),
       builder: (context, state, cubit) {
         return Scaffold(
           appBar: AppBar(
@@ -20,9 +36,7 @@ class CreateFuelLogPage extends StatelessWidget {
             centerTitle: true,
             actions: [
               IconButton(
-                onPressed: () {
-                  cubit.saveLog();
-                },
+                onPressed: state.isCorrect ? cubit.saveLog : null,
                 icon: const Icon(Icons.check),
               ),
             ],
@@ -39,13 +53,39 @@ class CreateFuelLogPage extends StatelessWidget {
     CreateFuelLogCubit cubit,
   ) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildRow('Licznik (km)', state.odometer.toString(), cubit.tempEdit),
-        _buildRow('Ilość paliwa', state.fuelAmount.toString(), cubit.tempEdit),
-        _buildRow('Cena paliwa', state.fuelPrice.toString(), cubit.tempEdit),
-        _buildRow(
-            'Całkowity koszt', state.totalPrice.toString(), cubit.tempEdit),
-        _buildDateRow(context, 'Data', state.dateTime, cubit.dateUpdate),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildRow(
+              'Licznik (km)', state.odometer.toString(), cubit.updateOdometer),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildRow('Ilość paliwa', state.fuelAmount.toString(),
+              cubit.updateFuelAmount),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildRow(
+              'Cena paliwa', state.fuelPrice.toString(), cubit.updateFuelPrice),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: _buildDateRow(context, state, cubit),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(child: Text('Podsumowanie:')),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Całkowity koszt ${state.totalPrice.toString()} zł'),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Spalanie: ${state.fuelCons} zł'),
+        ),
       ],
     );
   }
@@ -53,8 +93,10 @@ class CreateFuelLogPage extends StatelessWidget {
   Widget _buildRow(
     String label,
     String? initialValue,
-    Function(String?) onEdit,
-  ) {
+    Function(String?) onEdit, {
+    TextInputType inputType =
+        const TextInputType.numberWithOptions(decimal: true),
+  }) {
     return Row(
       children: [
         SizedBox(
@@ -65,6 +107,7 @@ class CreateFuelLogPage extends StatelessWidget {
           child: FuelLogTextField(
             initalValue: initialValue,
             onEdit: onEdit,
+            keyboardType: inputType,
           ),
         ),
       ],
@@ -73,33 +116,47 @@ class CreateFuelLogPage extends StatelessWidget {
 
   Widget _buildDateRow(
     BuildContext context,
-    String label,
-    DateTime initialDate,
-    Function(DateTime?) onEdit,
+    CreateFuelLogState state,
+    CreateFuelLogCubit cubit,
   ) {
     return Row(
       children: [
-        SizedBox(
+        const SizedBox(
           width: 150,
-          child: Text(label),
+          child: Text('Data'),
         ),
-        GestureDetector(
-          onTap: () async {
-            final date = await showDatePicker(
-              context: context,
-              initialDate: initialDate,
-              firstDate: initialDate.subtract(Duration(days: 30)),
-              lastDate: initialDate.add(Duration(days: 30)),
-            );
-            onEdit(date);
-          },
-          child: Expanded(
+        Expanded(
+          child: GestureDetector(
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: state.date,
+                firstDate: DateTime(2000, 1, 1),
+                lastDate: DateTime.now(),
+              );
+              cubit.dateUpdate(date);
+            },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(initialDate.toIso8601String()),
+              child: Text(state.dateDesc),
             ),
           ),
         ),
+        Expanded(
+          child: GestureDetector(
+            onTap: () async {
+              final time = await showTimePicker(
+                context: context,
+                initialTime: state.time,
+              );
+              cubit.timeUpdate(time);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(state.timeDesc),
+            ),
+          ),
+        )
       ],
     );
   }

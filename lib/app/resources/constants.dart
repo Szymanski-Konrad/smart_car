@@ -15,6 +15,12 @@ abstract class Constants {
   static const largeScreenWidth = 400.0;
 
   static const localFiles = [
+    'trip1',
+    'trip2',
+    'trip3',
+    'trip4',
+    'trip5',
+    'trip6',
     'work',
     'work2',
     'work3',

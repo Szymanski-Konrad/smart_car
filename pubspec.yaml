@@ -25,6 +25,8 @@ dependencies:
 
   # GPS
   geolocator: ^8.2.0
+  location: ^4.3.0
+  haversine_distance: ^1.2.1
 
   # Bloc
   bloc: ^8.0.2
@@ -34,10 +36,8 @@ dependencies:
   flutter_mailer: ^2.0.1
 
   # Sensors
-  sensors: ^2.0.3
   environment_sensors: ^0.2.0
   flutter_sensors: ^1.0.1
-  motion_sensors: ^0.1.0
 
   # Storage
   shared_preferences: ^2.0.11
@@ -64,6 +64,9 @@ dependencies:
 
   # Maps
   flutter_map: ^0.14.0
+  latlong2: ^0.8.1
+  xml: ^5.3.1
+  http: ^0.13.4
 
   #intl
   intl: ^0.17.0

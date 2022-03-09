@@ -135,7 +135,9 @@ class _AppState extends State<App> {
               ListTile(
                 title: ElevatedButton(
                   child: const Text(Strings.fuelStations),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigation.instance.push(SharedRoutes.fuelStations);
+                  },
                 ),
               ),
               const SizedBox(height: 16),

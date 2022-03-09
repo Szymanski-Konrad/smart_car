@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -14,28 +14,39 @@ part 'live_data_state.freezed.dart';
 
 enum TripStatus { idle, driving, savingFuel }
 
+class ReceivedData {
+  ReceivedData({
+    required this.data,
+    required this.command,
+    required this.splitted,
+  });
+
+  final List<int> data;
+  final String command;
+  final List<String> splitted;
+}
+
 @freezed
 class LiveDataState with _$LiveDataState {
   factory LiveDataState({
     // Live data
-    @Default(false) bool isRunning,
-    required DateTime tripStart,
-    @Default(0) int tripSeconds,
     required TripRecord tripRecord,
-    Position? lastPosition,
-    @Default(false) bool isLocalMode,
-    @Default(0) double acceleration,
-    @Default(0) int currentTimeSpent,
-    @Default(0) double currentFuelBurnt,
+    LocationData? lastLocation,
     @Default(TripStatus.idle) TripStatus tripStatus,
+    @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
-    @Default(0) double roadSlope,
+
+    // GPS
+    @Default(0) double direction,
+    @Default(0) double locationSlope,
+    @Default(0) double locationHeight,
 
     // Just for testing
     @Default(0.0) double localTripProgress,
     @Default(Constants.defaultLocalFile) String localData,
 
     // Bluetooth
+    @Default(false) bool isRunning,
     @Default(true) bool isConnecting,
     @Default(false) bool isDisconnecting,
     @Default(false) bool isConnnectingError,
@@ -54,8 +65,10 @@ class LiveDataState with _$LiveDataState {
     @Default(0) double xAccelerometer,
     @Default(0) double yAccelerometer,
     @Default(0) double zAccelerometer,
-    @Default(0.0) double temperature,
     @Default(false) bool isTemperatureAvaliable,
+    @Default(false) bool isBarometrAvaliable,
+    @Default(0.0) double temperature,
+    @Default(0.0) double pressure,
 
     // Errors
     @Default([]) List<String> errors,
@@ -67,7 +80,6 @@ class LiveDataState with _$LiveDataState {
     required double fuelPrice,
   }) {
     return LiveDataState(
-      tripStart: DateTime.now(),
       tripRecord: TripRecord(),
       pidsChecker: PidsChecker(),
       supportedPids: pids,
@@ -82,7 +94,6 @@ class LiveDataState with _$LiveDataState {
 extension LiveDataStateExtension on LiveDataState {
   LiveDataState clear() {
     return LiveDataState(
-      tripStart: DateTime.now(),
       tripRecord: TripRecord(),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
@@ -94,7 +105,6 @@ extension LiveDataStateExtension on LiveDataState {
 
   LiveDataState localMode() {
     return LiveDataState(
-      tripStart: DateTime.now(),
       tripRecord: TripRecord(),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
@@ -145,11 +155,25 @@ extension LiveDataStateExtension on LiveDataState {
     }
   }
 
-  OtherTileData get roadSlopeData => OtherTileData(
+  OtherTileData get directionData => OtherTileData(
         digits: 1,
+        unit: '',
+        title: 'Kierunek',
+        value: direction,
+      );
+
+  OtherTileData get locationHeightData => OtherTileData(
+        digits: 2,
+        unit: 'm',
+        title: 'Wysokość',
+        value: locationHeight,
+      );
+
+  OtherTileData get locationSlopeData => OtherTileData(
+        digits: 2,
         unit: '%',
-        title: Strings.roadTilt,
-        value: roadSlope,
+        title: 'Nachylenie',
+        value: locationSlope,
       );
 
   OtherTileData get gForceData => OtherTileData(
@@ -163,7 +187,14 @@ extension LiveDataStateExtension on LiveDataState {
         digits: 1,
         unit: '°C',
         title: Strings.indoorTemp,
-        value: gForce,
+        value: temperature,
+      );
+
+  OtherTileData get pressureData => OtherTileData(
+        digits: 2,
+        unit: 'hPa',
+        title: 'Pressure',
+        value: pressure,
       );
 
   OtherTileData get fuelStatusData => OtherTileData(
@@ -173,29 +204,6 @@ extension LiveDataStateExtension on LiveDataState {
         value: fuelSystemStatus.description,
         iconData: fuelSystemStatus.icon,
       );
-
-  String? get nextReadPidsPart {
-    if (shouldRead1_20) return '01' + Pids.pidsList1;
-    if (shouldRead21_40) return '01' + Pids.pidsList2;
-    if (shouldRead41_60) return '01' + Pids.pidsList3;
-    if (shouldRead61_80) return '01' + Pids.pidsList4;
-    if (shouldRead81_A0) return '01' + Pids.pidsList5;
-    if (shouldReadA1_C0) return '01' + Pids.pidsList6;
-    return null;
-  }
-
-  bool get shouldRead1_20 =>
-      pidsChecker.pidsSupported1_20 && !pidsChecker.pidsReaded1_20;
-  bool get shouldRead21_40 =>
-      pidsChecker.pidsSupported21_40 && !pidsChecker.pidsReaded21_40;
-  bool get shouldRead41_60 =>
-      pidsChecker.pidsSupported41_60 && !pidsChecker.pidsReaded41_60;
-  bool get shouldRead61_80 =>
-      pidsChecker.pidsSupported61_80 && !pidsChecker.pidsReaded61_80;
-  bool get shouldRead81_A0 =>
-      pidsChecker.pidsSupported81_A0 && !pidsChecker.pidsReaded81_A0;
-  bool get shouldReadA1_C0 =>
-      pidsChecker.pidsSupportedA1_C0 && !pidsChecker.pidsReadedA1_C0;
 
   String get getTemperature => temperature.toStringAsFixed(1);
 

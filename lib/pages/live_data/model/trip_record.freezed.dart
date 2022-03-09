@@ -22,7 +22,6 @@ class _$TripRecordTearOff {
       double currentFuelLvl = -1.0,
       double distance = 0.0,
       double instFuelConsumption = -1.0,
-      double averageFuelConsumption = -1.0,
       double kmPerL = 0.0,
       double usedFuel = 0.0,
       double idleUsedFuel = 0.0,
@@ -50,7 +49,6 @@ class _$TripRecordTearOff {
       currentFuelLvl: currentFuelLvl,
       distance: distance,
       instFuelConsumption: instFuelConsumption,
-      averageFuelConsumption: averageFuelConsumption,
       kmPerL: kmPerL,
       usedFuel: usedFuel,
       idleUsedFuel: idleUsedFuel,
@@ -86,7 +84,6 @@ mixin _$TripRecord {
   double get currentFuelLvl => throw _privateConstructorUsedError;
   double get distance => throw _privateConstructorUsedError;
   double get instFuelConsumption => throw _privateConstructorUsedError;
-  double get averageFuelConsumption => throw _privateConstructorUsedError;
   double get kmPerL => throw _privateConstructorUsedError;
   double get usedFuel => throw _privateConstructorUsedError;
   double get idleUsedFuel => throw _privateConstructorUsedError;
@@ -126,7 +123,6 @@ abstract class $TripRecordCopyWith<$Res> {
       double currentFuelLvl,
       double distance,
       double instFuelConsumption,
-      double averageFuelConsumption,
       double kmPerL,
       double usedFuel,
       double idleUsedFuel,
@@ -165,7 +161,6 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? currentFuelLvl = freezed,
     Object? distance = freezed,
     Object? instFuelConsumption = freezed,
-    Object? averageFuelConsumption = freezed,
     Object? kmPerL = freezed,
     Object? usedFuel = freezed,
     Object? idleUsedFuel = freezed,
@@ -205,10 +200,6 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
       instFuelConsumption: instFuelConsumption == freezed
           ? _value.instFuelConsumption
           : instFuelConsumption // ignore: cast_nullable_to_non_nullable
-              as double,
-      averageFuelConsumption: averageFuelConsumption == freezed
-          ? _value.averageFuelConsumption
-          : averageFuelConsumption // ignore: cast_nullable_to_non_nullable
               as double,
       kmPerL: kmPerL == freezed
           ? _value.kmPerL
@@ -313,7 +304,6 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double currentFuelLvl,
       double distance,
       double instFuelConsumption,
-      double averageFuelConsumption,
       double kmPerL,
       double usedFuel,
       double idleUsedFuel,
@@ -354,7 +344,6 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? currentFuelLvl = freezed,
     Object? distance = freezed,
     Object? instFuelConsumption = freezed,
-    Object? averageFuelConsumption = freezed,
     Object? kmPerL = freezed,
     Object? usedFuel = freezed,
     Object? idleUsedFuel = freezed,
@@ -394,10 +383,6 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
       instFuelConsumption: instFuelConsumption == freezed
           ? _value.instFuelConsumption
           : instFuelConsumption // ignore: cast_nullable_to_non_nullable
-              as double,
-      averageFuelConsumption: averageFuelConsumption == freezed
-          ? _value.averageFuelConsumption
-          : averageFuelConsumption // ignore: cast_nullable_to_non_nullable
               as double,
       kmPerL: kmPerL == freezed
           ? _value.kmPerL
@@ -499,7 +484,6 @@ class _$_TripRecord implements _TripRecord {
       this.currentFuelLvl = -1.0,
       this.distance = 0.0,
       this.instFuelConsumption = -1.0,
-      this.averageFuelConsumption = -1.0,
       this.kmPerL = 0.0,
       this.usedFuel = 0.0,
       this.idleUsedFuel = 0.0,
@@ -535,9 +519,6 @@ class _$_TripRecord implements _TripRecord {
   @JsonKey()
   @override
   final double instFuelConsumption;
-  @JsonKey()
-  @override
-  final double averageFuelConsumption;
   @JsonKey()
   @override
   final double kmPerL;
@@ -607,7 +588,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, averageFuelConsumption: $averageFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, fuelCosts: $fuelCosts, tripStatus: $tripStatus, updateTime: $updateTime, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, distance: $distance, instFuelConsumption: $instFuelConsumption, kmPerL: $kmPerL, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, currentSpeed: $currentSpeed, averageSpeed: $averageSpeed, range: $range, tankSize: $tankSize, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, fuelCosts: $fuelCosts, tripStatus: $tripStatus, updateTime: $updateTime, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, engineLoad: $engineLoad)';
   }
 
   @override
@@ -622,8 +603,6 @@ class _$_TripRecord implements _TripRecord {
             const DeepCollectionEquality().equals(other.distance, distance) &&
             const DeepCollectionEquality()
                 .equals(other.instFuelConsumption, instFuelConsumption) &&
-            const DeepCollectionEquality()
-                .equals(other.averageFuelConsumption, averageFuelConsumption) &&
             const DeepCollectionEquality().equals(other.kmPerL, kmPerL) &&
             const DeepCollectionEquality().equals(other.usedFuel, usedFuel) &&
             const DeepCollectionEquality()
@@ -670,7 +649,6 @@ class _$_TripRecord implements _TripRecord {
         const DeepCollectionEquality().hash(currentFuelLvl),
         const DeepCollectionEquality().hash(distance),
         const DeepCollectionEquality().hash(instFuelConsumption),
-        const DeepCollectionEquality().hash(averageFuelConsumption),
         const DeepCollectionEquality().hash(kmPerL),
         const DeepCollectionEquality().hash(usedFuel),
         const DeepCollectionEquality().hash(idleUsedFuel),
@@ -707,7 +685,6 @@ abstract class _TripRecord implements TripRecord {
       double currentFuelLvl,
       double distance,
       double instFuelConsumption,
-      double averageFuelConsumption,
       double kmPerL,
       double usedFuel,
       double idleUsedFuel,
@@ -739,8 +716,6 @@ abstract class _TripRecord implements TripRecord {
   double get distance;
   @override
   double get instFuelConsumption;
-  @override
-  double get averageFuelConsumption;
   @override
   double get kmPerL;
   @override

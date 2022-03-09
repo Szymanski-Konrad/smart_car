@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
@@ -9,15 +8,11 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_background/flutter_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
-import 'package:flutter_logs/flutter_logs.dart';
 import 'package:flutter_sensors/flutter_sensors.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:motion_sensors/motion_sensors.dart';
+
+import 'package:location/location.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
-import 'package:smart_car/app/resources/configs.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -25,15 +20,18 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/battery_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
-import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
+import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
-import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/utils/bt_connection.dart';
 import 'package:smart_car/utils/list_extension.dart';
+import 'package:smart_car/utils/location_helper.dart';
+import 'package:smart_car/utils/logger.dart';
+import 'package:smart_car/utils/obd_commands_extensions.dart';
 import 'package:smart_car/utils/trip_files.dart';
 import 'package:smart_car/utils/ui/countdown_text.dart';
 
@@ -58,15 +56,30 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   DateTime? lastDataReciveTime;
   DateTime lastReciveCommandTime = DateTime.now();
   DateTime lastTestCommandTime = DateTime.now();
-  BluetoothConnection? _connection;
-  StreamSubscription<Position>? positionSub;
+
+  StreamSubscription<LocationData>? locationSub;
   StreamSubscription<SensorEvent>? _accSubscription;
+  StreamSubscription? _tempSubscription;
+  StreamSubscription? _barometrSubscription;
   Timer? _everySecondTimer;
+  Location location = Location();
 
-  /// Initialize cubit
-  void init() async {
-    emit(state.copyWith(isConnnectingError: false));
+  /// Called when succesfully connected to OBD
+  void _onSuccessfulConnection() {
+    emit(state.copyWith(
+      isConnecting: false,
+      isDisconnecting: false,
+    ));
 
+    initializeObd();
+  }
+
+  /// Called when occured some connection error
+  void _onConnectionError() {
+    emit(state.copyWith(isConnnectingError: true));
+  }
+
+  Future<void> _listenForSensors() async {
     final stream = await SensorManager().sensorUpdates(
       sensorId: Sensors.ACCELEROMETER,
       interval: Sensors.SENSOR_DELAY_UI,
@@ -80,88 +93,88 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       ));
     });
 
-    commands.add(BatteryVoltageCommand());
-
-    if (address != null) {
-      BluetoothConnection.toAddress(address).then((connection) {
-        _connection = connection;
-        emit(state.copyWith(
-          isConnecting: false,
-          isDisconnecting: false,
-        ));
-        connection.input?.listen(_onDataReceived).onDone(() {
-          print('Connection is done');
-        });
-        initializeObd();
-        _initBackgroundWorking();
-      }).catchError((error) {
-        print('Cannot connect, exception occured');
-        print(error);
-        emit(state.copyWith(isConnnectingError: true));
+    final isBarometrAvailable =
+        await EnvironmentSensors().getSensorAvailable(SensorType.Pressure);
+    if (isBarometrAvailable) {
+      _barometrSubscription = EnvironmentSensors().pressure.listen((event) {
+        emit(state.copyWith(pressure: event));
       });
-    } else if (kDebugMode) {
-      _runTest();
     }
 
     final isTemperatureAvailable = await EnvironmentSensors()
         .getSensorAvailable(SensorType.AmbientTemperature);
-    emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
     if (isTemperatureAvailable) {
-      EnvironmentSensors().temperature.listen((event) {
+      _tempSubscription = EnvironmentSensors().temperature.listen((event) {
         emit(state.copyWith(temperature: event));
       });
     }
-    positionSub = Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.bestForNavigation,
-        distanceFilter: Constants.minGpsDistance,
+
+    emit(state.copyWith(
+      isBarometrAvaliable: isBarometrAvailable,
+      isTemperatureAvaliable: isTemperatureAvailable,
+    ));
+
+    location.changeSettings(
+      accuracy: LocationAccuracy.high,
+    );
+  }
+
+  void _onLocationChanged(LocationData currLocation) {
+    _insertError(
+        'Current location: ${currLocation.longitude}, ${currLocation.latitude}, speed: ${currLocation.speed}, height: ${currLocation.altitude}, isMock: ${currLocation.isMock}');
+    final lastLocation = state.lastLocation;
+    if (lastLocation == null) return;
+    final distance =
+        LocationHelper.calculateDistance(lastLocation, currLocation);
+    final angle =
+        LocationHelper.calculateAngle(lastLocation, currLocation, distance);
+    final totalDistance = state.tripRecord.gpsDistance + distance;
+    emit(state.copyWith(
+      lastLocation: currLocation,
+      locationSlope: angle,
+      locationHeight: currLocation.altitude ?? 0,
+      direction: currLocation.heading ?? 0,
+      tripRecord: state.tripRecord.copyWith(
+        gpsSpeed: currLocation.speed ?? 0,
+        gpsDistance: totalDistance,
       ),
-    ).listen(onGpsPositionChange);
+    ));
   }
 
-  Future<void> _initBackgroundWorking() async {
-    final hasPermissions = await FlutterBackground.initialize(
-        androidConfig: Configs.backgroundConfig);
-    if (hasPermissions) {
-      await FlutterBackground.enableBackgroundExecution();
-    }
-  }
+  /// Initialize cubit
+  void init() async {
+    emit(state.copyWith(isConnnectingError: false));
 
-  void onGpsPositionChange(Position position) {
-    print(position);
-    final lastPosition = state.lastPosition;
-    if (lastPosition != null) {
-      final distance = Geolocator.distanceBetween(
-        lastPosition.latitude,
-        lastPosition.longitude,
-        position.latitude,
-        position.longitude,
+    if (address != null) {
+      await BTConnection().connect(
+        address: address,
+        onData: _onDataReceived,
+        onSuccess: _onSuccessfulConnection,
+        onError: _onConnectionError,
       );
+    } else if (kDebugMode) {
+      _runTest();
+    } else {
+      return;
+    }
 
-      final gpsSpeed = position.speed * 3600 / 1000;
-      emit(state.copyWith(
-          tripRecord: state.tripRecord.copyWith(gpsSpeed: gpsSpeed)));
-      if (distance > Constants.minGpsDistance) {
-        final angle = _calculateAngle(lastPosition, position, distance);
-        final gpsDistance = state.tripRecord.gpsDistance + (distance / 1000);
-        emit(state.copyWith(
-          roadSlope: angle,
-          tripRecord: state.tripRecord.copyWith(
-            gpsDistance: gpsDistance,
-            gpsSpeed: gpsSpeed,
-          ),
-        ));
+    commands.add(BatteryVoltageCommand());
+    _listenForSensors();
+
+    locationSub = location.onLocationChanged.listen(_onLocationChanged,
+        onError: ((e, s) => _insertError(e.toString())));
+  }
+
+  /// Send command for preparing obd
+  Future<void> _sendInitializeCommands() async {
+    for (final comm in initializeCommands) {
+      BTConnection().sendCommand(comm, onError: _insertError);
+      if (comm == 'AT Z') {
+        await Future.delayed(const Duration(milliseconds: 1000));
+      } else {
+        await Future.delayed(const Duration(milliseconds: 200));
       }
     }
-    emit(state.copyWith(lastPosition: position));
-  }
-
-  double _calculateAngle(Position previous, Position current, double distance) {
-    final hightDiff = previous.altitude - current.altitude;
-    final c = sqrt(pow(distance, 2) + pow(hightDiff, 2));
-    print(
-        'Distance: $distance, C: $c, Height: $hightDiff, Angle: ${asin(distance / c - 1)}');
-    return asin(distance / c - 1);
   }
 
   Future<void> initializeObd() async {
@@ -170,24 +183,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       localFile: state.localData,
       fuelPrice: state.fuelPrice,
     ));
-    _sendCommand('AT Z'); // Reset obd
-    await Future.delayed(const Duration(milliseconds: 1000));
-    _sendCommand('AT E0'); // Echo off
-    await Future.delayed(const Duration(milliseconds: 200));
-    _sendCommand('AT L0'); // Line feed off
-    await Future.delayed(const Duration(milliseconds: 200));
-    _sendCommand('ATS0'); // Spaces off
-    await Future.delayed(const Duration(milliseconds: 200));
-    _sendCommand('AT ST 96'); // Set timeout 150 ms
-    await Future.delayed(const Duration(milliseconds: 200));
-    _sendCommand('AT SP 0'); // Select protocol command
-    await Future.delayed(const Duration(milliseconds: 200));
-    _sendCommand('AT E0'); // Echo off
-    await Future.delayed(const Duration(milliseconds: 200));
+    await _sendInitializeCommands();
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
 
-    await _determinePosition();
+    await LocationHelper.checkLocationService(location);
+
     lastReciveCommandTime = DateTime.now();
     _decideNextMove();
   }
@@ -196,29 +197,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     specialCommands.addAll(checkPidsCommands);
   }
 
-  Future<void> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-  }
-
+  /// Start timer, which fire every second
   void _startSecondTimer() {
     _everySecondTimer = Timer.periodic(
       const Duration(seconds: 1),
@@ -251,6 +230,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
   }
 
+  /// Testing local file of recorded trips
   Future<void> _runTest() async {
     final json =
         await rootBundle.loadString('assets/json/${state.localData}.json');
@@ -283,6 +263,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _runTest();
   }
 
+  /// Modify commands list
   void editCommandList(bool value, String pid) {
     if (value) {
       addCommand(pid);
@@ -322,19 +303,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         }
       }
     }
-    await _sendCommand(_command);
-  }
-
-  Future<void> _sendCommand(String command) async {
-    if (command.isNotEmpty) {
-      try {
-        final uft = Uint8List.fromList(utf8.encode(command + '\r\n'));
-        _connection?.output.add(uft);
-        await _connection?.output.allSent;
-      } catch (e) {
-        _insertError(e.toString());
-      }
-    }
+    await BTConnection().sendCommand(_command, onError: _insertError);
   }
 
   /// Process closing trip after detect motor off
@@ -344,7 +313,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       isTripClosing: true,
       isTripEnded: true,
     ));
-    _connection?.close();
+    BTConnection().close();
     saveCommands();
     await goBackWithDelay();
   }
@@ -361,6 +330,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (Navigation.instance.canPop()) Navigation.instance.pop();
   }
 
+  /// Save commands for future local testing
   Future<void> saveCommands() async {
     try {
       await TripFiles.saveCommandsToFile(testCommands);
@@ -372,20 +342,29 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   /// Check if need to send special command
   void _decideNextMove() {
-    final specialCommand = state.nextReadPidsPart;
+    final specialCommand = state.pidsChecker.nextReadPidsPart;
     if (specialCommand != null && specialCommands.isEmpty) {
       specialCommands.add(specialCommand);
     }
     _sendNextCommand();
   }
 
+  /// Processing fetched data from OBD II
   void _onDataReceived(Uint8List data) {
-    lastReciveCommandTime = DateTime.now();
-
     try {
       String dataString = String.fromCharCodes(data);
       if (dataString.trim().isEmpty) {
         return;
+      }
+
+      if (dataString.contains('.') || dataString.startsWith('1')) {
+        _insertError('Potentially battery voltage data: $dataString');
+      }
+
+      if (dataString.contains('.') ||
+          dataString.contains('V') ||
+          dataString.contains('ATRV')) {
+        _processBatteryVoltageCommand(dataString, data);
       }
 
       if (dataString.endsWith(Strings.promptCharacter)) {
@@ -395,38 +374,19 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
         return;
       }
+      lastReciveCommandTime = DateTime.now();
 
-      if (dataString.endsWith('V')) {
-        final dataIndex =
-            commands.lastIndexWhere((element) => element.command == 'ATRV');
-        final value =
-            double.tryParse(dataString.substring(1, dataString.length - 1));
-        if (dataIndex == -1 || value == null) return;
-        final voltage = (value * 10).toInt();
-        commands[dataIndex].commandBack([voltage], state.isLocalMode);
-
-        final now = DateTime.now();
-        final difference =
-            now.difference(lastTestCommandTime).inMilliseconds.abs();
-        lastTestCommandTime = now;
-
-        // Create test commands
-        if (!state.isLocalMode) {
-          final testCommand = TestCommand('ATRV', difference, data);
-          testCommands.add(testCommand);
-        }
+      if (dataString.contains('.') ||
+          dataString.contains('V') ||
+          dataString.contains('ATRV')) {
+        _processBatteryVoltageCommand(dataString, data);
+        return;
       }
 
       if (dataString.startsWith('41')) {
-        final splitted = <String>[];
-        for (int i = 0; i <= dataString.length - 2; i += 2) {
-          splitted.add(dataString.substring(i, i + 2));
-        }
-        final converted =
-            splitted.skip(2).map((hex) => int.parse(hex, radix: 16)).toList();
-
-        final pid = PIDExtension.code(splitted[1]);
-        final specialPid = SpecialPIDExtension.code(splitted[1]);
+        final receivedData = _convertReceivedData(dataString);
+        final pid = PIDExtension.code(receivedData.command);
+        final specialPid = SpecialPIDExtension.code(receivedData.command);
         final now = DateTime.now();
         final difference =
             now.difference(lastTestCommandTime).inMilliseconds.abs();
@@ -434,24 +394,24 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
         // Create test commands
         if (!state.isLocalMode) {
-          final testCommand = TestCommand('01${splitted[1]}', difference, data);
+          final testCommand =
+              TestCommand('01${receivedData.command}', difference, data);
           testCommands.add(testCommand);
         }
 
         if (pid != PID.unknown && commands.isNotEmpty) {
-          final dataIndex = commands.lastIndexWhere(
-              (element) => element.command.substring(2) == splitted[1]);
+          final dataIndex = commands.lastIndexWhere((element) =>
+              element.command.substring(2) == receivedData.command);
           if (dataIndex == -1) return;
-          commands[dataIndex].commandBack(converted, state.isLocalMode);
+          commands[dataIndex].commandBack(receivedData.data, state.isLocalMode);
 
           final tripRecord = state.tripRecord;
           final command = commands[dataIndex];
 
           switch (pid) {
             case PID.engineLoad:
-              emit(state.copyWith(
-                  tripRecord:
-                      tripRecord.updateEngineLoad(command.result.toDouble())));
+              emit(state.copyWith
+                  .tripRecord(engineLoad: command.result.toDouble()));
               break;
             case PID.fuelSystemStatus:
               if (command is FuelSystemStatusCommand) {
@@ -468,49 +428,27 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
             case PID.maf:
               if (command is MafCommand) {
-                final stft1 =
-                    commands.safeFirst<ShortTermFuelTrimBank1>()?.result;
-                final ltft1 =
-                    commands.safeFirst<LongTermFuelTrimBank1>()?.result;
-                final stft2 =
-                    commands.safeFirst<ShortTermFuelTrimBank2>()?.result;
-                final ltft2 =
-                    commands.safeFirst<LongTermFuelTrimBank2>()?.result;
-                final airFuelRatio =
-                    commands.safeFirst<CommandedAirFuelRatioCommand>()?.result;
-
-                final shortFuelTrim =
-                    1.0 + (stft1 ?? 0.0 + (stft2 ?? 0.0)).toDouble();
-                final longFuelTrim =
-                    1.0 + (ltft1 ?? 0.0 + (ltft2 ?? 0.0)).toDouble();
-
-                final usedFuel = command.fuelUsed;
+                final shortFuelTrim = _calculateShortFuelTrim();
+                final longFuelTrim = _calculateLongFuelTrim();
                 final instFuelConsumption = command.fuel100km(
                   tripRecord.currentSpeed,
                   tripRecord.engineLoad,
                   shortFuelTrim,
                   longFuelTrim,
-                  (airFuelRatio ?? 1.0) * 14.7,
+                  (commands.airFuelRatio ?? 1.0) * 14.7,
                 );
-                final avgFuelConsumption =
-                    100 * tripRecord.usedFuel / tripRecord.distance;
-                final speed = commands.safeFirst<SpeedCommand>()?.result;
-                final fuelStatus =
-                    commands.safeFirst<FuelSystemStatusCommand>()?.status;
-                final kmPerL = command.kmPerL(tripRecord.currentSpeed);
 
                 emit(state.copyWith(
                   tripRecord: tripRecord
                       .updateUsedFuel(
-                        usedFuel(tripRecord.engineLoad),
-                        speed ?? 0,
-                        fuelStatus ?? FuelSystemStatus.motorOff,
+                        command.fuelUsed(tripRecord.engineLoad),
+                        commands.speed,
+                        commands.fuelSystemStatus,
                         state.fuelPrice,
                       )
                       .copyWith(
                         instFuelConsumption: instFuelConsumption,
-                        averageFuelConsumption: avgFuelConsumption,
-                        kmPerL: kmPerL,
+                        kmPerL: command.kmPerL(tripRecord.currentSpeed),
                       )
                       .updateRange(),
                 ));
@@ -518,13 +456,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
             case PID.speed:
               if (command is SpeedCommand) {
-                final distance = command.distanceTraveled;
                 final acceleration = command.acceleration();
                 emit(state.copyWith(
                   tripRecord: tripRecord
-                      .updateDistance(distance, command.result.toInt())
+                      .updateDistance(
+                        command.distanceTraveled,
+                        command.result.toInt(),
+                      )
                       .updateRapidAcceleration(acceleration: acceleration),
-                  acceleration: acceleration,
                 ));
               }
               break;
@@ -532,53 +471,83 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
           }
         } else if (specialPid != SpecialPID.unknown) {
-          final pids = CheckPidsCommand.extractSupportedPids(
-              splitted.toList(), splitted[1]);
-          final checkPid = pids
-              .where((element) => checkPidsCommands.contains(element))
-              .toList();
-          if (checkPid.isNotEmpty) {
-            final special = checkPid.first;
-            specialCommands.add(special);
-            pids.remove(special);
-            emit(state.updateSupportedPidsPart(special));
-          }
-          final currentPids = List<String>.from(state.supportedPids);
-          for (var pid in pids) {
-            if (!currentPids.contains(pid)) addCommand(pid);
-          }
-          currentPids.addAll(pids);
-          emit(state
-              .updateReadedPidsPart('01' + splitted[1])
-              .copyWith(supportedPids: currentPids.toSet().toList()));
+          _processSpecialPid(receivedData);
         } else {
           final error = commands.isEmpty
               ? 'Commands list is empty'
-              : 'Unsupported pid: ${splitted[1]}, description: ${pidsDescription[splitted[1]]}';
+              : 'Unsupported pid: ${receivedData.command}, description: ${pidsDescription[receivedData.command]}';
           _insertError(error);
         }
+      } else {
+        _insertError('Not recognized data: $dataString');
       }
     } catch (e) {
       _insertError(e.toString());
     }
   }
 
+  void _processBatteryVoltageCommand(String dataString, Uint8List data) {
+    _insertError('ATRV code recognised');
+    _insertError('ATRV data: $dataString, $data');
+    final dataIndex =
+        commands.lastIndexWhere((element) => element is BatteryVoltageCommand);
+    final value = double.tryParse(dataString.substring(0, dataString.length));
+    _insertError('ATRV: Command data index: $dataIndex, value: $value');
+    if (dataIndex == -1 || value == null) return;
+    final voltage = (value * 10).toInt();
+    commands[dataIndex].commandBack([voltage], state.isLocalMode);
+
+    final now = DateTime.now();
+    final difference = now.difference(lastTestCommandTime).inMilliseconds.abs();
+    lastTestCommandTime = now;
+
+    // Create test commands
+    if (!state.isLocalMode) {
+      final testCommand = TestCommand('ATRV', difference, data);
+      testCommands.add(testCommand);
+    }
+  }
+
+  void _processSpecialPid(ReceivedData receivedData) {
+    final pids = CheckPidsCommand.extractSupportedPids(
+      receivedData.splitted,
+      receivedData.command,
+    );
+    final checkPid =
+        pids.where((element) => checkPidsCommands.contains(element)).toList();
+    if (checkPid.isNotEmpty) {
+      final special = checkPid.first;
+      specialCommands.add(special);
+      pids.remove(special);
+      emit(state.updateSupportedPidsPart(special));
+    }
+    final currentPids = List<String>.from(state.supportedPids);
+    for (var pid in pids) {
+      if (!currentPids.contains(pid)) addCommand(pid);
+    }
+    currentPids.addAll(pids);
+    emit(state
+        .updateReadedPidsPart('01' + receivedData.command)
+        .copyWith(supportedPids: currentPids.toSet().toList()));
+  }
+
+  // Convert [dataString] to more readable struct
+  ReceivedData _convertReceivedData(String dataString) {
+    final splitted = <String>[];
+    for (int i = 0; i <= dataString.length - 2; i += 2) {
+      splitted.add(dataString.substring(i, i + 2));
+    }
+    final data =
+        splitted.skip(2).map((hex) => int.parse(hex, radix: 16)).toList();
+
+    return ReceivedData(data: data, command: splitted[1], splitted: splitted);
+  }
+
   void _insertError(String error) {
     final errors = List<String>.from(state.errors);
     errors.add(error);
-    logToFile(error);
+    Logger.logToFile(error);
     emit(state.copyWith(errors: errors));
-  }
-
-  void logToFile(Object data) {
-    if (data.toString().isNotEmpty) {
-      FlutterLogs.logToFile(
-        appendTimeStamp: true,
-        logFileName: "device",
-        overwrite: false,
-        logMessage: '${data.toString()}\n',
-      );
-    }
   }
 
   void listenAllPids(List<String> pids) {
@@ -593,16 +562,18 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   int get averageResponseTime =>
       commands.isEmpty ? 0 : (totalResponseTime / commands.length).ceil();
 
+  double _calculateShortFuelTrim() => 1.0 + commands.stft1 + commands.stft2;
+  double _calculateLongFuelTrim() => 1.0 + commands.ltft1 + commands.ltft2;
+
   @override
   Future<void> close() async {
     _everySecondTimer?.cancel();
     _accSubscription?.cancel();
+    _tempSubscription?.cancel();
+    _barometrSubscription?.cancel();
     await saveCommands();
-    await _connection?.finish();
-    await positionSub?.cancel();
-    if (FlutterBackground.isBackgroundExecutionEnabled) {
-      await FlutterBackground.disableBackgroundExecution();
-    }
+    await BTConnection().close();
+    await locationSub?.cancel();
     super.close();
   }
 }

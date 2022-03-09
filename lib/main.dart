@@ -6,8 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigator.dart';
-import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_cubit.dart';
-import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_logs/flutter_logs.dart';
 import 'package:smart_car/utils/list_extension.dart';
 
 abstract class ObdCommand {

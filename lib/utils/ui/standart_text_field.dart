@@ -49,7 +49,7 @@ class _StandardTextFieldState extends State<StandardTextField> {
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.black,
         fontSize: 16,
         height: 1.33,
@@ -73,9 +73,9 @@ class _StandardTextFieldState extends State<StandardTextField> {
       minLines: widget.minLines,
       keyboardType: widget.keyboardType,
       decoration: InputDecoration(
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(Radius.circular(16.0)),
+          borderRadius: BorderRadius.all(const Radius.circular(16.0)),
         ),
         hintText: widget.hintText,
         errorText: widget.errorText,

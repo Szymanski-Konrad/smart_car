@@ -12,7 +12,7 @@ class FuelLog with _$FuelLog {
     required double fuelPrice,
     required double totalPrice,
     required DateTime logDate,
-    required double odometerDiff,
+    required double distanceTraveled,
     double? remainingFuel,
     double? fuelEfficiency,
     @Default(false) bool isRemainingFuelKnown,
@@ -22,8 +22,12 @@ class FuelLog with _$FuelLog {
 }
 
 extension FuelLogExtension on FuelLog {
-  String get showOdometerDiff => '+ ${odometerDiff.showSpaced} km';
-  String get showFuelPrice => '$fuelPrice zł';
-  String get showTotalPrice => '$totalPrice zł';
-  String get showOdometer => '${odometer.showSpaced} km';
+  String odometerFormatted() =>
+      '${odometer.showSpaced} km \n    ${distanceFormatted()}';
+  String distanceFormatted() => '+ ${distanceTraveled.showSpaced} km';
+  String fuelPriceFormatted() => '$fuelPrice zł';
+  String totalCostFormatted() => '$totalPrice zł';
+
+  double get fc => fuelAmount * 100 / distanceTraveled;
+  String get fuelConsumption => '${fc.toStringAsFixed(2)} l/100km';
 }

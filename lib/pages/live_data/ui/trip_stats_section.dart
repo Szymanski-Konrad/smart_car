@@ -23,8 +23,12 @@ class TripStatsSection extends StatelessWidget {
         children: [
           if (state.isTemperatureAvaliable)
             OtherInfoTile(data: state.indoorTempData),
+          if (state.isBarometrAvaliable)
+            OtherInfoTile(data: state.pressureData),
           OtherInfoTile(data: state.gForceData),
-          OtherInfoTile(data: state.roadSlopeData),
+          OtherInfoTile(data: state.locationHeightData),
+          OtherInfoTile(data: state.directionData),
+          OtherInfoTile(data: state.locationSlopeData),
           ...state.tripRecord.timeSection.map(
             (data) => TimeInfoTile(
               data: data,

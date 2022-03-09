@@ -22,13 +22,8 @@ class LiveStatsSection extends StatelessWidget {
         runSpacing: 8.0,
         spacing: 8.0,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Text(Strings.avgResponse(state.averageResponseTime)),
-              Text(Strings.totalResponse(state.totalResponseTime)),
-            ],
-          ),
+          Text(Strings.avgResponse(state.averageResponseTime)),
+          Text(Strings.totalResponse(state.totalResponseTime)),
           if (cubit.commands.isNotEmpty)
             ...cubit.commands
                 .whereType<VisibleObdCommand>()
