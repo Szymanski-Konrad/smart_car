@@ -10,7 +10,7 @@ abstract class Constants {
   static const minRapidSpeedTimeThreshold = 30; // s
   static const co2GenerationRatio = 11 / 3;
   static const minModuleVoltage = 13.3;
-  static const idleSpeedLimit = 1;
+  static const idleSpeedLimit = 0;
   static const defaultLocalFile = 'work';
   static const largeScreenWidth = 400.0;
 

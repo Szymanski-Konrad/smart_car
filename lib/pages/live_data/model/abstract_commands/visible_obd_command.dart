@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:smart_car/app/resources/color_palette.dart';
-import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 abstract class VisibleObdCommand extends ObdCommand {
@@ -16,15 +15,6 @@ abstract class VisibleObdCommand extends ObdCommand {
 
   String get name;
   String get description;
-  String? get namePL {
-    String code = command.substring(command.length - 2);
-    return pidsNamePL[code];
-  }
-
-  String? get descriptionPL {
-    String code = command.substring(command.length - 2);
-    return pidsDescriptionPL[code];
-  }
 
   String get unit;
   String get formattedResult => '-.- $unit';

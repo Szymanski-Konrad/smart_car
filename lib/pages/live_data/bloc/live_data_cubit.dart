@@ -63,6 +63,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription? _barometrSubscription;
   Timer? _everySecondTimer;
   Location location = Location();
+  final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
 
   /// Called when succesfully connected to OBD
   void _onSuccessfulConnection() {
@@ -120,22 +121,23 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _onLocationChanged(LocationData currLocation) {
-    _insertError(
-        'Current location: ${currLocation.longitude}, ${currLocation.latitude}, speed: ${currLocation.speed}, height: ${currLocation.altitude}, isMock: ${currLocation.isMock}');
     final lastLocation = state.lastLocation;
-    if (lastLocation == null) return;
+    if (lastLocation == null) {
+      emit(state.copyWith(lastLocation: currLocation));
+      return;
+    }
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
     final angle =
         LocationHelper.calculateAngle(lastLocation, currLocation, distance);
-    final totalDistance = state.tripRecord.gpsDistance + distance;
+    final totalDistance = state.tripRecord.gpsDistance + (distance / 1000);
     emit(state.copyWith(
       lastLocation: currLocation,
       locationSlope: angle,
       locationHeight: currLocation.altitude ?? 0,
       direction: currLocation.heading ?? 0,
       tripRecord: state.tripRecord.copyWith(
-        gpsSpeed: currLocation.speed ?? 0,
+        gpsSpeed: (currLocation.speed ?? 0) * 3600 / 1000,
         gpsDistance: totalDistance,
       ),
     ));
@@ -161,8 +163,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     commands.add(BatteryVoltageCommand());
     _listenForSensors();
 
-    locationSub = location.onLocationChanged.listen(_onLocationChanged,
-        onError: ((e, s) => _insertError(e.toString())));
+    locationSub = location.onLocationChanged.listen(_onLocationChanged);
   }
 
   /// Send command for preparing obd
@@ -357,10 +358,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
 
-      if (dataString.contains('.') || dataString.startsWith('1')) {
-        _insertError('Potentially battery voltage data: $dataString');
-      }
-
       if (dataString.contains('.') ||
           dataString.contains('V') ||
           dataString.contains('ATRV')) {
@@ -375,13 +372,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
       lastReciveCommandTime = DateTime.now();
-
-      if (dataString.contains('.') ||
-          dataString.contains('V') ||
-          dataString.contains('ATRV')) {
-        _processBatteryVoltageCommand(dataString, data);
-        return;
-      }
 
       if (dataString.startsWith('41')) {
         final receivedData = _convertReceivedData(dataString);
@@ -432,7 +422,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                 final longFuelTrim = _calculateLongFuelTrim();
                 final instFuelConsumption = command.fuel100km(
                   tripRecord.currentSpeed,
-                  tripRecord.engineLoad,
                   shortFuelTrim,
                   longFuelTrim,
                   (commands.airFuelRatio ?? 1.0) * 14.7,
@@ -487,12 +476,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _processBatteryVoltageCommand(String dataString, Uint8List data) {
-    _insertError('ATRV code recognised');
-    _insertError('ATRV data: $dataString, $data');
     final dataIndex =
         commands.lastIndexWhere((element) => element is BatteryVoltageCommand);
-    final value = double.tryParse(dataString.substring(0, dataString.length));
-    _insertError('ATRV: Command data index: $dataIndex, value: $value');
+    var numbers = doubleRE
+        .allMatches(dataString)
+        .map((m) => double.tryParse(m[0] ?? ''))
+        .toList();
+    final value = numbers.first;
+
     if (dataIndex == -1 || value == null) return;
     final voltage = (value * 10).toInt();
     commands[dataIndex].commandBack([voltage], state.isLocalMode);

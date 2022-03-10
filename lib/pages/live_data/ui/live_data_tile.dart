@@ -50,8 +50,8 @@ class LiveDataTile extends StatelessWidget {
         barrierDismissible: true,
         builder: (context) {
           return AlertDialog(
-            title: Text(command.namePL ?? command.name),
-            content: Text(command.descriptionPL ?? 'Brak informacji'),
+            title: Text(command.name),
+            content: Text(command.description),
           );
         });
   }
@@ -72,7 +72,7 @@ class LiveDataTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  command.namePL ?? command.name,
+                  command.name,
                   maxLines: 2,
                   style: textTheme,
                   textAlign: TextAlign.center,

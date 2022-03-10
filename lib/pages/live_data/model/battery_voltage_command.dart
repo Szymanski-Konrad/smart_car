@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_logs/flutter_logs.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class BatteryVoltageCommand extends VisibleObdCommand {
@@ -18,12 +17,6 @@ class BatteryVoltageCommand extends VisibleObdCommand {
 
   @override
   void performCalculations(List<int> data) {
-    FlutterLogs.logToFile(
-      appendTimeStamp: true,
-      logFileName: "device",
-      overwrite: false,
-      logMessage: 'Battery voltage: ${data.toString()}\n',
-    );
     if (data.isNotEmpty) {
       result = data[0] / 10;
       super.performCalculations(data);
@@ -31,13 +24,13 @@ class BatteryVoltageCommand extends VisibleObdCommand {
   }
 
   @override
-  String get description => 'Battery Voltage';
+  String get description => 'Napięcie akumulatora';
 
   @override
   IconData get icon => Icons.electrical_services;
 
   @override
-  String get name => 'Battery';
+  String get name => 'Napięcie akumulatora';
 
   @override
   String get unit => 'V';

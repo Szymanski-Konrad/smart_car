@@ -45,7 +45,7 @@ class _FuelStationPageState extends State<FuelStationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stacje paliw'),
+        title: const Text('Stacje paliw'),
         centerTitle: true,
       ),
       body: FlutterMap(
@@ -60,7 +60,7 @@ class _FuelStationPageState extends State<FuelStationPage> {
             urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
             subdomains: ['a', 'b', 'c'],
             attributionBuilder: (_) {
-              return Text("© OpenStreetMap contributors");
+              return const Text("© OpenStreetMap contributors");
             },
           ),
           MarkerLayerOptions(

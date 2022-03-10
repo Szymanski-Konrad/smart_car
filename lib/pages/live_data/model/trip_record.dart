@@ -11,40 +11,47 @@ part 'trip_record.freezed.dart';
 @freezed
 class TripRecord with _$TripRecord {
   factory TripRecord({
+    // Fuel info
     @Default(-1.0) double startFuelLvl,
     @Default(-1.0) double currentFuelLvl,
-    @Default(0.0) double distance,
     @Default(-1.0) double instFuelConsumption,
     @Default(0.0) double kmPerL,
     @Default(0.0) double usedFuel,
     @Default(0.0) double idleUsedFuel,
     @Default(0.0) double savedFuel,
+    @Default(55.0) double tankSize,
+    @Default(0) double fuelCosts,
+
+    // Gps
     @Default(-1.0) double gpsSpeed,
     @Default(0.0) double gpsDistance,
-    @Default(-1) int currentSpeed,
-    @Default(0.0) double averageSpeed,
-    @Default(-1.0) double range,
-    @Default(55.0) double tankSize,
+
+    // Time
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
-    @Default(0) double fuelCosts,
-    @Default(TripStatus.idle) TripStatus tripStatus,
-    @Default({}) Map<String, DateTime> updateTime,
     @Default(0) int currentDriveInterval,
     @Default(0.0) double currentDriveIntervalFuel,
+    @Default({}) Map<String, DateTime> updateTime,
+
+    // Distance & speed
+    @Default(0.0) double distance,
+    @Default(-1.0) double range,
+    @Default(-1) int currentSpeed,
+    @Default(0.0) double averageSpeed,
+    @Default(TripStatus.idle) TripStatus tripStatus,
 
     // Rapid driving
     @Default(0) int rapidAccelerations,
     @Default(0) int rapidBreakings,
     @Default(0) int lastAccelerationTime,
     @Default(0) int lastBreakingTime,
-    @Default(0.0) double engineLoad,
   }) = _TripRecord;
 }
 
 extension TripRecordExtension on TripRecord {
   int get totalTripSeconds => tripSeconds + idleTripSeconds;
-  double get avgFuelConsumption => 100 * usedFuel / distance;
+  double get totalFuelUsed => usedFuel + idleUsedFuel;
+  double get avgFuelConsumption => 100 * totalFuelUsed / distance;
 
   TripRecord updateFuelLvl(double value) {
     final initial = startFuelLvl < 0 ? value : startFuelLvl;
@@ -282,10 +289,7 @@ extension TripRecordExtension on TripRecord {
       );
 
   OtherTileData get producedCarboDetails => OtherTileData(
-        value: (usedFuel + idleUsedFuel) *
-            0.75 *
-            0.87 *
-            Constants.co2GenerationRatio,
+        value: totalFuelUsed * 0.75 * 0.87 * Constants.co2GenerationRatio,
         digits: 2,
         title: Strings.burntCO2,
         unit: 'kg',

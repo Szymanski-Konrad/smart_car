@@ -6,8 +6,8 @@ import 'package:xml/xml.dart';
 import 'package:http/http.dart';
 
 class OverpassApi {
-  static String _apiUrl = 'overpass-api.de';
-  static String _path = '/api/interpreter';
+  static const _apiUrl = 'overpass-api.de';
+  static const _path = '/api/interpreter';
 
   static Future<List<ResponseLocation>> fetchGasStationsAroundCenter(
     QueryLocation center,

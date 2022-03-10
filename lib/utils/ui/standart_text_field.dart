@@ -75,7 +75,7 @@ class _StandardTextFieldState extends State<StandardTextField> {
       decoration: InputDecoration(
         border: const OutlineInputBorder(
           borderSide: BorderSide.none,
-          borderRadius: BorderRadius.all(const Radius.circular(16.0)),
+          borderRadius: BorderRadius.all(Radius.circular(16.0)),
         ),
         hintText: widget.hintText,
         errorText: widget.errorText,
