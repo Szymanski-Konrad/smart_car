@@ -222,8 +222,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
             averageResponseTime: averageResponseTime,
             totalResponseTime: totalResponseTime,
             tripRecord: state.tripRecord
-                .updateSeconds(speed)
-                .updateTripStatus(tripStatus),
+                .updateTripStatus(speed, tripStatus),
           ),
         );
       },
