@@ -32,7 +32,7 @@ class LiveDataState with _$LiveDataState {
     // Live data
     required TripRecord tripRecord,
     LocationData? lastLocation,
-    @Default(TripStatus.idle) TripStatus tripStatus,
+    // @Default(TripStatus.idle) TripStatus tripStatus,
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
 
@@ -80,7 +80,7 @@ class LiveDataState with _$LiveDataState {
     required double fuelPrice,
   }) {
     return LiveDataState(
-      tripRecord: TripRecord(),
+      tripRecord: TripRecord(fuelPrice: fuelPrice),
       pidsChecker: PidsChecker(),
       supportedPids: pids,
       isConnecting: false,
@@ -94,7 +94,7 @@ class LiveDataState with _$LiveDataState {
 extension LiveDataStateExtension on LiveDataState {
   LiveDataState clear() {
     return LiveDataState(
-      tripRecord: TripRecord(),
+      tripRecord: TripRecord(fuelPrice: fuelPrice),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
@@ -105,7 +105,7 @@ extension LiveDataStateExtension on LiveDataState {
 
   LiveDataState localMode() {
     return LiveDataState(
-      tripRecord: TripRecord(),
+      tripRecord: TripRecord(fuelPrice: fuelPrice),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,

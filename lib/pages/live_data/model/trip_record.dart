@@ -15,12 +15,11 @@ class TripRecord with _$TripRecord {
     @Default(-1.0) double startFuelLvl,
     @Default(-1.0) double currentFuelLvl,
     @Default(-1.0) double instFuelConsumption,
-    @Default(0.0) double kmPerL,
     @Default(0.0) double usedFuel,
     @Default(0.0) double idleUsedFuel,
     @Default(0.0) double savedFuel,
     @Default(55.0) double tankSize,
-    @Default(0) double fuelCosts,
+    @Default(0) double fuelPrice,
 
     // Gps
     @Default(-1.0) double gpsSpeed,
@@ -37,7 +36,6 @@ class TripRecord with _$TripRecord {
     @Default(0.0) double distance,
     @Default(-1.0) double range,
     @Default(-1) int currentSpeed,
-    @Default(0.0) double averageSpeed,
     @Default(TripStatus.idle) TripStatus tripStatus,
 
     // Rapid driving
@@ -52,6 +50,9 @@ extension TripRecordExtension on TripRecord {
   int get totalTripSeconds => tripSeconds + idleTripSeconds;
   double get totalFuelUsed => usedFuel + idleUsedFuel;
   double get avgFuelConsumption => 100 * totalFuelUsed / distance;
+  double get fuelCosts => totalFuelUsed * fuelPrice;
+  double get averageSpeed => distance / (totalTripSeconds / 3600);
+  double get range => (tankSize * currentFuelLvl) / avgFuelConsumption;
 
   TripRecord updateFuelLvl(double value) {
     final initial = startFuelLvl < 0 ? value : startFuelLvl;
@@ -59,30 +60,20 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateDistance(double value, int speed) {
-    final currDistance = distance + value;
     return copyWith(
-      distance: currDistance,
+      distance: distance + value,
       currentSpeed: speed,
     );
   }
 
   TripRecord updateTripStatus(TripStatus status) {
-    final driveInterval =
-        status != tripStatus && status != TripStatus.savingFuel
-            ? 0
-            : currentDriveInterval;
+    final isSameStatus = (tripStatus == TripStatus.driving &&
+            status == TripStatus.savingFuel) ||
+        (tripStatus == TripStatus.savingFuel && status == TripStatus.driving);
     return copyWith(
       tripStatus: status,
-      currentDriveInterval: driveInterval,
+      currentDriveInterval: isSameStatus ? currentDriveInterval : 0,
     );
-  }
-
-  TripRecord updateRange() {
-    if (avgFuelConsumption > 0 && currentFuelLvl > 0 && tankSize > 0) {
-      final range = (tankSize * currentFuelLvl) / avgFuelConsumption;
-      return copyWith(range: range);
-    }
-    return this;
   }
 
   TripRecord updateUsedFuel(
@@ -97,13 +88,11 @@ extension TripRecordExtension on TripRecord {
       } else {
         return copyWith(
           usedFuel: usedFuel + value,
-          fuelCosts: (usedFuel + idleUsedFuel) * fuelPrice,
         );
       }
     } else {
       return copyWith(
         idleUsedFuel: idleUsedFuel + value,
-        fuelCosts: (usedFuel + idleUsedFuel) * fuelPrice,
       );
     }
   }
@@ -115,7 +104,6 @@ extension TripRecordExtension on TripRecord {
       idleTripSeconds:
           idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
       currentDriveInterval: currentDriveInterval + 1,
-      averageSpeed: distance / ((totalTripSeconds + 1) / 3600),
     );
   }
 

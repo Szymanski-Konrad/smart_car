@@ -221,7 +221,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           state.copyWith(
             averageResponseTime: averageResponseTime,
             totalResponseTime: totalResponseTime,
-            tripStatus: tripStatus,
             tripRecord: state.tripRecord
                 .updateSeconds(speed)
                 .updateTripStatus(tripStatus),
@@ -399,10 +398,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           final command = commands[dataIndex];
 
           switch (pid) {
-            case PID.engineLoad:
-              emit(state.copyWith
-                  .tripRecord(engineLoad: command.result.toDouble()));
-              break;
             case PID.fuelSystemStatus:
               if (command is FuelSystemStatusCommand) {
                 emit(state.copyWith(fuelSystemStatus: command.status));
@@ -430,16 +425,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                 emit(state.copyWith(
                   tripRecord: tripRecord
                       .updateUsedFuel(
-                        command.fuelUsed(tripRecord.engineLoad),
+                        command.fuelUsed(),
                         commands.speed,
                         commands.fuelSystemStatus,
                         state.fuelPrice,
                       )
-                      .copyWith(
-                        instFuelConsumption: instFuelConsumption,
-                        kmPerL: command.kmPerL(tripRecord.currentSpeed),
-                      )
-                      .updateRange(),
+                      .copyWith(instFuelConsumption: instFuelConsumption),
                 ));
               }
               break;

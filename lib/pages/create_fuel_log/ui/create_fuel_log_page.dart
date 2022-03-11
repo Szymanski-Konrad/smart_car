@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
-import 'package:smart_car/utils/date_extension.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/utils/validators.dart';

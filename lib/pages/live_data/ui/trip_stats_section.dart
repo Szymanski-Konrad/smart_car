@@ -38,7 +38,7 @@ class TripStatsSection extends StatelessWidget {
           ...state.tripRecord.fuelUsedSection.map(
             (data) => FuelInfoTile(
               data: data,
-              status: state.tripStatus,
+              status: state.tripRecord.tripStatus,
             ),
           ),
           ...state.tripRecord.otherInfoSection.map(

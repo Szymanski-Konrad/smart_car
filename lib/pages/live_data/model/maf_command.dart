@@ -57,7 +57,7 @@ class MafCommand extends VisibleObdCommand {
   }
 
   /// Get fuel used between command calls
-  double fuelUsed(double load) {
+  double fuelUsed() {
     if (result > 0) {
       return differenceMiliseconds * (fuelFlow() / (3600 * 1000));
     }
