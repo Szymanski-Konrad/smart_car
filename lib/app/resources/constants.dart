@@ -29,6 +29,8 @@ abstract class Constants {
     'gizycko-kolno',
     'nowiak-mikolajki',
     'nowiakKolno',
+    'nowiak-lomza',
+    'lomza-kolno',
     'passat1',
     'passat2',
     'passat3',
