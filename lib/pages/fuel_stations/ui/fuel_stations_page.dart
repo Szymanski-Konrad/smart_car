@@ -15,6 +15,7 @@ class _FuelStationPageState extends State<FuelStationPage> {
   MapController mapController = MapController();
 
   List<ResponseLocation> locations = [];
+  QueryLocation? location;
 
   @override
   void initState() {
@@ -23,21 +24,11 @@ class _FuelStationPageState extends State<FuelStationPage> {
   }
 
   Future<void> onMapEventStream(MapEvent event) async {
-    print(event.source);
     if (event.source == MapEventSource.dragEnd) {
-      QueryLocation location = QueryLocation(
+      location = QueryLocation(
         longitude: event.center.longitude,
         latitude: event.center.latitude,
       );
-      final results = await OverpassApi.fetchGasStationsAroundCenter(
-        location,
-        {'amenity': 'fuel'},
-        5000,
-      );
-      setState(() {
-        locations = results;
-      });
-      print(results);
     }
   }
 
@@ -48,25 +39,61 @@ class _FuelStationPageState extends State<FuelStationPage> {
         title: const Text('Stacje paliw'),
         centerTitle: true,
       ),
-      body: FlutterMap(
-        options: MapOptions(
-          center: LatLng(52.43, 20.7),
-          zoom: 13.0,
-          interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-        ),
-        mapController: mapController,
-        layers: [
-          TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c'],
-            attributionBuilder: (_) {
-              return const Text("© OpenStreetMap contributors");
-            },
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: FlutterMap(
+              options: MapOptions(
+                center: LatLng(52.43, 20.7),
+                zoom: 13.0,
+                interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+              ),
+              mapController: mapController,
+              layers: [
+                TileLayerOptions(
+                  urlTemplate:
+                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                  subdomains: ['a', 'b', 'c'],
+                  attributionBuilder: (_) {
+                    return const Text("© OpenStreetMap contributors");
+                  },
+                ),
+                MarkerLayerOptions(
+                  markers: locations.map(_buildMarker).toList(),
+                ),
+              ],
+            ),
           ),
-          MarkerLayerOptions(
-            markers: locations.map(_buildMarker).toList(),
-          ),
+          Positioned(
+            left: 16,
+            bottom: 16,
+            child: Card(
+              child: Column(
+                children: [
+                  Text('PB95'),
+                  Text('PB98'),
+                  Text('ON'),
+                  Text('LPG'),
+                ],
+              ),
+            ),
+          )
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.search),
+        onPressed: () async {
+          final _location = location;
+          if (_location == null) return;
+          final results = await OverpassApi.fetchGasStationsAroundCenter(
+            _location,
+            {'amenity': 'fuel'},
+            5000,
+          );
+          setState(() {
+            locations = results;
+          });
+        },
       ),
     );
   }
@@ -74,13 +101,20 @@ class _FuelStationPageState extends State<FuelStationPage> {
   Marker _buildMarker(ResponseLocation location) {
     print(location);
     return Marker(
-      width: 40,
-      height: 40,
+      width: 60,
+      height: 100,
       point: LatLng(location.latitude, location.longitude),
-      builder: (ctx) => const Icon(
-        Icons.local_gas_station,
-        color: Colors.blue,
-        size: 40,
+      builder: (ctx) => Column(
+        children: [
+          Card(
+            child: Text('4,79 zł'),
+          ),
+          const Icon(
+            Icons.local_gas_station,
+            color: Colors.blue,
+            size: 24,
+          ),
+        ],
       ),
     );
   }

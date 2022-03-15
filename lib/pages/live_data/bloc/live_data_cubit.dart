@@ -210,19 +210,13 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           motorOff();
         }
         final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
-        final fuelStatus =
-            commands.safeFirst<FuelSystemStatusCommand>()?.status;
-        final tripStatus = speed < Constants.idleSpeedLimit
-            ? TripStatus.idle
-            : fuelStatus == FuelSystemStatus.fuelCut
-                ? TripStatus.savingFuel
-                : TripStatus.driving;
+        final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>();
+        final tripStatus = fuelStatus?.tripStatus(speed);
         emit(
           state.copyWith(
             averageResponseTime: averageResponseTime,
             totalResponseTime: totalResponseTime,
-            tripRecord: state.tripRecord
-                .updateTripStatus(speed, tripStatus),
+            tripRecord: state.tripRecord.updateTripStatus(speed, tripStatus),
           ),
         );
       },

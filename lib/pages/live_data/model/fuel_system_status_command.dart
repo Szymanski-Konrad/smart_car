@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
 enum FuelSystemStatus {
@@ -100,5 +102,13 @@ class FuelSystemStatusCommand extends ObdCommand {
       default:
         return FuelSystemStatus.unknown;
     }
+  }
+
+  TripStatus tripStatus(num speed) {
+    return speed < Constants.idleSpeedLimit
+        ? TripStatus.idle
+        : status == FuelSystemStatus.fuelCut
+            ? TripStatus.savingFuel
+            : TripStatus.driving;
   }
 }

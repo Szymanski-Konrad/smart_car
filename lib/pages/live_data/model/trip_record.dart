@@ -66,13 +66,18 @@ extension TripRecordExtension on TripRecord {
     );
   }
 
-  TripRecord updateTripStatus(TripStatus status) {
-    final isSameStatus = (tripStatus == TripStatus.driving &&
-            status == TripStatus.savingFuel) ||
+  TripRecord updateTripStatus(num speed, TripStatus? status) {
+    final _speed = speed.isNaN ? 0 : speed;
+    final isSameStatus = status == tripStatus ||
+        (tripStatus == TripStatus.driving && status == TripStatus.savingFuel) ||
         (tripStatus == TripStatus.savingFuel && status == TripStatus.driving);
+    print('$isSameStatus, $status, $tripStatus');
     return copyWith(
-      tripStatus: status,
-      currentDriveInterval: isSameStatus ? currentDriveInterval : 0,
+      tripStatus: status ?? tripStatus,
+      tripSeconds: tripSeconds + (_speed > Constants.idleSpeedLimit ? 1 : 0),
+      idleTripSeconds:
+          idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
+      currentDriveInterval: isSameStatus ? currentDriveInterval + 1 : 0,
     );
   }
 
@@ -95,16 +100,6 @@ extension TripRecordExtension on TripRecord {
         idleUsedFuel: idleUsedFuel + value,
       );
     }
-  }
-
-  TripRecord updateSeconds(num speed) {
-    final _speed = speed.isNaN ? 0 : speed;
-    return copyWith(
-      tripSeconds: tripSeconds + (_speed > Constants.idleSpeedLimit ? 1 : 0),
-      idleTripSeconds:
-          idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
-      currentDriveInterval: currentDriveInterval + 1,
-    );
   }
 
   TripRecord updateRapidAcceleration({required double acceleration}) {

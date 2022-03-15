@@ -4,6 +4,8 @@ import 'package:smart_car/models/coordinates.dart';
 part 'gas_station.freezed.dart';
 part 'gas_station.g.dart';
 
+enum FuelType { pb95, pb98, on, lpg }
+
 @freezed
 class GasStation with _$GasStation {
   factory GasStation({
