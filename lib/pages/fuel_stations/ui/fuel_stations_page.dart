@@ -1,8 +1,127 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
+import 'package:smart_car/pages/fuel_stations/bloc/fuel_stations_cubit.dart';
+import 'package:smart_car/pages/fuel_stations/bloc/fuel_stations_state.dart';
 import 'package:smart_car/services/overpass_api.dart';
+import 'package:smart_car/utils/scoped_bloc_builder.dart';
+
+class FuelStationsPage extends StatelessWidget {
+  const FuelStationsPage({ Key? key }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Stacje paliw'),
+        centerTitle: true,
+      ),
+      body: ScopedListenerBlocBuilder<FuelStationsCubit, FuelStationsState>(
+      create: (_) => FuelStationsCubit(      ),
+      listener: (context, state) {
+      },
+      listenWhen: (previous, current) {
+        return false;
+      },
+      builder: (context, state, cubit) {
+        return state.isConnnectingError
+            ? Scaffold(
+                appBar: AppBar(),
+                body: const Center(
+                  child: Text(Strings.cannotConnect),
+                ),
+              )
+            : Scaffold(
+                appBar: AppBar(
+                  title: Text(
+                    state.isLocalMode
+                        ? Strings.progress(state.localTripProgress)
+                        : state.isConnecting
+                            ? Strings.connecting
+                            : Strings.connected,
+                  ),
+                  actions: [
+                    IconButton(
+                      onPressed: () =>
+                          Navigation.instance.push(SharedRoutes.settings),
+                      icon: const Icon(Icons.settings),
+                    ),
+                    IconButton(
+                      onPressed: () async {
+                        final files = await TripFiles.showFilesInDirectory();
+                        showDialog(
+                            context: context,
+                            builder: (ctx) {
+                              return AlertDialog(
+                                title: Text(
+                                    Strings.filesInDirectory(files.length)),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        TripFiles.sendTripsToMail(files),
+                                    child: const Text(Strings.sendFiles),
+                                  ),
+                                ],
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    children: [
+                                      ...files.map((e) => ListTile(
+                                            title: Text(e),
+                                          )),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                      icon: const Icon(Icons.file_copy_sharp),
+                    ),
+                    if (state.supportedPids.isNotEmpty)
+                      IconButton(
+                        onPressed: () => showSupportedCommandsDialog(
+                            context, state.supportedPids, cubit, state),
+                        icon: const Icon(Icons.list),
+                      )
+                  ],
+                ),
+                body: SafeArea(
+                  child: DefaultTabController(
+                    length: 2,
+                    child: Column(
+                      children: [
+                        const TabBar(
+                          tabs: [
+                            Tab(
+                              icon: Icon(Icons.time_to_leave_outlined),
+                              text: Strings.liveData,
+                            ),
+                            Tab(
+                              icon: Icon(Icons.bar_chart),
+                              text: Strings.tripStats,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20.0),
+                        Expanded(
+                          child: TabBarView(
+                            children: [
+                              LiveStatsSection(state: state, cubit: cubit),
+                              TripStatsSection(state: state, cubit: cubit),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              );
+      },
+    );
+    );
+  }
+}
 
 class FuelStationPage extends StatefulWidget {
   const FuelStationPage({Key? key}) : super(key: key);
@@ -12,57 +131,20 @@ class FuelStationPage extends StatefulWidget {
 }
 
 class _FuelStationPageState extends State<FuelStationPage> {
-  MapController mapController = MapController();
 
-  List<ResponseLocation> locations = [];
-  QueryLocation? location;
 
-  @override
-  void initState() {
-    super.initState();
-    mapController.mapEventStream.listen(onMapEventStream);
-  }
 
-  Future<void> onMapEventStream(MapEvent event) async {
-    if (event.source == MapEventSource.dragEnd) {
-      location = QueryLocation(
-        longitude: event.center.longitude,
-        latitude: event.center.latitude,
-      );
-    }
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Stacje paliw'),
-        centerTitle: true,
-      ),
+      
       body: Stack(
         children: [
           Positioned.fill(
-            child: FlutterMap(
-              options: MapOptions(
-                center: LatLng(52.43, 20.7),
-                zoom: 13.0,
-                interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-              ),
-              mapController: mapController,
-              layers: [
-                TileLayerOptions(
-                  urlTemplate:
-                      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                  subdomains: ['a', 'b', 'c'],
-                  attributionBuilder: (_) {
-                    return const Text("© OpenStreetMap contributors");
-                  },
-                ),
-                MarkerLayerOptions(
-                  markers: locations.map(_buildMarker).toList(),
-                ),
-              ],
-            ),
+            child: 
           ),
           Positioned(
             left: 16,
@@ -70,10 +152,9 @@ class _FuelStationPageState extends State<FuelStationPage> {
             child: Card(
               child: Column(
                 children: [
-                  Text('PB95'),
-                  Text('PB98'),
-                  Text('ON'),
-                  Text('LPG'),
+                  ...FuelStationType.values
+                      .map(_buildStationType)
+                      .toList(),
                 ],
               ),
             ),
@@ -98,24 +179,12 @@ class _FuelStationPageState extends State<FuelStationPage> {
     );
   }
 
-  Marker _buildMarker(ResponseLocation location) {
-    print(location);
-    return Marker(
-      width: 60,
-      height: 100,
-      point: LatLng(location.latitude, location.longitude),
-      builder: (ctx) => Column(
-        children: [
-          Card(
-            child: Text('4,79 zł'),
-          ),
-          const Icon(
-            Icons.local_gas_station,
-            color: Colors.blue,
-            size: 24,
-          ),
-        ],
-      ),
+  Widget _buildStationType(FuelStationType type) {
+    return GestureDetector(
+      onTap: () {},
+      child: Text(type.description),
     );
   }
+
+  
 }

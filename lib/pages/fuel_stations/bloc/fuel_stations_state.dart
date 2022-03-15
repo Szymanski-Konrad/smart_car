@@ -7,5 +7,6 @@ part 'fuel_stations_state.freezed.dart';
 class FuelStationsState with _$FuelStationsState {
   factory FuelStationsState({
     @Default([]) List<GasStation> gasStation,
+    @Default(FuelStationType.pb95) FuelStationType fuelType,
   }) = _FuelStationsState;
 }

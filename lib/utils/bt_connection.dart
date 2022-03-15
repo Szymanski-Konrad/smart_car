@@ -24,7 +24,7 @@ class BTConnection {
   }) async {
     await BluetoothConnection.toAddress(address).then((connection) {
       _connection = connection;
-      connection.input?.listen(onData).onDone(() {
+      _connection?.input?.listen(onData).onDone(() {
         print('Connection is done');
       });
       _initBackgroundWorking();
