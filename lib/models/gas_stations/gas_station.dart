@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:smart_car/models/coordinates.dart';
+import 'package:latlong2/latlong.dart';
 
 part 'gas_station.freezed.dart';
 part 'gas_station.g.dart';
@@ -7,13 +7,19 @@ part 'gas_station.g.dart';
 @freezed
 class GasStation with _$GasStation {
   factory GasStation({
-    required String id,
-    // required Coordinates coordinates,
-    @Default({}) Map<String, double> fuelPrices,
+    required int id,
+    required LatLng coordinates,
+    @Default({}) Map<FuelStationType, double> fuelPrices,
   }) = _GasStation;
 
   factory GasStation.fromJson(Map<String, dynamic> json) =>
       _$GasStationFromJson(json);
+}
+
+extension GasStationExtension on GasStation {
+  double? fuelPrice(FuelStationType type) {
+    return fuelPrices[type];
+  }
 }
 
 enum FuelStationType { pb95, pb98, diesel, lpg }

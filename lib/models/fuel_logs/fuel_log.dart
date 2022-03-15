@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:smart_car/models/coordinates.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:smart_car/utils/double_extension.dart';
 
 part 'fuel_log.freezed.dart';
@@ -17,7 +17,7 @@ class FuelLog with _$FuelLog {
     double? fuelEfficiency,
     @Default(false) bool isRemainingFuelKnown,
     @Default(true) bool isFull,
-    Coordinates? location,
+    LatLng? location,
   }) = _FuelLog;
 }
 

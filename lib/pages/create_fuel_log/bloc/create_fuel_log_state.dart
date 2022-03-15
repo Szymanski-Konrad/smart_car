@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:smart_car/models/coordinates.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:smart_car/utils/date_extension.dart';
 
 part 'create_fuel_log_state.freezed.dart';
@@ -19,7 +19,7 @@ class CreateFuelLogState with _$CreateFuelLogState {
     required DateTime date,
     required TimeOfDay time,
     @Default(true) bool isFullTank,
-    Coordinates? coordinates,
+    LatLng? coordinates,
   }) = _CreateFuelLogState;
 }
 

@@ -53,6 +53,7 @@ class LocationArea {
 }
 
 class ResponseLocation {
+  final int id;
   final double longitude;
   final double latitude;
   final String? name;
@@ -60,6 +61,7 @@ class ResponseLocation {
   final String? street;
 
   ResponseLocation({
+    required this.id,
     required this.longitude,
     required this.latitude,
     this.name,
@@ -75,6 +77,7 @@ class ResponseLocation {
     }
 
     return ResponseLocation(
+      id: json['id'],
       longitude: json['lon'],
       latitude: json['lat'],
       name: json['tags']['name'],

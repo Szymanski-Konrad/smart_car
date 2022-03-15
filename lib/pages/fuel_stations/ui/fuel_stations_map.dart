@@ -1,10 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 
 class FuelStationsMap extends StatefulWidget {
-  const FuelStationsMap({Key? key}) : super(key: key);
+  const FuelStationsMap({
+    Key? key,
+    required this.onLocationChanged,
+    required this.gasStations,
+    required this.fuelType,
+  }) : super(key: key);
+
+  final Function(QueryLocation) onLocationChanged;
+  final List<GasStation> gasStations;
+  final FuelStationType fuelType;
 
   @override
   State<FuelStationsMap> createState() => _FuelStationsMapState();
@@ -14,7 +24,6 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   MapController mapController = MapController();
 
   List<ResponseLocation> locations = [];
-  QueryLocation? location;
 
   @override
   void initState() {
@@ -24,10 +33,11 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
 
   Future<void> onMapEventStream(MapEvent event) async {
     if (event.source == MapEventSource.dragEnd) {
-      location = QueryLocation(
+      final location = QueryLocation(
         longitude: event.center.longitude,
         latitude: event.center.latitude,
       );
+      widget.onLocationChanged(location);
     }
   }
 
@@ -49,22 +59,21 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
           },
         ),
         MarkerLayerOptions(
-          markers: locations.map(_buildMarker).toList(),
+          markers: widget.gasStations.map(_buildMarker).toList(),
         ),
       ],
     );
   }
 
-  Marker _buildMarker(ResponseLocation location) {
-    print(location);
+  Marker _buildMarker(GasStation station) {
     return Marker(
       width: 60,
       height: 100,
-      point: LatLng(location.latitude, location.longitude),
+      point: station.coordinates,
       builder: (ctx) => Column(
         children: [
           Card(
-            child: Text('4,79 zł'),
+            child: Text('${station.fuelPrice(widget.fuelType) ?? '-.-'} zł'),
           ),
           const Icon(
             Icons.local_gas_station,

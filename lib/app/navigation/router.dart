@@ -41,7 +41,7 @@ extension on RouteSettings {
       case SharedRoutes.createFuelLog:
         return const CreateFuelLogPage();
       case SharedRoutes.fuelStations:
-        return const FuelStationPage();
+        return const FuelStationsPage();
       default:
         return const App();
     }
