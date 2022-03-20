@@ -19,7 +19,9 @@ abstract class LocationHelper {
     LocationData current,
     double distance,
   ) {
-    final hightDiff = current.altitude ?? 0 - (previous.altitude ?? 0);
+    final currentAlt = current.altitude ?? 0;
+    final previousAlt = previous.altitude ?? 0;
+    final hightDiff = currentAlt - previousAlt;
     final c = sqrt(pow(distance, 2) + pow(hightDiff, 2));
     return asin(hightDiff / c);
   }

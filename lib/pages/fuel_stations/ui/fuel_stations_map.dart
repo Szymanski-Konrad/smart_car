@@ -29,15 +29,14 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   void initState() {
     super.initState();
     mapController.mapEventStream.listen(onMapEventStream);
+    mapController.onReady.then((value) {
+      widget.onLocationChanged(QueryLocation.fromLatLng(mapController.center));
+    });
   }
 
   Future<void> onMapEventStream(MapEvent event) async {
     if (event.source == MapEventSource.dragEnd) {
-      final location = QueryLocation(
-        longitude: event.center.longitude,
-        latitude: event.center.latitude,
-      );
-      widget.onLocationChanged(location);
+      widget.onLocationChanged(QueryLocation.fromLatLng(event.center));
     }
   }
 
@@ -72,14 +71,37 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
       point: station.coordinates,
       builder: (ctx) => Column(
         children: [
-          Card(
-            child: Text('${station.fuelPrice(widget.fuelType) ?? '-.-'} zł'),
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                context: context,
+                isDismissible: true,
+                builder: (context) {
+                  return _buildBottomSheet(context, station);
+                },
+              );
+            },
+            child: Card(
+              child: Text('${station.fuelPrice(widget.fuelType) ?? '-.-'} zł'),
+            ),
           ),
           const Icon(
             Icons.local_gas_station,
             color: Colors.blue,
             size: 24,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSheet(BuildContext context, GasStation station) {
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(station.id.toString()),
+          Text(station.fuelPrices.toString()),
         ],
       ),
     );

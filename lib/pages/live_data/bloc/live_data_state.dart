@@ -14,6 +14,11 @@ part 'live_data_state.freezed.dart';
 
 enum TripStatus { idle, driving, savingFuel }
 
+extension TripStatusExtension on TripStatus {
+  bool get isDriving =>
+      [TripStatus.driving, TripStatus.savingFuel].contains(this);
+}
+
 class ReceivedData {
   ReceivedData({
     required this.data,
@@ -68,7 +73,6 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isTemperatureAvaliable,
     @Default(false) bool isBarometrAvaliable,
     @Default(0.0) double temperature,
-    @Default(0.0) double pressure,
 
     // Errors
     @Default([]) List<String> errors,
@@ -188,13 +192,6 @@ extension LiveDataStateExtension on LiveDataState {
         unit: '°C',
         title: Strings.indoorTemp,
         value: temperature,
-      );
-
-  OtherTileData get pressureData => OtherTileData(
-        digits: 2,
-        unit: 'hPa',
-        title: 'Pressure',
-        value: pressure,
       );
 
   OtherTileData get fuelStatusData => OtherTileData(

@@ -67,6 +67,7 @@ abstract class ObdCommand {
         waitTimes++;
       }
     }
+    return null;
   }
 
   void insertHistoryData() {

@@ -1,3 +1,5 @@
+import 'package:latlong2/latlong.dart';
+
 class OverpassQuery {
   final String output;
   final int timeout;
@@ -95,4 +97,11 @@ class QueryLocation {
     required this.longitude,
     required this.latitude,
   });
+
+  factory QueryLocation.fromLatLng(LatLng latLng) {
+    return QueryLocation(
+      longitude: latLng.longitude,
+      latitude: latLng.latitude,
+    );
+  }
 }

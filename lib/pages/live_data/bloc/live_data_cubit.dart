@@ -60,7 +60,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription<LocationData>? locationSub;
   StreamSubscription<SensorEvent>? _accSubscription;
   StreamSubscription? _tempSubscription;
-  StreamSubscription? _barometrSubscription;
   Timer? _everySecondTimer;
   Location location = Location();
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
@@ -94,14 +93,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       ));
     });
 
-    final isBarometrAvailable =
-        await EnvironmentSensors().getSensorAvailable(SensorType.Pressure);
-    if (isBarometrAvailable) {
-      _barometrSubscription = EnvironmentSensors().pressure.listen((event) {
-        emit(state.copyWith(pressure: event));
-      });
-    }
-
     final isTemperatureAvailable = await EnvironmentSensors()
         .getSensorAvailable(SensorType.AmbientTemperature);
     if (isTemperatureAvailable) {
@@ -110,10 +101,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       });
     }
 
-    emit(state.copyWith(
-      isBarometrAvaliable: isBarometrAvailable,
-      isTemperatureAvaliable: isTemperatureAvailable,
-    ));
+    emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
 
     location.changeSettings(
       accuracy: LocationAccuracy.high,
@@ -350,9 +338,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
 
-      if (dataString.contains('.') ||
-          dataString.contains('V') ||
-          dataString.contains('ATRV')) {
+      if ((dataString.contains('.') ||
+              dataString.contains('V') ||
+              dataString.contains('ATRV')) &&
+          !dataString.contains('ELM')) {
         _processBatteryVoltageCommand(dataString, data);
       }
 
@@ -545,7 +534,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _everySecondTimer?.cancel();
     _accSubscription?.cancel();
     _tempSubscription?.cancel();
-    _barometrSubscription?.cancel();
     await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();

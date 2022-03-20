@@ -638,6 +638,7 @@ extension PIDExtension on PID {
       case PID.cylinderFuelRate:
         return CylinderFuelRateCommand();
     }
+    return null;
   }
 }
 
