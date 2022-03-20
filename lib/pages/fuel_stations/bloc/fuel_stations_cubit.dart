@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:smart_car/app/resources/stations.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/fuel_stations/bloc/fuel_stations_state.dart';
@@ -23,6 +23,7 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
   }
 
   Future<void> onSearch() async {
+    print('onSearch');
     final _location = state.location;
     if (_location == null) return;
     final results = await OverpassApi.fetchGasStationsAroundCenter(
@@ -49,12 +50,7 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
       if (index >= 0) {
         gasStations.add(remoteStations[index]);
       } else {
-        gasStations.add(
-          GasStation(
-            id: location.id,
-            coordinates: LatLng(location.latitude, location.longitude),
-          ),
-        );
+        gasStations.add(GasStation.fromLocation(location));
       }
     }
 

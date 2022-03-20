@@ -1,4 +1,5 @@
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/utils/strings_extension.dart';
 
 class OverpassQuery {
   final String output;
@@ -50,8 +51,11 @@ class LocationArea {
   final double latitude;
   final double radius;
 
-  LocationArea(
-      {required this.longitude, required this.latitude, required this.radius});
+  LocationArea({
+    required this.longitude,
+    required this.latitude,
+    required this.radius,
+  });
 }
 
 class ResponseLocation {
@@ -61,6 +65,17 @@ class ResponseLocation {
   final String? name;
   final String? city;
   final String? street;
+  final String? openingHours;
+  final String? postcode;
+  final String? brand;
+  final String? stationOperator;
+  final String? houseNumber;
+  final bool hasLpg;
+  final bool hasDiesel;
+  final bool hasPb95;
+  final bool hasPb98;
+  final bool hasShop;
+  final bool hasElectricity;
 
   ResponseLocation({
     required this.id,
@@ -69,6 +84,17 @@ class ResponseLocation {
     this.name,
     this.city,
     this.street,
+    this.houseNumber,
+    this.postcode,
+    this.openingHours,
+    this.stationOperator,
+    this.brand,
+    this.hasLpg = false,
+    this.hasDiesel = false,
+    this.hasPb95 = false,
+    this.hasPb98 = false,
+    this.hasShop = false,
+    this.hasElectricity = false,
   });
 
   static fromJson(Map<dynamic, dynamic> json) {
@@ -85,6 +111,17 @@ class ResponseLocation {
       name: json['tags']['name'],
       city: json['tags']['addr:city'],
       street: json['tags']['addr:street'],
+      houseNumber: json['tags']['addr:housenumber'],
+      postcode: json['tags']['postcode'],
+      brand: json['tags']['brand'],
+      openingHours: json['tags']['opening_hours'],
+      stationOperator: json['tags']['operator'],
+      hasLpg: json['tags']['fuel:lpg'].toString().parseBool(),
+      hasDiesel: json['tags']['fuel:diesel'].toString().parseBool(),
+      hasPb95: json['tags']['fuel:octane_95'].toString().parseBool(),
+      hasPb98: json['tags']['fuel:octane_98'].toString().parseBool(),
+      hasElectricity: json['tags']['fuel:electricity'].toString().parseBool(),
+      hasShop: json['tags']['shop'].toString().parseBool(),
     );
   }
 }

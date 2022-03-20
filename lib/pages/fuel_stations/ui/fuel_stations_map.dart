@@ -66,7 +66,7 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
 
   Marker _buildMarker(GasStation station) {
     return Marker(
-      width: 60,
+      width: 50,
       height: 100,
       point: station.coordinates,
       builder: (ctx) => Column(
@@ -75,14 +75,22 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
             onTap: () {
               showModalBottomSheet(
                 context: context,
+                barrierColor: Colors.transparent,
                 isDismissible: true,
+                backgroundColor: Colors.transparent,
                 builder: (context) {
                   return _buildBottomSheet(context, station);
                 },
               );
             },
-            child: Card(
-              child: Text('${station.fuelPrice(widget.fuelType) ?? '-.-'} zł'),
+            child: SizedBox(
+              height: 30,
+              width: 50,
+              child: Card(
+                child: Center(
+                    child: Text(
+                        '${station.fuelPrice(widget.fuelType) ?? '-.-'} zł')),
+              ),
             ),
           ),
           const Icon(
@@ -97,11 +105,29 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
 
   Widget _buildBottomSheet(BuildContext context, GasStation station) {
     return Container(
+      color: Colors.black,
+      margin: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(station.id.toString()),
-          Text(station.fuelPrices.toString()),
+          Text('Nazwa: ${station.name}'),
+          const SizedBox(height: 8.0),
+          Text('Ceny paliw: ${station.fuelPrices.toString()}'),
+          Text('Lokalizacja ${station.coordinates.toSexagesimal()}'),
+          if (station.brand != null) Text('Sieć: ${station.brand}'),
+          if (station.city != null) Text('Miasto: ${station.city}'),
+          if (station.openingHours != null)
+            Text('Godziny otwarcia: ${station.openingHours}'),
+          if (station.stationOperator != null)
+            Text('Operator: ${station.stationOperator}'),
+          if (station.street != null) Text('Ulica: ${station.street}'),
+          if (station.hasDiesel == true) Text('Diesel ✅'),
+          if (station.hasElectricity == true) Text('Prąd ✅'),
+          if (station.hasLpg == true) Text('LPG ✅'),
+          if (station.hasPb95 == true) Text('Pb95 ✅'),
+          if (station.hasPb98 == true) Text('Pb98 ✅'),
+          if (station.hasShop == true) Text('Sklep ✅}'),
         ],
       ),
     );

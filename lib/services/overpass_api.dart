@@ -20,8 +20,9 @@ class OverpassApi {
     String? responseText;
 
     try {
+      //TODO: Handle on timeout and other errors
       final response =
-          await Client().send(request).timeout(const Duration(seconds: 20));
+          await Client().send(request).timeout(const Duration(seconds: 5));
 
       responseText = await response.stream.bytesToString();
     } catch (e) {
