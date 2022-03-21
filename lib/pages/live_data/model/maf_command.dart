@@ -34,32 +34,41 @@ class MafCommand extends VisibleObdCommand {
   /// get fuelFlow in [l/h]
   /// [fuelDensity] - kilograms of fuel in m3
   /// [airFuelRatio] - current air fuel ratio for fuel type
-  double fuelFlow({double fuelDensity = 740, double airFuelRatio = 14.7}) {
+  void calculateFuelFlow({
+    double fuelDensity = 740,
+    double airFuelRatio = 14.7,
+    double trimTerm = 1.0,
+  }) {
     if (result > 0) {
-      return (result * 3600) / airFuelRatio / fuelDensity;
+      _fuelFlow = (result * 3600 * trimTerm) / airFuelRatio / fuelDensity;
     }
-    return 0;
+    _fuelFlow = 0;
   }
 
   double kmPerL(int speed) {
     return speed * 14.7 * 740 / (3600 * result.toDouble());
   }
 
+  double _fuelFlow = 0;
+
   /// Calculate fuel consumption per 100 km
   /// [speed] - current speed of vehicle
   double fuel100km(
       int speed, double longTerm, double shortTerm, double airFuelRatio) {
-    final flow = fuelFlow(airFuelRatio: airFuelRatio);
+    final trimTerm = longTerm + shortTerm;
+    calculateFuelFlow(airFuelRatio: airFuelRatio, trimTerm: trimTerm);
+
     if (speed > 0) {
-      return (flow * (longTerm + shortTerm) / speed) * 100;
+      return (_fuelFlow / speed) * 100;
     }
-    return flow;
+    return _fuelFlow;
   }
 
   /// Get fuel used between command calls
   double fuelUsed() {
+    //TODO: calculate this in fuel flow and here just calculate used fuel
     if (result > 0) {
-      return differenceMiliseconds * (fuelFlow() / (3600 * 1000));
+      return differenceMiliseconds * (_fuelFlow / (3600 * 1000));
     }
     return 0;
   }
