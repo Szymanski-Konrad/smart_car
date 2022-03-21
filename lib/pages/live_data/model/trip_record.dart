@@ -66,18 +66,22 @@ extension TripRecordExtension on TripRecord {
     );
   }
 
+  bool _isSameStatus(TripStatus? status) {
+    if (status == null) return true;
+    if (status == tripStatus) return true;
+    if (status.isDriving && tripStatus.isDriving) return true;
+    return false;
+  }
+
   TripRecord updateTripStatus(num speed, TripStatus? status) {
     final _speed = speed.isNaN ? 0 : speed;
-    final isSameStatus = status == tripStatus ||
-        (tripStatus == TripStatus.driving && status == TripStatus.savingFuel) ||
-        (tripStatus == TripStatus.savingFuel && status == TripStatus.driving);
-    print('$isSameStatus, $status, $tripStatus');
+    final isSameStatus = _isSameStatus(status);
     return copyWith(
       tripStatus: status ?? tripStatus,
       tripSeconds: tripSeconds + (_speed > Constants.idleSpeedLimit ? 1 : 0),
       idleTripSeconds:
           idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
-      currentDriveInterval: isSameStatus ? currentDriveInterval + 1 : 0,
+      currentDriveInterval: isSameStatus ? currentDriveInterval + 1 : 1,
     );
   }
 

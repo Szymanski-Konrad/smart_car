@@ -1,5 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/overpass/overpass_query.dart';
 
 part 'gas_station.freezed.dart';
 part 'gas_station.g.dart';
@@ -10,7 +12,41 @@ class GasStation with _$GasStation {
     required int id,
     required LatLng coordinates,
     @Default({}) Map<FuelStationType, double> fuelPrices,
+    @Default(Strings.gasStation) String name,
+    String? city,
+    String? street,
+    String? openingHours,
+    String? postcode,
+    String? brand,
+    String? stationOperator,
+    String? houseNumber,
+    @Default(false) bool hasLpg,
+    @Default(false) bool hasDiesel,
+    @Default(false) bool hasPb95,
+    @Default(false) bool hasPb98,
+    @Default(false) bool hasShop,
+    @Default(false) bool hasElectricity,
   }) = _GasStation;
+
+  factory GasStation.fromLocation(ResponseLocation location) => GasStation(
+        id: location.id,
+        coordinates: LatLng(location.latitude, location.longitude),
+        brand: location.brand,
+        city: location.city,
+        fuelPrices: {},
+        hasDiesel: location.hasDiesel,
+        hasElectricity: location.hasElectricity,
+        hasLpg: location.hasLpg,
+        hasPb95: location.hasPb95,
+        hasPb98: location.hasPb98,
+        hasShop: location.hasShop,
+        houseNumber: location.houseNumber,
+        name: location.name ?? Strings.gasStation,
+        openingHours: location.openingHours,
+        postcode: location.postcode,
+        stationOperator: location.stationOperator,
+        street: location.street,
+      );
 
   factory GasStation.fromJson(Map<String, dynamic> json) =>
       _$GasStationFromJson(json);

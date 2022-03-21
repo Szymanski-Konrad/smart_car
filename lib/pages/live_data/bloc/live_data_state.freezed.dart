@@ -45,7 +45,6 @@ class _$LiveDataStateTearOff {
       bool isTemperatureAvaliable = false,
       bool isBarometrAvaliable = false,
       double temperature = 0.0,
-      double pressure = 0.0,
       List<String> errors = const []}) {
     return _LiveDataState(
       tripRecord: tripRecord,
@@ -75,7 +74,6 @@ class _$LiveDataStateTearOff {
       isTemperatureAvaliable: isTemperatureAvaliable,
       isBarometrAvaliable: isBarometrAvaliable,
       temperature: temperature,
-      pressure: pressure,
       errors: errors,
     );
   }
@@ -115,8 +113,7 @@ mixin _$LiveDataState {
   double get zAccelerometer => throw _privateConstructorUsedError;
   bool get isTemperatureAvaliable => throw _privateConstructorUsedError;
   bool get isBarometrAvaliable => throw _privateConstructorUsedError;
-  double get temperature => throw _privateConstructorUsedError;
-  double get pressure => throw _privateConstructorUsedError; // Errors
+  double get temperature => throw _privateConstructorUsedError; // Errors
   List<String> get errors => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -157,7 +154,6 @@ abstract class $LiveDataStateCopyWith<$Res> {
       bool isTemperatureAvaliable,
       bool isBarometrAvaliable,
       double temperature,
-      double pressure,
       List<String> errors});
 
   $TripRecordCopyWith<$Res> get tripRecord;
@@ -202,7 +198,6 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? isTemperatureAvaliable = freezed,
     Object? isBarometrAvaliable = freezed,
     Object? temperature = freezed,
-    Object? pressure = freezed,
     Object? errors = freezed,
   }) {
     return _then(_value.copyWith(
@@ -314,10 +309,6 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
               as double,
-      pressure: pressure == freezed
-          ? _value.pressure
-          : pressure // ignore: cast_nullable_to_non_nullable
-              as double,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -375,7 +366,6 @@ abstract class _$LiveDataStateCopyWith<$Res>
       bool isTemperatureAvaliable,
       bool isBarometrAvaliable,
       double temperature,
-      double pressure,
       List<String> errors});
 
   @override
@@ -424,7 +414,6 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? isTemperatureAvaliable = freezed,
     Object? isBarometrAvaliable = freezed,
     Object? temperature = freezed,
-    Object? pressure = freezed,
     Object? errors = freezed,
   }) {
     return _then(_LiveDataState(
@@ -536,10 +525,6 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
               as double,
-      pressure: pressure == freezed
-          ? _value.pressure
-          : pressure // ignore: cast_nullable_to_non_nullable
-              as double,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -579,7 +564,6 @@ class _$_LiveDataState implements _LiveDataState {
       this.isTemperatureAvaliable = false,
       this.isBarometrAvaliable = false,
       this.temperature = 0.0,
-      this.pressure = 0.0,
       this.errors = const []});
 
   @override // Live data
@@ -661,15 +645,12 @@ class _$_LiveDataState implements _LiveDataState {
   @override
   final double temperature;
   @JsonKey()
-  @override
-  final double pressure;
-  @JsonKey()
   @override // Errors
   final List<String> errors;
 
   @override
   String toString() {
-    return 'LiveDataState(tripRecord: $tripRecord, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, isTemperatureAvaliable: $isTemperatureAvaliable, isBarometrAvaliable: $isBarometrAvaliable, temperature: $temperature, pressure: $pressure, errors: $errors)';
+    return 'LiveDataState(tripRecord: $tripRecord, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, isTemperatureAvaliable: $isTemperatureAvaliable, isBarometrAvaliable: $isBarometrAvaliable, temperature: $temperature, errors: $errors)';
   }
 
   @override
@@ -726,7 +707,6 @@ class _$_LiveDataState implements _LiveDataState {
                 .equals(other.isBarometrAvaliable, isBarometrAvaliable) &&
             const DeepCollectionEquality()
                 .equals(other.temperature, temperature) &&
-            const DeepCollectionEquality().equals(other.pressure, pressure) &&
             const DeepCollectionEquality().equals(other.errors, errors));
   }
 
@@ -760,7 +740,6 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(isTemperatureAvaliable),
         const DeepCollectionEquality().hash(isBarometrAvaliable),
         const DeepCollectionEquality().hash(temperature),
-        const DeepCollectionEquality().hash(pressure),
         const DeepCollectionEquality().hash(errors)
       ]);
 
@@ -799,7 +778,6 @@ abstract class _LiveDataState implements LiveDataState {
       bool isTemperatureAvaliable,
       bool isBarometrAvaliable,
       double temperature,
-      double pressure,
       List<String> errors}) = _$_LiveDataState;
 
   @override // Live data
@@ -856,8 +834,6 @@ abstract class _LiveDataState implements LiveDataState {
   bool get isBarometrAvaliable;
   @override
   double get temperature;
-  @override
-  double get pressure;
   @override // Errors
   List<String> get errors;
   @override

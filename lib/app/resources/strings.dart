@@ -101,4 +101,7 @@ abstract class Strings {
 
   // Fuel logs
   static const String addYourFirstLog = 'Dodaj swój pierwszy wpis';
+
+  // Fuel stations
+  static const String gasStation = 'Stacja paliw';
 }

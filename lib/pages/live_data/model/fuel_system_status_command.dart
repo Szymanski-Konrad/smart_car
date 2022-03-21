@@ -105,7 +105,7 @@ class FuelSystemStatusCommand extends ObdCommand {
   }
 
   TripStatus tripStatus(num speed) {
-    return speed < Constants.idleSpeedLimit
+    return speed.isNaN || speed <= Constants.idleSpeedLimit
         ? TripStatus.idle
         : status == FuelSystemStatus.fuelCut
             ? TripStatus.savingFuel
