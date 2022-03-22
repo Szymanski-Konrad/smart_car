@@ -4,4 +4,4 @@ set -o pipefail # to exit when the status of the last command that threw a non-z
 set -o nounset # to exit when your script tries to use undeclared variables
 set -o xtrace # to trace what gets executed. Useful for debugging
 
-fvm flutter pub run build_runner build --delete-conflicting-outputs
+flutter pub run build_runner build --delete-conflicting-outputs

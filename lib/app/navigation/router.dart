@@ -10,6 +10,7 @@ import 'package:smart_car/pages/fuel_logs/ui/fuel_logs_page.dart';
 import 'package:smart_car/pages/fuel_stations/ui/fuel_stations_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/ui/settings_page.dart';
+import 'package:smart_car/pages/station_details/ui/station_details_page.dart';
 
 abstract class AppRouter {
   const AppRouter._();
@@ -42,6 +43,8 @@ extension on RouteSettings {
         return const CreateFuelLogPage();
       case SharedRoutes.fuelStations:
         return const FuelStationsPage();
+      case SharedRoutes.stationDetails:
+        return const StationDetailsPage();
       default:
         return const App();
     }

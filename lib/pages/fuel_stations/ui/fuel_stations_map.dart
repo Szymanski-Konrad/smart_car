@@ -122,12 +122,20 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
           if (station.stationOperator != null)
             Text('Operator: ${station.stationOperator}'),
           if (station.street != null) Text('Ulica: ${station.street}'),
-          if (station.hasDiesel == true) Text('Diesel ✅'),
-          if (station.hasElectricity == true) Text('Prąd ✅'),
-          if (station.hasLpg == true) Text('LPG ✅'),
-          if (station.hasPb95 == true) Text('Pb95 ✅'),
-          if (station.hasPb98 == true) Text('Pb98 ✅'),
-          if (station.hasShop == true) Text('Sklep ✅}'),
+          Wrap(
+            children: [
+              if (station.hasDiesel == true) const Text('Diesel ✅'),
+              if (station.hasElectricity == true) const Text('Prąd ✅'),
+              if (station.hasLpg == true) const Text('LPG ✅'),
+              if (station.hasPb95 == true) const Text('Pb95 ✅'),
+              if (station.hasPb98 == true) const Text('Pb98 ✅'),
+              if (station.hasShop == true) const Text('Sklep ✅'),
+            ],
+          ),
+          ElevatedButton(
+            onPressed: () {},
+            child: Text('Szczegóły'),
+          ),
         ],
       ),
     );
