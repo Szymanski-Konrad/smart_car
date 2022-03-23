@@ -26,6 +26,7 @@ abstract class TripFiles {
     return paths.where((element) => element.contains('trip')).toList();
   }
 
+  /// Send [files] with mail
   static Future<void> sendTripsToMail(List<String> files) async {
     final mailOptions = MailOptions(
       body: 'Sending my last trips',

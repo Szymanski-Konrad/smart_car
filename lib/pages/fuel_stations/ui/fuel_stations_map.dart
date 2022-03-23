@@ -107,24 +107,30 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   }
 
   Widget _buildBottomSheet(BuildContext context, GasStation station) {
+    //TODO: Add info about distance from current location
     return Container(
-      color: Colors.black,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(32.0),
+        color: Colors.blueGrey,
+      ),
       margin: const EdgeInsets.all(16.0),
       padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Nazwa: ${station.name}'),
-          const SizedBox(height: 8.0),
-          Text('Ceny paliw: ${station.fuelPrices.toString()}'),
-          Text('Lokalizacja ${station.coordinates.toSexagesimal()}'),
-          if (station.brand != null) Text('Sieć: ${station.brand}'),
-          if (station.city != null) Text('Miasto: ${station.city}'),
+          // Section 1: Name & location
+          ListTile(
+            onTap: () => Navigation.instance.push(
+              SharedRoutes.stationDetails,
+              arguments: StationDetailsPageArguments(station: station),
+            ),
+            title: Text('Nazwa: ${station.name}'),
+            // subtitle: Text(station.address),
+          ),
+          // const Divider(color: Colors.white, thickness: 2.0),
+          // Section 2: Available fuel types & additional info
           if (station.openingHours != null)
             Text('Godziny otwarcia: ${station.openingHours}'),
-          if (station.stationOperator != null)
-            Text('Operator: ${station.stationOperator}'),
-          if (station.street != null) Text('Ulica: ${station.street}'),
           Wrap(
             children: [
               if (station.hasDiesel == true) const Text('Diesel ✅'),
@@ -135,14 +141,23 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
               if (station.hasShop == true) const Text('Sklep ✅'),
             ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigation.instance.push(
-                SharedRoutes.stationDetails,
-                arguments: StationDetailsPageArguments(station: station),
-              );
-            },
-            child: const Text('Szczegóły'),
+          // Section 3: Fuel prices from backend
+          Wrap(
+            children: [
+              if (station.fuelPrices.isEmpty)
+                const Center(
+                  child: Text('Ta stacja nie ma jeszcze dodanych cen'),
+                ),
+              ...station.fuelPrices.entries.map(
+                (price) => Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Chip(
+                    avatar: CircleAvatar(child: Text(price.key.description)),
+                    label: Text('${price.value.toStringAsFixed(2)} zł'),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),

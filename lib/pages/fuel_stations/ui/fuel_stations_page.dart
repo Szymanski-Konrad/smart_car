@@ -43,8 +43,8 @@ class FuelStationsPage extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 16,
-          bottom: 16,
+          right: 16,
+          top: 16,
           child: SizedBox(
             width: 80,
             child: Column(
@@ -56,7 +56,14 @@ class FuelStationsPage extends StatelessWidget {
               ],
             ),
           ),
-        )
+        ),
+        if (state.isLoading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black45,
+              child: const Center(child: CircularProgressIndicator()),
+            ),
+          ),
       ],
     );
   }

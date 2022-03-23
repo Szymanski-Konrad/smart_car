@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
@@ -13,6 +12,7 @@ class GasStation with _$GasStation {
   factory GasStation({
     required int id,
     @JsonKey(toJson: LocationHelper.coordsToJson) required LatLng coordinates,
+    //TODO: Add info about change price date
     @Default({}) Map<FuelStationType, double> fuelPrices,
     @Default(Strings.gasStation) String name,
     String? city,
@@ -58,6 +58,8 @@ extension GasStationExtension on GasStation {
   double? fuelPrice(FuelStationType type) {
     return fuelPrices[type];
   }
+
+  String get address => '$city, $street $houseNumber, $postcode';
 }
 
 enum FuelStationType { pb95, pb98, diesel, lpg }
@@ -66,9 +68,9 @@ extension FuelStationTypeExtension on FuelStationType {
   String get description {
     switch (this) {
       case FuelStationType.pb95:
-        return 'PB 95';
+        return '95';
       case FuelStationType.pb98:
-        return 'PB 98';
+        return '98';
       case FuelStationType.diesel:
         return 'ON';
       case FuelStationType.lpg:

@@ -5,7 +5,14 @@ import 'package:smart_car/services/firestore_handler.dart';
 
 class StationDetailsCubit extends Cubit<StationDetailsState> {
   StationDetailsCubit(GasStation station)
-      : super(StationDetailsState(station: station));
+      : super(StationDetailsState(station: station)) {
+    init();
+  }
+
+  void init() {
+    final station = state.station;
+    emit(state.copyWith(prices: station.fuelPrices));
+  }
 
   void enablePriceChange(FuelStationType fuelType) {
     final updatePrices = Map<FuelStationType, double>.from(state.updatePrices);

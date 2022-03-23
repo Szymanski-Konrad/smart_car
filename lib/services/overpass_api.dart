@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:smart_car/models/overpass/overpass_query.dart';
@@ -13,6 +14,7 @@ class OverpassApi {
     QueryLocation center,
     Map<String, String> filter,
     double radius,
+    Function() onTimeout,
   ) async {
     final request = Request('GET', Uri.https(_apiUrl, _path));
     request.bodyFields = _buildRequestBody(center, filter, radius);
@@ -25,6 +27,10 @@ class OverpassApi {
           await Client().send(request).timeout(const Duration(seconds: 5));
 
       responseText = await response.stream.bytesToString();
+    } on TimeoutException catch (e) {
+      Logger.logToFile(e);
+      onTimeout();
+      return Future.value([]);
     } catch (e) {
       Logger.logToFile(e);
       return Future.error(e);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/station_details/bloc/station_details_cubit.dart';
 import 'package:smart_car/pages/station_details/bloc/station_details_state.dart';
@@ -28,8 +27,7 @@ class StationDetailsPage extends StatelessWidget
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text('Nazwa: ${state.station.name}'),
-                const SizedBox(height: 8.0),
-                Text('Ceny paliw: ${state.station.fuelPrices.toString()}'),
+                const SizedBox(height: 16.0),
                 Text(
                     'Lokalizacja ${state.station.coordinates.toSexagesimal()}'),
                 if (state.station.brand != null)
@@ -42,6 +40,8 @@ class StationDetailsPage extends StatelessWidget
                   Text('Operator: ${state.station.stationOperator}'),
                 if (state.station.street != null)
                   Text('Ulica: ${state.station.street}'),
+                const SizedBox(height: 16.0),
+                const Text('Dostępne rodzaje paliwa:'),
                 Wrap(
                   children: [
                     if (state.station.hasDiesel == true) const Text('Diesel ✅'),

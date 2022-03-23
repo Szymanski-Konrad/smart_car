@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:fl_toast/fl_toast.dart';
+import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
@@ -23,16 +25,32 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
   }
 
   Future<void> onSearch() async {
-    print('onSearch');
+    emit(state.copyWith(isLoading: true));
     final _location = state.location;
     if (_location == null) return;
     final results = await OverpassApi.fetchGasStationsAroundCenter(
       _location,
       {'amenity': 'fuel'},
       5000,
+      onTimeout,
     );
+
     final gasStations = await _mapResultsToGasStations(results);
-    emit(state.copyWith(gasStations: gasStations));
+    emit(state.copyWith(
+      gasStations: gasStations,
+      isLoading: false,
+    ));
+  }
+
+  Future<void> onTimeout() async {
+    emit(state.copyWith(isLoading: false));
+    await showAndroidToast(
+      backgroundColor: Colors.green,
+      alignment: Alignment.center,
+      child: const Text('Nie można pobrać stacji, spróbuj ponownie'),
+      duration: const Duration(seconds: 2),
+      context: ToastProvider.context,
+    );
   }
 
   Future<List<GasStation>> _mapResultsToGasStations(

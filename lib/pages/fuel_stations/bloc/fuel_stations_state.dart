@@ -10,5 +10,6 @@ class FuelStationsState with _$FuelStationsState {
     @Default([]) List<GasStation> gasStations,
     @Default(FuelStationType.pb95) FuelStationType fuelType,
     QueryLocation? location,
+    @Default(false) bool isLoading,
   }) = _FuelStationsState;
 }
