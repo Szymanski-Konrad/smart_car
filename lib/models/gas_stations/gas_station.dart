@@ -1,7 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
+import 'package:smart_car/utils/location_helper.dart';
 
 part 'gas_station.freezed.dart';
 part 'gas_station.g.dart';
@@ -10,7 +12,7 @@ part 'gas_station.g.dart';
 class GasStation with _$GasStation {
   factory GasStation({
     required int id,
-    required LatLng coordinates,
+    @JsonKey(toJson: LocationHelper.coordsToJson) required LatLng coordinates,
     @Default({}) Map<FuelStationType, double> fuelPrices,
     @Default(Strings.gasStation) String name,
     String? city,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
+import 'package:smart_car/pages/station_details/ui/station_details_page.dart';
 
 class FuelStationsMap extends StatefulWidget {
   const FuelStationsMap({
@@ -133,8 +136,13 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
             ],
           ),
           ElevatedButton(
-            onPressed: () {},
-            child: Text('Szczegóły'),
+            onPressed: () {
+              Navigation.instance.push(
+                SharedRoutes.stationDetails,
+                arguments: StationDetailsPageArguments(station: station),
+              );
+            },
+            child: const Text('Szczegóły'),
           ),
         ],
       ),

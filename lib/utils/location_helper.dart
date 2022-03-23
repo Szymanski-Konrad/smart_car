@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:haversine_distance/haversine_distance.dart' as hav;
 
@@ -52,4 +53,8 @@ abstract class LocationHelper {
           'Location permissions are permanently denied, we cannot request permissions.');
     }
   }
+
+  static Map<String, dynamic> coordsToJson(LatLng latLng) => {
+        'coordinates': [latLng.longitude, latLng.latitude]
+      };
 }

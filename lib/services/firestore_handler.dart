@@ -9,7 +9,10 @@ abstract class FirestoreHandler {
     await FirebaseFirestore.instance
         .collection(kStationsCollection)
         .doc(station.id.toString())
-        .update(station.toJson());
+        .set(
+          station.toJson(),
+          SetOptions(merge: true),
+        );
   }
 
   static Future<List<GasStation>> getAllStations(List<String> ids) async {

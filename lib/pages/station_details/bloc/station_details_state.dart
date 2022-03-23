@@ -8,6 +8,15 @@ class StationDetailsState with _$StationDetailsState {
   const factory StationDetailsState({
     required GasStation station,
     FuelStationType? selectedFuelType,
-    double? newPrice,
+    @Default({}) Map<FuelStationType, double> prices,
+    @Default({}) Map<FuelStationType, double> updatePrices,
+    FuelStationType? newFuelType,
   }) = _StationDetailsState;
+}
+
+extension StationDetailsStateExtension on StationDetailsState {
+  bool isPriceEdited(FuelStationType type) => updatePrices.containsKey(type);
+  double? fuelPrice(FuelStationType type) => updatePrices[type] ?? prices[type];
+  bool containsPrice(FuelStationType type) =>
+      prices.containsKey(type) || updatePrices.containsKey(type);
 }
