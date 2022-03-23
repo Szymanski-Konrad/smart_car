@@ -19,17 +19,19 @@ class OverpassQuery {
       elementsString += '$element;';
     }
 
-    String data = '[out:$output][timeout:$timeout];($elementsString);out;';
+    String data =
+        '[out:$output][timeout:$timeout];($elementsString);out center;';
 
     return <String, String>{'data': data};
   }
 }
 
 class SetElement {
+  final String queryType; //node, way, relation
   final Map<String, String> tags;
   final LocationArea area;
 
-  SetElement({required this.tags, required this.area});
+  SetElement({required this.queryType, required this.tags, required this.area});
 
   @override
   String toString() {
@@ -42,7 +44,7 @@ class SetElement {
     String areaString =
         '(around:${area.radius},${area.latitude},${area.longitude})';
 
-    return 'node$tagString$areaString';
+    return '$queryType$tagString$areaString';
   }
 }
 
@@ -106,8 +108,8 @@ class ResponseLocation {
 
     return ResponseLocation(
       id: json['id'],
-      longitude: json['lon'],
-      latitude: json['lat'],
+      longitude: json['lon'] ?? json['center']['lon'],
+      latitude: json['lat'] ?? json['center']['lat'],
       name: json['tags']['name'],
       city: json['tags']['addr:city'],
       street: json['tags']['addr:street'],

@@ -74,13 +74,32 @@ class OverpassApi {
       timeout: 25,
       elements: [
         SetElement(
+          queryType: 'node',
           tags: filter,
           area: LocationArea(
             longitude: center.longitude,
             latitude: center.latitude,
             radius: radius,
           ),
-        )
+        ),
+        SetElement(
+          queryType: 'way',
+          tags: filter,
+          area: LocationArea(
+            longitude: center.longitude,
+            latitude: center.latitude,
+            radius: radius,
+          ),
+        ),
+        SetElement(
+          queryType: 'relation',
+          tags: filter,
+          area: LocationArea(
+            longitude: center.longitude,
+            latitude: center.latitude,
+            radius: radius,
+          ),
+        ),
       ],
     );
 
