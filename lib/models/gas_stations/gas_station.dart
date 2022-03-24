@@ -60,6 +60,11 @@ extension GasStationExtension on GasStation {
   }
 
   String get address => '$city, $street $houseNumber, $postcode';
+
+  String get stationName {
+    final _brand = brand;
+    return name == 'Stacja paliw' && _brand != null ? _brand : name;
+  }
 }
 
 enum FuelStationType { pb95, pb98, diesel, lpg }

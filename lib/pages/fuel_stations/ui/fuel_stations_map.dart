@@ -6,6 +6,7 @@ import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/station_details/ui/station_details_page.dart';
+import 'package:smart_car/utils/ui/fuel_price_card.dart';
 
 class FuelStationsMap extends StatefulWidget {
   const FuelStationsMap({
@@ -91,8 +92,10 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
               width: 50,
               child: Card(
                 child: Center(
-                    child: Text(
-                        '${station.fuelPrice(widget.fuelType) ?? '-.-'} zł')),
+                  child: Text(
+                    '${station.fuelPrice(widget.fuelType)?.toStringAsFixed(2) ?? '-.-'} zł',
+                  ),
+                ),
               ),
             ),
           ),
@@ -120,40 +123,31 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
         children: [
           // Section 1: Name & location
           ListTile(
+            minVerticalPadding: 0,
             onTap: () => Navigation.instance.push(
               SharedRoutes.stationDetails,
               arguments: StationDetailsPageArguments(station: station),
             ),
-            title: Text('Nazwa: ${station.name}'),
-            // subtitle: Text(station.address),
+            title: Text(station.stationName),
+            subtitle: Text(station.address),
           ),
-          // const Divider(color: Colors.white, thickness: 2.0),
-          // Section 2: Available fuel types & additional info
-          if (station.openingHours != null)
-            Text('Godziny otwarcia: ${station.openingHours}'),
-          Wrap(
-            children: [
-              if (station.hasDiesel == true) const Text('Diesel ✅'),
-              if (station.hasElectricity == true) const Text('Prąd ✅'),
-              if (station.hasLpg == true) const Text('LPG ✅'),
-              if (station.hasPb95 == true) const Text('Pb95 ✅'),
-              if (station.hasPb98 == true) const Text('Pb98 ✅'),
-              if (station.hasShop == true) const Text('Sklep ✅'),
-            ],
-          ),
-          // Section 3: Fuel prices from backend
+          const Divider(color: Colors.white, thickness: 2.0),
+          // Section 2: Fuel prices from backend
           Wrap(
             children: [
               if (station.fuelPrices.isEmpty)
                 const Center(
-                  child: Text('Ta stacja nie ma jeszcze dodanych cen'),
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text('Ta stacja nie ma jeszcze dodanych cen'),
+                  ),
                 ),
               ...station.fuelPrices.entries.map(
-                (price) => Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Chip(
-                    avatar: CircleAvatar(child: Text(price.key.description)),
-                    label: Text('${price.value.toStringAsFixed(2)} zł'),
+                (entry) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FuelPriceCard(
+                    price: entry.value,
+                    type: entry.key,
                   ),
                 ),
               ),
