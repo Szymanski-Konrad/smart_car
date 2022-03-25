@@ -13,42 +13,36 @@ class FuelLogCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  const Text('Tankowanie'),
                   _buildIconText(
                       fuelLog.logDate.toDateFormat, Icons.calendar_today),
-                  _buildIconText(
-                      fuelLog.fuelConsumption, Icons.account_balance_wallet),
                 ],
               ),
-            ),
-            const VerticalDivider(
-              width: 32.0,
-              thickness: 2.0,
-              color: Colors.blue,
-            ),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildIconText(fuelLog.odometerFormatted(), Icons.speed),
-                  _buildIconText(fuelLog.totalCostFormatted(),
-                      Icons.account_balance_wallet),
-                ],
+              _buildIconText(
+                  fuelLog.fuelConsumption, Icons.show_chart_outlined),
+              _buildIconText(
+                fuelLog.distanceFormatted(),
+                Icons.directions_car,
               ),
-            ),
-          ],
+              _buildIconText(
+                fuelLog.fuelWithCost(),
+                Icons.local_gas_station,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -56,6 +50,7 @@ class FuelLogCard extends StatelessWidget {
 
   Widget _buildIconText(String text, IconData icon) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon),
         const SizedBox(width: 8.0),

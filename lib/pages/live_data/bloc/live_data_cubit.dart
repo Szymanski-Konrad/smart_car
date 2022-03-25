@@ -82,7 +82,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Future<void> _listenForSensors() async {
     final stream = await SensorManager().sensorUpdates(
       sensorId: Sensors.ACCELEROMETER,
-      interval: Sensors.SENSOR_DELAY_UI,
+      interval: Sensors.SENSOR_DELAY_NORMAL,
     );
 
     _accSubscription = stream.listen((event) {
@@ -232,11 +232,13 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       } else {
         await Future.delayed(const Duration(milliseconds: 10));
       }
-      _onDataReceived(testCommand.data);
-      index++;
-      if (index % percentyl == 0) {
-        final percentage = (index / testCommands.length) * 100;
-        emit(state.copyWith(localTripProgress: percentage));
+      if (_everySecondTimer?.isActive == true) {
+        _onDataReceived(testCommand.data);
+        index++;
+        if (index % percentyl == 0) {
+          final percentage = (index / testCommands.length) * 100;
+          emit(state.copyWith(localTripProgress: percentage));
+        }
       }
     }
 
@@ -526,17 +528,19 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   int get averageResponseTime =>
       commands.isEmpty ? 0 : (totalResponseTime / commands.length).ceil();
 
-  double _calculateShortFuelTrim() => 1.0 + commands.stft1 + commands.stft2;
-  double _calculateLongFuelTrim() => 1.0 + commands.ltft1 + commands.ltft2;
+  double _calculateShortFuelTrim() =>
+      1.0 + (commands.stft1 + commands.stft2) / 100;
+  double _calculateLongFuelTrim() =>
+      1.0 + (commands.ltft1 + commands.ltft2) / 100;
 
   @override
   Future<void> close() async {
     _everySecondTimer?.cancel();
-    _accSubscription?.cancel();
-    _tempSubscription?.cancel();
     await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();
+    await _accSubscription?.cancel();
+    await _tempSubscription?.cancel();
     super.close();
   }
 }

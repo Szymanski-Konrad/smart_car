@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class MafCommand extends VisibleObdCommand {
-  MafCommand() : super('0110', min: 0, max: 100, prio: 0, enableHistory: false);
+  MafCommand() : super('0110', min: 0, max: 100, prio: 0, enableHistory: true);
 
   @override
   Color get color {
@@ -40,13 +40,10 @@ class MafCommand extends VisibleObdCommand {
     double trimTerm = 1.0,
   }) {
     if (result > 0) {
-      _fuelFlow = (result * 3600 * trimTerm) / airFuelRatio / fuelDensity;
+      _fuelFlow = (result * trimTerm * 3600) / airFuelRatio / fuelDensity;
+    } else {
+      _fuelFlow = 0;
     }
-    _fuelFlow = 0;
-  }
-
-  double kmPerL(int speed) {
-    return speed * 14.7 * 740 / (3600 * result.toDouble());
   }
 
   double _fuelFlow = 0;
@@ -57,7 +54,6 @@ class MafCommand extends VisibleObdCommand {
       int speed, double longTerm, double shortTerm, double airFuelRatio) {
     final trimTerm = longTerm + shortTerm;
     calculateFuelFlow(airFuelRatio: airFuelRatio, trimTerm: trimTerm);
-
     if (speed > 0) {
       return (_fuelFlow / speed) * 100;
     }
@@ -66,9 +62,8 @@ class MafCommand extends VisibleObdCommand {
 
   /// Get fuel used between command calls
   double fuelUsed() {
-    //TODO: calculate this in fuel flow and here just calculate used fuel
-    if (result > 0) {
-      return differenceMiliseconds * (_fuelFlow / (3600 * 1000));
+    if (_fuelFlow > 0) {
+      return differenceMiliseconds * _fuelFlow / 3600000;
     }
     return 0;
   }

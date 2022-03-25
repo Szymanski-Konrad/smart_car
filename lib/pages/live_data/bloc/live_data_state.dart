@@ -177,7 +177,7 @@ extension LiveDataStateExtension on LiveDataState {
         digits: 2,
         unit: '%',
         title: 'Nachylenie',
-        value: locationSlope,
+        value: locationSlope.abs(),
       );
 
   OtherTileData get gForceData => OtherTileData(

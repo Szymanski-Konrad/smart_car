@@ -22,10 +22,24 @@ class FuelPriceCard extends StatelessWidget {
         FuelTypeHelper.selectFuelTypeIcon(type),
         const SizedBox(width: 8.0),
         GestureDetector(
-          child: Text('${price.toStringAsFixed(2)} zł'),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              '${price.toStringAsFixed(2)} zł',
+              style: priceStyle,
+            ),
+          ),
           onTap: onTap,
         ),
       ],
     );
   }
+
+  TextStyle? get priceStyle => onTap != null
+      ? TextStyle(
+          color: Colors.amber,
+          decorationThickness: 2,
+          decoration: TextDecoration.underline,
+        )
+      : null;
 }

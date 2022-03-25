@@ -49,10 +49,18 @@ class TripRecord with _$TripRecord {
 extension TripRecordExtension on TripRecord {
   int get totalTripSeconds => tripSeconds + idleTripSeconds;
   double get totalFuelUsed => usedFuel + idleUsedFuel;
-  double get avgFuelConsumption => 100 * totalFuelUsed / distance;
+  double get avgFuelConsumption {
+    if (totalFuelUsed == 0) return -1.0;
+    if (distance == 0) return 100 * totalFuelUsed;
+    return 100 * totalFuelUsed / distance;
+  }
+
   double get fuelCosts => totalFuelUsed * fuelPrice;
   double get averageSpeed => distance / (totalTripSeconds / 3600);
-  double get range => (tankSize * currentFuelLvl) / avgFuelConsumption;
+  double get range {
+    if (tankSize == 0) return -1;
+    return (tankSize * currentFuelLvl) / avgFuelConsumption;
+  }
 
   TripRecord updateFuelLvl(double value) {
     final initial = startFuelLvl < 0 ? value : startFuelLvl;
@@ -147,6 +155,7 @@ extension TripRecordExtension on TripRecord {
         producedCarboDetails,
         savedCarboDetails,
         avgSpeedDetails,
+        currSpeedDetails,
         distanceDetails,
         rangeDetails,
         gpsDistanceDetails,
@@ -162,15 +171,13 @@ extension TripRecordExtension on TripRecord {
         digits: 2,
       );
 
-  FuelTileData get savedFuelDetails {
-    return FuelTileData(
-      value: savedFuel,
-      title: Strings.savedFuel,
-      unit: 'l',
-      digits: 3,
-      tripStatus: TripStatus.savingFuel,
-    );
-  }
+  FuelTileData get savedFuelDetails => FuelTileData(
+        value: savedFuel,
+        title: Strings.savedFuel,
+        unit: 'l',
+        digits: 3,
+        tripStatus: TripStatus.savingFuel,
+      );
 
   FuelTileData get usedFuelDetails => FuelTileData(
         value: usedFuel,
@@ -205,7 +212,7 @@ extension TripRecordExtension on TripRecord {
   OtherTileData get avgFuelDetails => OtherTileData(
         value: avgFuelConsumption,
         title: Strings.averageFuelConsumption,
-        unit: 'l/100km',
+        unit: distance > 0 ? 'l/100km' : 'l/h',
         digits: 1,
       );
 
@@ -257,6 +264,13 @@ extension TripRecordExtension on TripRecord {
   OtherTileData get avgSpeedDetails => OtherTileData(
         value: averageSpeed,
         title: Strings.averageSpeed,
+        unit: 'km/h',
+        digits: 1,
+      );
+
+  OtherTileData get currSpeedDetails => OtherTileData(
+        value: currentSpeed,
+        title: 'Prędkość',
         unit: 'km/h',
         digits: 1,
       );

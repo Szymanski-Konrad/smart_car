@@ -5,6 +5,7 @@ import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_cubit.dart';
 import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/utils/ui/fuel_log_card.dart';
+import 'package:smart_car/utils/ui/fuel_stats_card.dart';
 
 class FuelLogsPage extends StatelessWidget {
   const FuelLogsPage({Key? key}) : super(key: key);
@@ -54,16 +55,14 @@ class FuelLogsPage extends StatelessWidget {
     FuelLogsState state,
     FuelLogsCubit cubit,
   ) {
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 16.0,
-        vertical: 8.0,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          FuelStatsCard(logs: state.logs),
+          const SizedBox(height: 32.0),
+          ...state.logs.map((log) => FuelLogCard(fuelLog: log)),
+        ],
       ),
-      itemCount: state.logs.length,
-      itemBuilder: (context, index) {
-        final log = state.logs[index];
-        return FuelLogCard(fuelLog: log);
-      },
     );
   }
 }

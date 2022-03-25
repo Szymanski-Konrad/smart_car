@@ -123,7 +123,9 @@ class _FuelPriceRowState extends State<FuelPriceRow> {
         FuelPriceCard(
           type: fuelType,
           price: price,
-          onTap: () => _showInputDialog(context, widget.cubit, price, fuelType),
+          onTap: widget.isEditable
+              ? () => _showInputDialog(context, widget.cubit, price, fuelType)
+              : null,
         ),
         if (!widget.isEditable)
           IconButton(
@@ -163,8 +165,12 @@ class _FuelPriceRowState extends State<FuelPriceRow> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Wprowadź cenę'),
-        content: TextField(controller: _textController),
+        title: const Text('Wprowadź cenę'),
+        content: TextField(
+          autofocus: true,
+          controller: _textController,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        ),
         actions: [
           ElevatedButton(
             onPressed: () {
@@ -172,7 +178,7 @@ class _FuelPriceRowState extends State<FuelPriceRow> {
               cubit.editPrice(fuelType, value);
               Navigator.of(context).pop();
             },
-            child: Text('Zapisz'),
+            child: const Text('Zapisz'),
           )
         ],
       ),
