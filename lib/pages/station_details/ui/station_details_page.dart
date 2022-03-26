@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/models/gas_stations/fuel_info.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/station_details/bloc/station_details_cubit.dart';
 import 'package:smart_car/pages/station_details/bloc/station_details_state.dart';
@@ -24,64 +24,66 @@ class StationDetailsPage extends StatelessWidget
       appBar: AppBar(title: const Text('Szczegóły stacji')),
       body: ScopedBlocBuilder<StationDetailsCubit, StationDetailsState>(
         create: (_) => StationDetailsCubit(getArgument(context).station),
-        builder: (context, state, cubit) => SingleChildScrollView(
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('Nazwa: ${state.station.name}'),
-                  const SizedBox(height: 16.0),
-                  Text(
-                      'Lokalizacja ${state.station.coordinates.toSexagesimal()}'),
-                  if (state.station.brand != null)
-                    Text('Sieć: ${state.station.brand}'),
-                  if (state.station.city != null)
-                    Text('Miasto: ${state.station.city}'),
-                  if (state.station.openingHours != null)
-                    Text('Godziny otwarcia: ${state.station.openingHours}'),
-                  if (state.station.stationOperator != null)
-                    Text('Operator: ${state.station.stationOperator}'),
-                  if (state.station.street != null)
-                    Text('Ulica: ${state.station.street}'),
-                  const SizedBox(height: 16.0),
-                  const Text('Dostępne rodzaje paliwa:'),
-                  const SizedBox(height: 8.0),
-                  Wrap(
-                    spacing: 8.0,
-                    children: [
-                      if (!state.station.hasDiesel == true)
-                        FuelTypeHelper.iconON(),
-                      if (!state.station.hasLpg == true)
-                        FuelTypeHelper.iconLPG(),
-                      if (!state.station.hasPb95 == true)
-                        FuelTypeHelper.iconPB95(),
-                      if (!state.station.hasPb98 == true)
-                        FuelTypeHelper.iconPB98(),
-                    ],
-                  ),
-                  const SizedBox(height: 16.0),
-                  const Text('Ceny paliw'),
-                  ...FuelStationType.values.map(
-                    (type) => FuelPriceRow(
-                      cubit: cubit,
-                      fuelType: type,
-                      price: state.fuelPrice(type),
-                      isEditable: state.isPriceEdited(type),
-                      isEnabled: state.containsPrice(type),
+        builder: (context, state, cubit) {
+          return SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text('Nazwa: ${state.station.name}'),
+                    const SizedBox(height: 16.0),
+                    Text(
+                        'Lokalizacja ${state.station.coordinates.toSexagesimal()}'),
+                    if (state.station.brand != null)
+                      Text('Sieć: ${state.station.brand}'),
+                    if (state.station.city != null)
+                      Text('Miasto: ${state.station.city}'),
+                    if (state.station.openingHours != null)
+                      Text('Godziny otwarcia: ${state.station.openingHours}'),
+                    if (state.station.stationOperator != null)
+                      Text('Operator: ${state.station.stationOperator}'),
+                    if (state.station.street != null)
+                      Text('Ulica: ${state.station.street}'),
+                    const SizedBox(height: 16.0),
+                    const Text('Dostępne rodzaje paliwa:'),
+                    const SizedBox(height: 8.0),
+                    Wrap(
+                      spacing: 8.0,
+                      children: [
+                        if (!state.station.hasDiesel == true)
+                          FuelTypeHelper.iconON(),
+                        if (!state.station.hasLpg == true)
+                          FuelTypeHelper.iconLPG(),
+                        if (!state.station.hasPb95 == true)
+                          FuelTypeHelper.iconPB95(),
+                        if (!state.station.hasPb98 == true)
+                          FuelTypeHelper.iconPB98(),
+                      ],
                     ),
-                  ),
-                  ElevatedButton(
-                    onPressed:
-                        state.updatePrices.isEmpty ? cubit.saveChanges : null,
-                    child: const Text('Zapisz zmiany'),
-                  ),
-                ],
+                    const SizedBox(height: 16.0),
+                    const Text('Ceny paliw'),
+                    ...FuelStationType.values.map(
+                      (type) => FuelPriceRow(
+                        cubit: cubit,
+                        fuelType: type,
+                        fuelInfo: state.fuelInfo(type),
+                        isEditable: state.isPriceEdited(type),
+                        isEnabled: state.containsPrice(type),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed:
+                          state.updatePrices.isEmpty ? cubit.saveChanges : null,
+                      child: const Text('Zapisz zmiany'),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
@@ -92,14 +94,14 @@ class FuelPriceRow extends StatefulWidget {
     Key? key,
     required this.cubit,
     required this.fuelType,
-    required this.price,
+    required this.fuelInfo,
     required this.isEditable,
     required this.isEnabled,
   }) : super(key: key);
 
   final StationDetailsCubit cubit;
   final FuelStationType fuelType;
-  final double? price;
+  final FuelInfo? fuelInfo;
   final bool isEditable;
   final bool isEnabled;
 
@@ -110,9 +112,9 @@ class FuelPriceRow extends StatefulWidget {
 class _FuelPriceRowState extends State<FuelPriceRow> {
   @override
   Widget build(BuildContext context) {
-    final price = widget.price;
+    final fuelInfo = widget.fuelInfo;
     final fuelType = widget.fuelType;
-    if (price == null || !widget.isEnabled) {
+    if (fuelInfo == null || !widget.isEnabled) {
       return TextButton(
         onPressed: () => widget.cubit.addNewFuelType(widget.fuelType),
         child: Text('+ ${widget.fuelType.name}'),
@@ -122,9 +124,10 @@ class _FuelPriceRowState extends State<FuelPriceRow> {
       children: [
         FuelPriceCard(
           type: fuelType,
-          price: price,
+          fuelInfo: fuelInfo,
           onTap: widget.isEditable
-              ? () => _showInputDialog(context, widget.cubit, price, fuelType)
+              ? () => _showInputDialog(
+                  context, widget.cubit, fuelInfo.price, fuelType)
               : null,
         ),
         if (!widget.isEditable)

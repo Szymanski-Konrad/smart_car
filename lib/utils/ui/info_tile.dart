@@ -37,7 +37,7 @@ class OtherInfoTile extends StatelessWidget {
         children: [
           Text(
             '${data.formattedValue} ${data.unit}',
-            style: TextStyles.valueTextStyle,
+            style: TextStyles.valueTextStyle.copyWith(color: data.fontColor),
           ),
           if (icon != null) Icon(icon),
           Text(

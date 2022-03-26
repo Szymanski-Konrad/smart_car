@@ -110,7 +110,6 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   }
 
   Widget _buildBottomSheet(BuildContext context, GasStation station) {
-    //TODO: Add info about distance from current location
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32.0),
@@ -146,7 +145,7 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
                 (entry) => Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: FuelPriceCard(
-                    price: entry.value,
+                    fuelInfo: entry.value,
                     type: entry.key,
                   ),
                 ),

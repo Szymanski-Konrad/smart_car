@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/models/gas_stations/fuel_info.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
 
@@ -6,12 +7,12 @@ class FuelPriceCard extends StatelessWidget {
   const FuelPriceCard({
     Key? key,
     required this.type,
-    required this.price,
+    required this.fuelInfo,
     this.onTap,
   }) : super(key: key);
 
   final FuelStationType type;
-  final double price;
+  final FuelInfo fuelInfo;
   final VoidCallback? onTap;
 
   @override
@@ -25,7 +26,7 @@ class FuelPriceCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
-              '${price.toStringAsFixed(2)} zł',
+              '${fuelInfo.price.toStringAsFixed(2)} zł',
               style: priceStyle,
             ),
           ),
@@ -36,7 +37,7 @@ class FuelPriceCard extends StatelessWidget {
   }
 
   TextStyle? get priceStyle => onTap != null
-      ? TextStyle(
+      ? const TextStyle(
           color: Colors.amber,
           decorationThickness: 2,
           decoration: TextDecoration.underline,

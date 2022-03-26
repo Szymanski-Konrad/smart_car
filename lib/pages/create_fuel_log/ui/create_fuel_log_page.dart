@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
 import 'package:smart_car/utils/route_argument.dart';
@@ -10,10 +11,12 @@ class CreateFuelLogPageArgument {
   CreateFuelLogPageArgument({
     required this.currentOdometer,
     required this.lastFuelPrice,
+    this.fuelLog,
   });
 
   final double currentOdometer;
   final double lastFuelPrice;
+  FuelLog? fuelLog;
 }
 
 class CreateFuelLogPage extends StatelessWidget

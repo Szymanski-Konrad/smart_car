@@ -5,6 +5,7 @@ import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
+import 'package:uuid/uuid.dart';
 
 class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
   CreateFuelLogCubit({
@@ -14,8 +15,6 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
           fuelPrice: fuelPrice,
           odometer: odometer,
         ));
-
-  void tempEdit(String? value) {}
 
   void updateOdometer(String? value) {
     if (value == null) return;
@@ -64,12 +63,14 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       state.time.minute,
     );
     GlobalBlocs.fuelLogs.addNewLog(FuelLog(
+      id: const Uuid().v1(),
       odometer: state.odometer + state.odometerDiff,
       fuelAmount: state.fuelAmount,
       fuelPrice: state.fuelPrice,
-      totalPrice: state.totalPrice,
       logDate: dateTime,
-      distanceTraveled: state.odometerDiff,
+      distance: state.odometerDiff,
+      isFull: state.isFullTank,
+      isRemainingFuelKnown: state.isRemainingFuelKnown,
     ));
     Navigation.instance.pop();
   }

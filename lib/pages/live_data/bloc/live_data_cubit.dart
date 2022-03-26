@@ -528,10 +528,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   int get averageResponseTime =>
       commands.isEmpty ? 0 : (totalResponseTime / commands.length).ceil();
 
-  double _calculateShortFuelTrim() =>
-      1.0 + (commands.stft1 + commands.stft2) / 100;
-  double _calculateLongFuelTrim() =>
-      1.0 + (commands.ltft1 + commands.ltft2) / 100;
+  double _calculateShortFuelTrim() => (commands.stft1 + commands.stft2) / 100;
+  double _calculateLongFuelTrim() => (commands.ltft1 + commands.ltft2) / 100;
 
   @override
   Future<void> close() async {

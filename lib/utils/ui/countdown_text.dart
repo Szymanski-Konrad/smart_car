@@ -34,7 +34,6 @@ class _CountDownTextState extends State<CountDownText> {
 
   @override
   Widget build(BuildContext context) {
-    //TODO: Improve view
     return SizedBox(
       width: double.infinity,
       child: Padding(

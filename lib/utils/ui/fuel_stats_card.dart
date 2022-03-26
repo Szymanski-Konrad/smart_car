@@ -19,7 +19,7 @@ class FuelStatsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('Podsumowanie'),
+              const Text('Podsumowanie'),
               const SizedBox(height: 16.0),
               Row(
                 children: [

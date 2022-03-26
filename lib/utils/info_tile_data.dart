@@ -8,6 +8,7 @@ abstract class InfoTileData<T> {
     required this.title,
     required this.unit,
     this.iconData,
+    this.fontColor,
   });
 
   final T value;
@@ -15,6 +16,7 @@ abstract class InfoTileData<T> {
   final String title;
   final String unit;
   IconData? iconData;
+  Color? fontColor;
 
   String get formattedValue {
     final val = value;
@@ -41,11 +43,13 @@ class FuelTileData<T> extends InfoTileData<T> {
     required String title,
     required String unit,
     required this.tripStatus,
+    Color? color,
   }) : super(
           value: value,
           digits: digits,
           title: title,
           unit: unit,
+          fontColor: color,
         );
 
   final TripStatus tripStatus;
@@ -58,11 +62,13 @@ class TimeTileData<T> extends InfoTileData<T> {
     required String title,
     required String unit,
     required this.isCurrent,
+    Color? color,
   }) : super(
           value: value,
           digits: digits,
           title: title,
           unit: unit,
+          fontColor: color,
         );
 
   final bool isCurrent;
@@ -75,11 +81,13 @@ class OtherTileData<T> extends InfoTileData<T> {
     required String title,
     required String unit,
     IconData? iconData,
+    Color? color,
   }) : super(
           value: value,
           digits: digits,
           title: title,
           unit: unit,
           iconData: iconData,
+          fontColor: color,
         );
 }

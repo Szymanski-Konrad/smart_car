@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -22,7 +24,6 @@ class OverpassApi {
     String? responseText;
 
     try {
-      //TODO: Handle on timeout and other errors
       final response =
           await Client().send(request).timeout(const Duration(seconds: 5));
 

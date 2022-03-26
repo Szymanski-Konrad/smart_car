@@ -168,7 +168,7 @@ extension TripRecordExtension on TripRecord {
         value: fuelCosts,
         title: Strings.fuelCosts,
         unit: 'PLN',
-        digits: 2,
+        digits: 1,
       );
 
   FuelTileData get savedFuelDetails => FuelTileData(

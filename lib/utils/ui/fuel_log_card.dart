@@ -32,7 +32,9 @@ class FuelLogCard extends StatelessWidget {
                 ],
               ),
               _buildIconText(
-                  fuelLog.fuelConsumption, Icons.show_chart_outlined),
+                fuelLog.fuelConsumptionFormatted(),
+                Icons.show_chart_outlined,
+              ),
               _buildIconText(
                 fuelLog.distanceFormatted(),
                 Icons.directions_car,

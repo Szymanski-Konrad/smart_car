@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/utils/date_extension.dart';
 
 part 'create_fuel_log_state.freezed.dart';
@@ -19,11 +20,25 @@ class CreateFuelLogState with _$CreateFuelLogState {
     required DateTime date,
     required TimeOfDay time,
     @Default(true) bool isFullTank,
+    @Default(false) bool isRemainingFuelKnown,
     LatLng? coordinates,
   }) = _CreateFuelLogState;
 }
 
 extension CreateFuelLogStateExtension on CreateFuelLogState {
+  static CreateFuelLogState toEdit(FuelLog fuelLog) => CreateFuelLogState(
+        currentOdometer: fuelLog.odometer,
+        fuelPrice: fuelLog.fuelPrice,
+        date: fuelLog.logDate,
+        time: TimeOfDay.fromDateTime(fuelLog.logDate),
+        coordinates: fuelLog.location,
+        fuelAmount: fuelLog.fuelAmount,
+        isFullTank: fuelLog.isFull,
+        odometer: fuelLog.distance,
+        odometerInputType: OdometerInputType.diff,
+        totalPrice: fuelLog.fuelPrice * fuelLog.fuelAmount,
+      );
+
   static CreateFuelLogState initial({
     required double fuelPrice,
     required double odometer,

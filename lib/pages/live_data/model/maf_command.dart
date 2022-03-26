@@ -51,8 +51,12 @@ class MafCommand extends VisibleObdCommand {
   /// Calculate fuel consumption per 100 km
   /// [speed] - current speed of vehicle
   double fuel100km(
-      int speed, double longTerm, double shortTerm, double airFuelRatio) {
-    final trimTerm = longTerm + shortTerm;
+    int speed,
+    double longTerm,
+    double shortTerm,
+    double airFuelRatio,
+  ) {
+    final trimTerm = 1 + longTerm + shortTerm;
     calculateFuelFlow(airFuelRatio: airFuelRatio, trimTerm: trimTerm);
     if (speed > 0) {
       return (_fuelFlow / speed) * 100;

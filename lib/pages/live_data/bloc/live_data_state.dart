@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:location/location.dart';
 import 'package:smart_car/app/resources/constants.dart';
@@ -162,7 +163,7 @@ extension LiveDataStateExtension on LiveDataState {
   OtherTileData get directionData => OtherTileData(
         digits: 1,
         unit: '',
-        title: 'Kierunek',
+        title: 'Kierunek ($directionString)',
         value: direction,
       );
 
@@ -185,6 +186,28 @@ extension LiveDataStateExtension on LiveDataState {
         unit: 'g',
         title: Strings.gForce,
         value: gForce,
+        color: gForceColor,
+      );
+
+  OtherTileData get gForceDataX => OtherTileData(
+        digits: 2,
+        unit: 'g',
+        title: Strings.gForce + ' X',
+        value: xAccelerometer.abs() / 9.8,
+      );
+
+  OtherTileData get gForceDataY => OtherTileData(
+        digits: 2,
+        unit: 'g',
+        title: Strings.gForce + ' Y',
+        value: yAccelerometer.abs() / 9.8,
+      );
+
+  OtherTileData get gForceDataZ => OtherTileData(
+        digits: 2,
+        unit: 'g',
+        title: Strings.gForce + ' Z',
+        value: zAccelerometer.abs() / 9.8,
       );
 
   OtherTileData get indoorTempData => OtherTileData(
@@ -209,4 +232,23 @@ extension LiveDataStateExtension on LiveDataState {
           .toDouble();
 
   double get gForce => sqrt(_accelerationSum) / 9.8;
+
+  Color get gForceColor {
+    if (gForce > 1.3) return Colors.red;
+    if (gForce > 1.2) return Colors.orange;
+    if (gForce > 1.1) return Colors.yellow;
+    return Colors.green;
+  }
+
+  String get directionString {
+    if (direction == 0 || direction == 360) return 'N';
+    if (direction > 0 && direction < 90) return 'NE';
+    if (direction == 90) return 'E';
+    if (direction > 90 && direction < 180) return 'SE';
+    if (direction == 180) return 'S';
+    if (direction > 180 && direction < 270) return 'SW';
+    if (direction == 270) return 'W';
+    if (direction > 270 && direction < 360) return 'NW';
+    return '-.-';
+  }
 }

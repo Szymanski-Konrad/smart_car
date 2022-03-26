@@ -24,6 +24,9 @@ class TripStatsSection extends StatelessWidget {
           if (state.isTemperatureAvaliable)
             OtherInfoTile(data: state.indoorTempData),
           OtherInfoTile(data: state.gForceData),
+          OtherInfoTile(data: state.gForceDataX),
+          OtherInfoTile(data: state.gForceDataY),
+          OtherInfoTile(data: state.gForceDataZ),
           OtherInfoTile(data: state.locationHeightData),
           OtherInfoTile(data: state.directionData),
           OtherInfoTile(data: state.locationSlopeData),

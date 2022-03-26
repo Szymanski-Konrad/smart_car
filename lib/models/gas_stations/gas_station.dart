@@ -1,6 +1,9 @@
+// ignore_for_file: invalid_annotation_target
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/gas_stations/fuel_info.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/utils/location_helper.dart';
 
@@ -12,8 +15,7 @@ class GasStation with _$GasStation {
   factory GasStation({
     required int id,
     @JsonKey(toJson: LocationHelper.coordsToJson) required LatLng coordinates,
-    //TODO: Add info about change price date
-    @Default({}) Map<FuelStationType, double> fuelPrices,
+    @Default({}) Map<FuelStationType, FuelInfo> fuelPrices,
     @Default(Strings.gasStation) String name,
     String? city,
     String? street,
@@ -56,7 +58,7 @@ class GasStation with _$GasStation {
 
 extension GasStationExtension on GasStation {
   double? fuelPrice(FuelStationType type) {
-    return fuelPrices[type];
+    return fuelPrices[type]?.price;
   }
 
   String get address => '$city, $street $houseNumber, $postcode';
