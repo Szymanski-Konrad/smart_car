@@ -4,16 +4,16 @@ import 'package:smart_car/models/gas_stations/gas_station.dart';
 abstract class FuelTypeHelper {
   FuelTypeHelper._();
 
-  static Widget selectFuelTypeIcon(FuelStationType type) {
+  static Widget selectFuelTypeIcon(FuelStationType type, {Color? color}) {
     switch (type) {
       case FuelStationType.pb95:
-        return _buildFuelTypeIcon('PB95', Colors.green);
+        return _buildFuelTypeIcon('PB95', color ?? Colors.green);
       case FuelStationType.pb98:
-        return _buildFuelTypeIcon('PB98', Colors.green);
+        return _buildFuelTypeIcon('PB98', color ?? Colors.green);
       case FuelStationType.diesel:
-        return _buildFuelTypeIcon('ON', Colors.black);
+        return _buildFuelTypeIcon('ON', color ?? Colors.black);
       case FuelStationType.lpg:
-        return _buildFuelTypeIcon('LPG', Colors.red);
+        return _buildFuelTypeIcon('LPG', color ?? Colors.red);
     }
   }
 
@@ -47,9 +47,7 @@ abstract class FuelTypeHelper {
       child: Center(
         child: Text(
           value,
-          style: TextStyle(
-            color: background != Colors.green ? Colors.white : Colors.black,
-          ),
+          style: const TextStyle(color: Colors.white),
         ),
       ),
     );

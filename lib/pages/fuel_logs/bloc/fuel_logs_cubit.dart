@@ -18,8 +18,8 @@ class FuelLogsCubit extends Cubit<FuelLogsState> {
 
   void createNewLog() {
     final argument = CreateFuelLogPageArgument(
-      currentOdometer: state.logs.last.odometer,
-      lastFuelPrice: state.logs.last.fuelPrice,
+      currentOdometer: state.logs.isEmpty ? 0.0 : state.logs.last.odometer,
+      lastFuelPrice: state.logs.isEmpty ? 0.0 : state.logs.last.fuelPrice,
     );
     Navigation.instance.push(SharedRoutes.createFuelLog, arguments: argument);
   }

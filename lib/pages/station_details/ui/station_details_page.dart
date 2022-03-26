@@ -69,6 +69,7 @@ class StationDetailsPage extends StatelessWidget
                         cubit: cubit,
                         fuelType: type,
                         fuelInfo: state.fuelInfo(type),
+                        changeDate: state.changeDate(type),
                         isEditable: state.isPriceEdited(type),
                         isEnabled: state.containsPrice(type),
                       ),
@@ -97,11 +98,13 @@ class FuelPriceRow extends StatefulWidget {
     required this.fuelInfo,
     required this.isEditable,
     required this.isEnabled,
+    this.changeDate,
   }) : super(key: key);
 
   final StationDetailsCubit cubit;
   final FuelStationType fuelType;
   final FuelInfo? fuelInfo;
+  final DateTime? changeDate;
   final bool isEditable;
   final bool isEnabled;
 
@@ -125,6 +128,7 @@ class _FuelPriceRowState extends State<FuelPriceRow> {
         FuelPriceCard(
           type: fuelType,
           fuelInfo: fuelInfo,
+          changeDate: widget.changeDate,
           onTap: widget.isEditable
               ? () => _showInputDialog(
                   context, widget.cubit, fuelInfo.price, fuelType)

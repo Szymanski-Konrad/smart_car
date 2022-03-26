@@ -101,6 +101,11 @@ abstract class Strings {
 
   // Fuel logs
   static const String addYourFirstLog = 'Dodaj swój pierwszy wpis';
+  static String fuelLogsCounter(int number) {
+    if (number == 1) return '$number tankowanie';
+    if (number < 5) return '$number tankowania';
+    return '$number tankowań';
+  }
 
   // Fuel stations
   static const String gasStation = 'Stacja paliw';

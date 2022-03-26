@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/utils/date_extension.dart';
+import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
 
 class FuelLogCard extends StatelessWidget {
   const FuelLogCard({
@@ -27,6 +28,7 @@ class FuelLogCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text('Tankowanie'),
+                  FuelTypeHelper.selectFuelTypeIcon(fuelLog.fuelType),
                   _buildIconText(
                       fuelLog.logDate.toDateFormat, Icons.calendar_today),
                 ],

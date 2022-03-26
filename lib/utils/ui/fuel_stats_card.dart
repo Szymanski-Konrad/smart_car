@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 
 class FuelStatsCard extends StatelessWidget {
@@ -17,42 +18,64 @@ class FuelStatsCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text('Podsumowanie'),
+              Center(
+                  child: Text(
+                      'Podsumowanie (${Strings.fuelLogsCounter(logs.length)})')),
+              _buildIconText(
+                logs.consumptionFormatted(),
+                Icons.show_chart_outlined,
+              ),
               const SizedBox(height: 16.0),
               Row(
                 children: [
                   Expanded(
-                    child: _buildIconText(
-                      logs.fuelFormatted(),
-                      Icons.local_gas_station,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('Wszystkie'),
+                        const SizedBox(height: 16.0),
+                        _buildIconText(
+                          logs.totalFuelFormatted(),
+                          Icons.local_gas_station,
+                        ),
+                        _buildIconText(
+                          logs.totalCostFormatted(),
+                          Icons.account_balance_wallet,
+                        ),
+                        _buildIconText(
+                          logs.totalDistanceFormatted(),
+                          Icons.route,
+                        ),
+                      ],
                     ),
                   ),
+                  const SizedBox(width: 16.0),
                   Expanded(
-                    child: _buildIconText(
-                      logs.costFormatted(),
-                      Icons.account_balance_wallet,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const Text('Średnio'),
+                        const SizedBox(height: 16.0),
+                        _buildIconText(
+                          logs.averageFuelFormatted(),
+                          Icons.local_gas_station,
+                        ),
+                        _buildIconText(
+                          logs.averageCostFormatted(),
+                          Icons.account_balance_wallet,
+                        ),
+                        _buildIconText(
+                          logs.averageDistanceFormatted(),
+                          Icons.route,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildIconText(
-                      logs.distanceFormatted(),
-                      Icons.route,
-                    ),
-                  ),
-                  Expanded(
-                    child: _buildIconText(
-                      logs.consumptionFormatted(),
-                      Icons.show_chart_outlined,
-                    ),
-                  ),
-                ],
-              )
             ],
           ),
         ),

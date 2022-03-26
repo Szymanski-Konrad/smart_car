@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
+import 'package:smart_car/utils/list_extension.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
+import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
 import 'package:smart_car/utils/validators.dart';
 
 class CreateFuelLogPageArgument {
@@ -22,6 +25,8 @@ class CreateFuelLogPageArgument {
 class CreateFuelLogPage extends StatelessWidget
     with RouteArgument<CreateFuelLogPageArgument> {
   const CreateFuelLogPage({Key? key}) : super(key: key);
+
+  static const double _labelWidth = 150.0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,39 +59,67 @@ class CreateFuelLogPage extends StatelessWidget
     CreateFuelLogState state,
     CreateFuelLogCubit cubit,
   ) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildRow(
+              'Licznik (km)',
+              state.odometer.toString(),
+              cubit.updateOdometer,
+              hintText:
+                  'Aktualny stan licznika: ${state.currentOdometer.toStringAsFixed(1)} km',
+              suffixText: 'km',
+            ),
+            _buildRow(
+              'Ilość paliwa',
+              state.fuelAmount.toString(),
+              cubit.updateFuelAmount,
+              suffixText: 'l',
+            ),
+            _buildRow(
+              'Cena paliwa',
+              state.fuelPrice.toString(),
+              cubit.updateFuelPrice,
+              suffixText: 'zł',
+            ),
+            _buildSelectFuelRow(state.fuelType, cubit),
+            _buildDateRow(context, state, cubit),
+            const Padding(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Center(child: Text('Podsumowanie:')),
+            ),
+            Text('Całkowity koszt: ${state.totalPrice.toString()} zł'),
+            Text('Spalanie: ${state.fuelCons}'),
+          ].cast<Widget>().dividedBy(const SizedBox(height: 12.0)),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectFuelRow(
+      FuelStationType selected, CreateFuelLogCubit cubit) {
+    return Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _buildRow(
-              'Licznik (km)', state.odometer.toString(), cubit.updateOdometer),
+        const SizedBox(
+          width: _labelWidth,
+          child: Text('Rodzaj paliwa'),
         ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _buildRow('Ilość paliwa', state.fuelAmount.toString(),
-              cubit.updateFuelAmount),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _buildRow(
-              'Cena paliwa', state.fuelPrice.toString(), cubit.updateFuelPrice),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _buildDateRow(context, state, cubit),
-        ),
-        const Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Center(child: Text('Podsumowanie:')),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text('Całkowity koszt ${state.totalPrice.toString()} zł'),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text('Spalanie: ${state.fuelCons} zł'),
+        Wrap(
+          spacing: 8.0,
+          children: FuelStationType.values
+              .map(
+                (e) => GestureDetector(
+                  onTap: () => cubit.changeFuelType(e),
+                  child: FuelTypeHelper.selectFuelTypeIcon(
+                    e,
+                    color: e == selected ? Colors.green : Colors.black,
+                  ),
+                ),
+              )
+              .toList(),
         ),
       ],
     );
@@ -98,17 +131,21 @@ class CreateFuelLogPage extends StatelessWidget
     Function(String?) onEdit, {
     TextInputType inputType =
         const TextInputType.numberWithOptions(decimal: true),
+    String? hintText,
+    String? suffixText,
   }) {
     return Row(
       children: [
         SizedBox(
-          width: 150,
+          width: _labelWidth,
           child: Text(label),
         ),
         Expanded(
           child: FuelLogTextField(
             initalValue: initialValue,
             onEdit: onEdit,
+            hintText: hintText,
+            suffixText: suffixText,
             keyboardType: inputType,
           ),
         ),
@@ -170,10 +207,14 @@ class FuelLogTextField extends StatefulWidget {
     required this.initalValue,
     required this.onEdit,
     this.validator,
+    this.hintText,
+    this.suffixText,
     this.keyboardType = TextInputType.number,
   }) : super(key: key);
 
   final String? initalValue;
+  final String? hintText;
+  final String? suffixText;
   final Function(String) onEdit;
   final String? Function(String?)? validator;
   final TextInputType keyboardType;
@@ -196,6 +237,10 @@ class _FuelLogTextFieldState extends State<FuelLogTextField> {
               replacementString: '.'),
       ],
       validator: widget.validator ?? Validators.positiveNumberValidator,
+      decoration: InputDecoration(
+        helperText: widget.hintText,
+        suffixText: widget.suffixText,
+      ),
       onChanged: widget.onEdit,
       autovalidateMode: AutovalidateMode.onUserInteraction,
     );

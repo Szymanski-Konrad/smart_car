@@ -16,6 +16,8 @@ class StationDetailsState with _$StationDetailsState {
 
 extension StationDetailsStateExtension on StationDetailsState {
   bool isPriceEdited(FuelStationType type) => updatePrices.containsKey(type);
+  DateTime? changeDate(FuelStationType type) =>
+      station.fuelPrices[type]?.changeDate;
   FuelInfo? fuelInfo(FuelStationType type) =>
       updatePrices[type] ?? prices[type];
   bool containsPrice(FuelStationType type) =>

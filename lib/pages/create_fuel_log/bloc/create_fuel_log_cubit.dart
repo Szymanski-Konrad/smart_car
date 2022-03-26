@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
 import 'package:uuid/uuid.dart';
 
@@ -54,6 +55,10 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
     emit(state.copyWith(date: value));
   }
 
+  void changeFuelType(FuelStationType type) {
+    emit(state.copyWith(fuelType: type));
+  }
+
   void saveLog() {
     final dateTime = DateTime(
       state.date.year,
@@ -71,6 +76,7 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       distance: state.odometerDiff,
       isFull: state.isFullTank,
       isRemainingFuelKnown: state.isRemainingFuelKnown,
+      fuelType: state.fuelType,
     ));
     Navigation.instance.pop();
   }

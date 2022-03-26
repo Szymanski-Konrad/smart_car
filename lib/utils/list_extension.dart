@@ -22,4 +22,15 @@ extension ListExtension<T> on List<T> {
 
     return null;
   }
+
+  List<T> dividedBy(T divider) {
+    if (isEmpty) return [];
+    final List<T> list = [];
+    list.add(first);
+    for (int i = 1; i < length; i++) {
+      list.add(divider);
+      list.add(elementAt(i));
+    }
+    return list;
+  }
 }
