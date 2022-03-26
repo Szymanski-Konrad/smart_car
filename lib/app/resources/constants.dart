@@ -15,20 +15,9 @@ abstract class Constants {
   static const largeScreenWidth = 400.0;
 
   static const localFiles = [
-    'trip1',
-    'trip2',
-    'trip3',
-    'trip4',
-    'trip5',
-    'trip6',
     'work',
-    'work2',
-    'work3',
-    'work4',
-    'ford1',
     'gizycko-kolno',
     'nowiak-mikolajki',
-    'nowiakKolno',
     'nowiak-lomza',
     'lomza-kolno',
     'passat1',
@@ -36,7 +25,6 @@ abstract class Constants {
     'passat3',
     'passat4',
     'passat5',
-    'praca',
     'toyota1',
     'toyota2',
     'toyota3',
