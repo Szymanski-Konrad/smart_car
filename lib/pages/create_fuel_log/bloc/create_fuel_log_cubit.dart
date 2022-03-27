@@ -5,7 +5,10 @@ import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
+import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
+import 'package:smart_car/services/overpass_api.dart';
+import 'package:smart_car/utils/location_helper.dart';
 import 'package:uuid/uuid.dart';
 
 class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
@@ -15,7 +18,21 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
   }) : super(CreateFuelLogStateExtension.initial(
           fuelPrice: fuelPrice,
           odometer: odometer,
-        ));
+        )) {
+    init();
+  }
+
+  Future<void> init() async {
+    final location = await LocationHelper.getCurrentLocation();
+    if (location == null) return;
+    emit(state.copyWith(isStationsLoading: true, coordinates: location));
+    final stations = await OverpassApi.fetchGasStationsAroundCenter(
+        QueryLocation.fromLatLng(location));
+    emit(state.copyWith(
+      isStationsLoading: false,
+      nearGasStations: stations,
+    ));
+  }
 
   void updateOdometer(String? value) {
     if (value == null) return;
@@ -77,6 +94,7 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       isFull: state.isFullTank,
       isRemainingFuelKnown: state.isRemainingFuelKnown,
       fuelType: state.fuelType,
+      location: state.coordinates,
     ));
     Navigation.instance.pop();
   }

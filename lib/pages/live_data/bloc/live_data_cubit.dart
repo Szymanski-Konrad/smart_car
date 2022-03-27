@@ -61,7 +61,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription<SensorEvent>? _accSubscription;
   StreamSubscription? _tempSubscription;
   Timer? _everySecondTimer;
-  Location location = Location();
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
 
   /// Called when succesfully connected to OBD
@@ -103,7 +102,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
     emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
 
-    location.changeSettings(
+    Location.instance.changeSettings(
       accuracy: LocationAccuracy.high,
     );
   }
@@ -117,7 +116,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
     final angle =
-        LocationHelper.calculateAngle(lastLocation, currLocation, distance);
+        LocationHelper.calculateAngle(lastLocation, currLocation, distance: distance);
     final totalDistance = state.tripRecord.gpsDistance + (distance / 1000);
     emit(state.copyWith(
       lastLocation: currLocation,
@@ -151,7 +150,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     commands.add(BatteryVoltageCommand());
     _listenForSensors();
 
-    locationSub = location.onLocationChanged.listen(_onLocationChanged);
+    locationSub =
+        Location.instance.onLocationChanged.listen(_onLocationChanged);
   }
 
   /// Send command for preparing obd
@@ -176,7 +176,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
 
-    await LocationHelper.checkLocationService(location);
+    await LocationHelper.checkLocationService();
 
     lastReciveCommandTime = DateTime.now();
     _decideNextMove();

@@ -3,7 +3,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
+import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/utils/logger.dart';
 import 'package:xml/xml.dart';
 import 'package:http/http.dart';
@@ -12,13 +14,14 @@ class OverpassApi {
   static const _apiUrl = 'overpass-api.de';
   static const _path = '/api/interpreter';
 
-  static Future<List<ResponseLocation>> fetchGasStationsAroundCenter(
-    QueryLocation center,
-    Map<String, String> filter,
-    double radius,
-    Function() onTimeout,
-  ) async {
+  /// Fetch gas stations in [radius] m around [center]
+  static Future<List<GasStation>> fetchGasStationsAroundCenter(
+    QueryLocation center, {
+    double radius = 5000,
+    Function()? onTimeout,
+  }) async {
     final request = Request('GET', Uri.https(_apiUrl, _path));
+    final filter = {'amenity': 'fuel'};
     request.bodyFields = _buildRequestBody(center, filter, radius);
 
     String? responseText;
@@ -30,7 +33,7 @@ class OverpassApi {
       responseText = await response.stream.bytesToString();
     } on TimeoutException catch (e) {
       Logger.logToFile(e);
-      onTimeout();
+      onTimeout?.call();
       return Future.value([]);
     } catch (e) {
       Logger.logToFile(e);
@@ -65,7 +68,9 @@ class OverpassApi {
       resultList.add(ResponseLocation.fromJson(location));
     }
 
-    return resultList;
+    final stations = await _mapResultsToGasStations(resultList);
+
+    return stations;
   }
 
   static Map<String, String> _buildRequestBody(
@@ -105,5 +110,27 @@ class OverpassApi {
     );
 
     return query.toMap();
+  }
+
+  static Future<List<GasStation>> _mapResultsToGasStations(
+    List<ResponseLocation> locations,
+  ) async {
+    final gasStations = <GasStation>[];
+    final ids = locations.map((e) => e.id.toString()).toList();
+    final remoteStations = await FirestoreHandler.getAllStations(ids);
+    if (remoteStations.length == locations.length) {
+      return remoteStations;
+    }
+    for (final location in locations) {
+      final index =
+          remoteStations.indexWhere((element) => element.id == location.id);
+      if (index >= 0) {
+        gasStations.add(remoteStations[index]);
+      } else {
+        gasStations.add(GasStation.fromLocation(location));
+      }
+    }
+
+    return gasStations;
   }
 }

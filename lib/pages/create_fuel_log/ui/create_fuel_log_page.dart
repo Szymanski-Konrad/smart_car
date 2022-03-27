@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
 import 'package:smart_car/utils/list_extension.dart';
+import 'package:smart_car/utils/location_helper.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
@@ -87,6 +89,7 @@ class CreateFuelLogPage extends StatelessWidget
             ),
             _buildSelectFuelRow(state.fuelType, cubit),
             _buildDateRow(context, state, cubit),
+            _buildSelectStationRow(state, cubit),
             const Padding(
               padding: EdgeInsets.only(top: 16.0),
               child: Center(child: Text('Podsumowanie:')),
@@ -95,6 +98,33 @@ class CreateFuelLogPage extends StatelessWidget
             Text('Spalanie: ${state.fuelCons}'),
           ].cast<Widget>().dividedBy(const SizedBox(height: 12.0)),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSelectStationRow(
+    CreateFuelLogState state,
+    CreateFuelLogCubit cubit,
+  ) {
+    final location = state.coordinates;
+    if (location == null) return const Text('Brak stacji w pobliżu');
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: state.nearGasStations
+            .map(
+              (e) => Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Column(
+                  children: [
+                    Text(e.name),
+                    Text(
+                        '${LocationHelper.calculateDistanceLatLng(e.coordinates, location).toStringAsFixed(2)} km'),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }

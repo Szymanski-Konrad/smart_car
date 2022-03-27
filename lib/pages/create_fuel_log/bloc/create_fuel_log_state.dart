@@ -23,7 +23,12 @@ class CreateFuelLogState with _$CreateFuelLogState {
     @Default(true) bool isFullTank,
     @Default(false) bool isRemainingFuelKnown,
     @Default(FuelStationType.pb95) FuelStationType fuelType,
+
+    // For localization
+    @Default(false) bool isStationsLoading,
     LatLng? coordinates,
+    @Default([]) List<GasStation> nearGasStations,
+    GasStation? selectedGasStation,
   }) = _CreateFuelLogState;
 }
 

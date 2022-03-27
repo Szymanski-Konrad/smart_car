@@ -26,14 +26,11 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
     emit(state.copyWith(isLoading: true));
     final _location = state.location;
     if (_location == null) return;
-    final results = await OverpassApi.fetchGasStationsAroundCenter(
+    final gasStations = await OverpassApi.fetchGasStationsAroundCenter(
       _location,
-      {'amenity': 'fuel'},
-      5000,
-      onTimeout,
+      onTimeout: onTimeout,
     );
 
-    final gasStations = await _mapResultsToGasStations(results);
     emit(state.copyWith(
       gasStations: gasStations,
       isLoading: false,
@@ -49,27 +46,5 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
       duration: const Duration(seconds: 2),
       context: ToastProvider.context,
     );
-  }
-
-  Future<List<GasStation>> _mapResultsToGasStations(
-    List<ResponseLocation> locations,
-  ) async {
-    final gasStations = <GasStation>[];
-    final ids = locations.map((e) => e.id.toString()).toList();
-    final remoteStations = await FirestoreHandler.getAllStations(ids);
-    if (remoteStations.length == locations.length) {
-      return remoteStations;
-    }
-    for (final location in locations) {
-      final index =
-          remoteStations.indexWhere((element) => element.id == location.id);
-      if (index >= 0) {
-        gasStations.add(remoteStations[index]);
-      } else {
-        gasStations.add(GasStation.fromLocation(location));
-      }
-    }
-
-    return gasStations;
   }
 }
