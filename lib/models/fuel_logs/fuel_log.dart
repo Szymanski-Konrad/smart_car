@@ -20,6 +20,7 @@ class FuelLog with _$FuelLog {
     @Default(true) bool isFull,
     double? remainingFuel,
     LatLng? location,
+    String? stationName,
   }) = _FuelLog;
 
   factory FuelLog.fromJson(Map<String, dynamic> json) =>

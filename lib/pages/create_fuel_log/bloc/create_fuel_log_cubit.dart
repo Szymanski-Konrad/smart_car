@@ -95,6 +95,7 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       isRemainingFuelKnown: state.isRemainingFuelKnown,
       fuelType: state.fuelType,
       location: state.coordinates,
+      stationName: state.selectedGasStation?.stationName,
     ));
     Navigation.instance.pop();
   }

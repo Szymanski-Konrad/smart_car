@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_cubit.dart';

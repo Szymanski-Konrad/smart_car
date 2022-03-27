@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/fuel_stations/bloc/fuel_stations_state.dart';
-import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/services/overpass_api.dart';
 
 class FuelStationsCubit extends Cubit<FuelStationsState> {
