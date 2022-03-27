@@ -15,6 +15,7 @@ class FuelStationsPage extends StatelessWidget {
       builder: (context, state, cubit) {
         return Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: !state.isLoading,
             title: const Text('Stacje paliw'),
             centerTitle: true,
           ),

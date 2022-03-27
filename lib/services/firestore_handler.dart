@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+import 'package:smart_car/models/gas_stations/fuel_info.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 
 abstract class FirestoreHandler {
@@ -9,6 +10,17 @@ abstract class FirestoreHandler {
 
   /// Save info about [station]
   static Future<void> saveStation(GasStation station) async {
+    await FirebaseFirestore.instance
+        .collection(kStationsCollection)
+        .doc(station.id.toString())
+        .set(
+          station.toJson(),
+          SetOptions(merge: true),
+        );
+  }
+
+  /// Update station price
+  static Future<void> updateStationPrice({required GasStation station}) async {
     await FirebaseFirestore.instance
         .collection(kStationsCollection)
         .doc(station.id.toString())

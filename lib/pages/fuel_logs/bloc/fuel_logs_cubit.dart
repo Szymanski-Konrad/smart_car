@@ -24,10 +24,16 @@ class FuelLogsCubit extends Cubit<FuelLogsState> {
     Navigation.instance.push(SharedRoutes.createFuelLog, arguments: argument);
   }
 
-  Future<void> addNewLog(FuelLog log) async {
+  Future<void> addLog(FuelLog log) async {
     await FirestoreHandler.saveFuelLog(log);
     final logs = List<FuelLog>.from(state.logs);
-    logs.add(log);
+    final index = logs.indexWhere((element) => element.id == log.id);
+    if (index != -1) {
+      logs.removeAt(index);
+      logs.insert(index, log);
+    } else {
+      logs.add(log);
+    }
     emit(state.copyWith(logs: logs));
   }
 

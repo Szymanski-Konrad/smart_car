@@ -30,6 +30,8 @@ class FuelLog with _$FuelLog {
 extension FuelLogExtension on FuelLog {
   String odometerFormatted() => '${odometer.showSpaced} km';
   String distanceFormatted() => '+ ${distance.showSpaced} km';
+  String odometerDiffFormat() =>
+      '${odometerFormatted()} (${distanceFormatted()})';
   String fuelPriceFormatted() => '$fuelPrice zł';
   String totalCostFormatted() => '${totalCost.toStringAsFixed(2)} zł';
   String fuelAmountFormatted() => '$fuelAmount l';

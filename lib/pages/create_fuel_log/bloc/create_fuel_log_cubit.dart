@@ -7,31 +7,51 @@ import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/create_fuel_log/bloc/create_fuel_log_state.dart';
+import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/services/overpass_api.dart';
 import 'package:smart_car/utils/location_helper.dart';
-import 'package:uuid/uuid.dart';
+import 'package:smart_car/utils/validators.dart';
 
 class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
   CreateFuelLogCubit({
     required double odometer,
     required double fuelPrice,
-  }) : super(CreateFuelLogStateExtension.initial(
-          fuelPrice: fuelPrice,
-          odometer: odometer,
-        )) {
-    init();
+    FuelLog? fuelLog,
+  }) : super(fuelLog != null
+            ? CreateFuelLogStateExtension.toEdit(fuelLog)
+            : CreateFuelLogStateExtension.initial(
+                fuelPrice: fuelPrice,
+                odometer: odometer,
+              )) {
+    init(fuelLog);
   }
 
-  Future<void> init() async {
+  final odometerTextController = TextEditingController();
+  final distanceTextController = TextEditingController();
+
+  String? checkOdometerValue(String? value) {
+    return Validators.odometerHigherThanPreviousValidator(
+        value, state.currentOdometer);
+  }
+
+  Future<void> init(FuelLog? fuelLog) async {
+    if (fuelLog != null) {
+      odometerTextController.text = fuelLog.odometer.toString();
+      distanceTextController.text = fuelLog.distance.toString();
+    }
     final location = await LocationHelper.getCurrentLocation();
     if (location == null) return;
-    emit(state.copyWith(isStationsLoading: true, coordinates: location));
-    final stations = await OverpassApi.fetchGasStationsAroundCenter(
-        QueryLocation.fromLatLng(location));
-    emit(state.copyWith(
-      isStationsLoading: false,
-      nearGasStations: stations,
-    ));
+    if (!isClosed) {
+      emit(state.copyWith(isStationsLoading: true, coordinates: location));
+      final stations = await OverpassApi.fetchGasStationsAroundCenter(
+          QueryLocation.fromLatLng(location));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isStationsLoading: false,
+          nearGasStations: stations..sortByLocation(location),
+        ));
+      }
+    }
   }
 
   void updateOdometer(String? value) {
@@ -39,6 +59,24 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
     final parsed = double.tryParse(value);
     if (parsed == null) return;
     emit(state.copyWith(odometer: parsed));
+    distanceTextController.value =
+        newTextValue(state.newDistance.toStringAsFixed(1));
+  }
+
+  TextEditingValue newTextValue(String value) {
+    return TextEditingValue(
+      text: value,
+      selection: TextSelection.collapsed(offset: value.length),
+    );
+  }
+
+  void updateDistance(String? value) {
+    if (value == null) return;
+    final parsed = double.tryParse(value);
+    if (parsed == null) return;
+    emit(state.copyWith(distance: parsed));
+    odometerTextController.value =
+        newTextValue(state.newOdometer.toStringAsFixed(1));
   }
 
   void updateFuelAmount(String? value) {
@@ -46,7 +84,11 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
     final parsed = double.tryParse(value);
     if (parsed == null) return;
     emit(state.copyWith(fuelAmount: parsed));
-    updateFuelCost();
+  }
+
+  void toggleOdometerInputType(bool value) {
+    final type = value ? OdometerInputType.diff : OdometerInputType.total;
+    emit(state.copyWith(odometerInputType: type));
   }
 
   void updateFuelPrice(String? value) {
@@ -54,12 +96,6 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
     final parsed = double.tryParse(value);
     if (parsed == null) return;
     emit(state.copyWith(fuelPrice: parsed));
-    updateFuelCost();
-  }
-
-  void updateFuelCost() {
-    final cost = state.fuelPrice * state.fuelAmount;
-    emit(state.copyWith(totalPrice: cost));
   }
 
   void timeUpdate(TimeOfDay? value) {
@@ -76,7 +112,12 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
     emit(state.copyWith(fuelType: type));
   }
 
-  void saveLog() {
+  void selectStation(GasStation station) {
+    emit(state.copyWith(selectedGasStation: station));
+  }
+
+  Future<void> saveLog() async {
+    emit(state.copyWith(isSaving: true));
     final dateTime = DateTime(
       state.date.year,
       state.date.month,
@@ -84,19 +125,34 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       state.time.hour,
       state.time.minute,
     );
-    GlobalBlocs.fuelLogs.addNewLog(FuelLog(
-      id: const Uuid().v1(),
-      odometer: state.odometer + state.odometerDiff,
+
+    GlobalBlocs.fuelLogs.addLog(FuelLog(
+      id: state.fuelLogId,
+      odometer: state.newOdometer,
       fuelAmount: state.fuelAmount,
       fuelPrice: state.fuelPrice,
       logDate: dateTime,
-      distance: state.odometerDiff,
+      distance: state.distance,
       isFull: state.isFullTank,
       isRemainingFuelKnown: state.isRemainingFuelKnown,
       fuelType: state.fuelType,
       location: state.coordinates,
       stationName: state.selectedGasStation?.stationName,
     ));
+    final station = state.selectedGasStation;
+    if (station != null) {
+      await FirestoreHandler.updateStationPrice(
+        station: station.updatePrice(state.fuelType, state.fuelPrice),
+      );
+    }
+    emit(state.copyWith(isSaving: false));
     Navigation.instance.pop();
+  }
+
+  @override
+  Future<void> close() async {
+    distanceTextController.dispose();
+    odometerTextController.dispose();
+    super.close();
   }
 }

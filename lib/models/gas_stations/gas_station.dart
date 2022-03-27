@@ -67,6 +67,29 @@ extension GasStationExtension on GasStation {
     final _brand = brand;
     return name == 'Stacja paliw' && _brand != null ? _brand : name;
   }
+
+  double distanceTo(LatLng location) {
+    return LocationHelper.calculateDistanceLatLng(coordinates, location);
+  }
+
+  GasStation updatePrice(FuelStationType type, double price) {
+    final _prices = fuelPrices;
+    _prices[type] = FuelInfo.price(price);
+    return copyWith(fuelPrices: _prices);
+  }
+}
+
+extension GasStationsExtension on List<GasStation> {
+  void sortByLocation(LatLng location) {
+    sort((a, b) => compareDistance(a, b, location));
+  }
+
+  int compareDistance(GasStation a, GasStation b, LatLng location) {
+    final distance = a.distanceTo(location) - b.distanceTo(location);
+    if (distance > 0) return 1;
+    if (distance < 0) return -1;
+    return 0;
+  }
 }
 
 enum FuelStationType { pb95, pb98, diesel, lpg }

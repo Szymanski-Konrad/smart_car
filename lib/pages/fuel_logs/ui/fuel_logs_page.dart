@@ -60,7 +60,7 @@ class FuelLogsPage extends StatelessWidget {
         children: [
           FuelStatsCard(logs: state.logs),
           const SizedBox(height: 32.0),
-          ...state.logs.map((log) => FuelLogCard(fuelLog: log)),
+          ...state.logs.reversed.map((log) => FuelLogCard(fuelLog: log)),
         ],
       ),
     );

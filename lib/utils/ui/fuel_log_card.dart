@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+import 'package:smart_car/pages/create_fuel_log/ui/create_fuel_log_page.dart';
 import 'package:smart_car/utils/date_extension.dart';
 import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
 
@@ -38,13 +41,32 @@ class FuelLogCard extends StatelessWidget {
                 Icons.show_chart_outlined,
               ),
               _buildIconText(
-                fuelLog.distanceFormatted(),
+                fuelLog.odometerDiffFormat(),
                 Icons.directions_car,
               ),
               _buildIconText(
                 fuelLog.fuelWithCost(),
                 Icons.local_gas_station,
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      final argument = CreateFuelLogPageArgument(
+                        currentOdometer: fuelLog.odometer,
+                        lastFuelPrice: fuelLog.fuelPrice,
+                        fuelLog: fuelLog,
+                      );
+                      Navigation.instance.push(
+                        SharedRoutes.createFuelLog,
+                        arguments: argument,
+                      );
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
+                ],
+              )
             ],
           ),
         ),
