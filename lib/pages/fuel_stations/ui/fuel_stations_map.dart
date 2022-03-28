@@ -71,38 +71,47 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   Marker _buildMarker(GasStation station) {
     return Marker(
       width: 50,
-      height: 100,
+      height: 30,
       point: station.coordinates,
-      builder: (ctx) => Column(
+      builder: (ctx) => Stack(
+        clipBehavior: Clip.none,
         children: [
-          GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
-                context: context,
-                barrierColor: Colors.transparent,
-                isDismissible: true,
-                backgroundColor: Colors.transparent,
-                builder: (context) {
-                  return _buildBottomSheet(context, station);
-                },
-              );
-            },
-            child: SizedBox(
-              height: 30,
-              width: 50,
-              child: Card(
-                child: Center(
-                  child: Text(
-                    '${station.fuelPrice(widget.fuelType)?.toStringAsFixed(2) ?? '-.-'} zł',
-                  ),
-                ),
-              ),
-            ),
-          ),
           const Icon(
             Icons.local_gas_station,
             color: Colors.blue,
             size: 24,
+          ),
+          Positioned(
+            left: -15,
+            bottom: -20,
+            child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                showModalBottomSheet(
+                  context: context,
+                  barrierColor: Colors.transparent,
+                  isDismissible: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (context) {
+                    return _buildBottomSheet(context, station);
+                  },
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SizedBox(
+                  height: 30,
+                  width: 50,
+                  child: Card(
+                    child: Center(
+                      child: Text(
+                        '${station.fuelPrice(widget.fuelType)?.toStringAsFixed(2) ?? '-.-'} zł',
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

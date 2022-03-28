@@ -103,6 +103,7 @@ class CreateFuelLogPage extends StatelessWidget
             ),
             _buildSelectFuelRow(state.fuelType, cubit),
             _buildDateRow(context, state, cubit),
+            _buildSelectedStationRow(state.selectedGasStation),
             _buildSelectStationRow(state, cubit),
             const Padding(
               padding: EdgeInsets.only(top: 16.0),
@@ -113,6 +114,15 @@ class CreateFuelLogPage extends StatelessWidget
           ].cast<Widget>().dividedBy(const SizedBox(height: 12.0)),
         ),
       ),
+    );
+  }
+
+  Widget _buildSelectedStationRow(GasStation? gasStation) {
+    return Row(
+      children: [
+        const SizedBox(width: _labelWidth, child: Text('Wybrana stacja')),
+        if (gasStation != null) Expanded(child: Text(gasStation.stationName)),
+      ],
     );
   }
 

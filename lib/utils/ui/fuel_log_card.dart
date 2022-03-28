@@ -16,6 +16,7 @@ class FuelLogCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final station = fuelLog.stationName;
     return SizedBox(
       child: Card(
         shape: RoundedRectangleBorder(
@@ -48,6 +49,11 @@ class FuelLogCard extends StatelessWidget {
                 fuelLog.fuelWithCost(),
                 Icons.local_gas_station,
               ),
+              if (station != null)
+                _buildIconText(
+                  station,
+                  Icons.location_on,
+                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
