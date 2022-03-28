@@ -37,7 +37,7 @@ class OverpassApi {
       return Future.value([]);
     } catch (e) {
       Logger.logToFile(e);
-      return Future.error(e);
+      return Future.value([]);
     }
 
     var responseJson;

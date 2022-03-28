@@ -68,6 +68,7 @@ extension GasStationExtension on GasStation {
     return name == 'Stacja paliw' && _brand != null ? _brand : name;
   }
 
+  /// Calcuate distance from [location] to station, return result in km
   double distanceTo(LatLng location) {
     return LocationHelper.calculateDistanceLatLng(coordinates, location);
   }

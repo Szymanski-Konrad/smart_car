@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
@@ -46,9 +47,15 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       final stations = await OverpassApi.fetchGasStationsAroundCenter(
           QueryLocation.fromLatLng(location));
       if (!isClosed) {
+        stations.sortByLocation(location);
+        if (stations.isNotEmpty &&
+            stations.first.distanceTo(location) <=
+                Constants.autoAssignStationMaxDistanceKM) {
+          emit(state.copyWith(selectedGasStation: stations.first));
+        }
         emit(state.copyWith(
           isStationsLoading: false,
-          nearGasStations: stations..sortByLocation(location),
+          nearGasStations: stations,
         ));
       }
     }

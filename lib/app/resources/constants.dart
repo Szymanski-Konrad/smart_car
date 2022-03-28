@@ -13,6 +13,7 @@ abstract class Constants {
   static const idleSpeedLimit = 0;
   static const defaultLocalFile = 'work';
   static const largeScreenWidth = 400.0;
+  static const autoAssignStationMaxDistanceKM = 0.1;
 
   static const localFiles = [
     'work',
