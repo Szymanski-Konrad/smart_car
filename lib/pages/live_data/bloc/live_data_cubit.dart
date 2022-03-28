@@ -16,6 +16,7 @@ import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/trip_summary/trip_summary.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/battery_voltage_command.dart';
@@ -27,6 +28,7 @@ import 'package:smart_car/pages/live_data/model/maf_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/utils/bt_connection.dart';
 import 'package:smart_car/utils/list_extension.dart';
 import 'package:smart_car/utils/location_helper.dart';
@@ -34,6 +36,7 @@ import 'package:smart_car/utils/logger.dart';
 import 'package:smart_car/utils/obd_commands_extensions.dart';
 import 'package:smart_car/utils/trip_files.dart';
 import 'package:smart_car/utils/ui/countdown_text.dart';
+import 'package:uuid/uuid.dart';
 
 class LiveDataCubit extends Cubit<LiveDataState> {
   LiveDataCubit({
@@ -109,14 +112,21 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   void _onLocationChanged(LocationData currLocation) {
     final lastLocation = state.lastLocation;
+    if (state.firstLocation == null) {
+      emit(state.copyWith(
+        firstLocation: currLocation,
+        lastLocation: currLocation,
+      ));
+      return;
+    }
     if (lastLocation == null) {
       emit(state.copyWith(lastLocation: currLocation));
       return;
     }
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
-    final angle =
-        LocationHelper.calculateAngle(lastLocation, currLocation, distance: distance);
+    final angle = LocationHelper.calculateAngle(lastLocation, currLocation,
+        distance: distance);
     final totalDistance = state.tripRecord.gpsDistance + (distance / 1000);
     emit(state.copyWith(
       lastLocation: currLocation,
@@ -298,6 +308,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     ));
     BTConnection().close();
     saveCommands();
+    await generateTripSummary();
     await goBackWithDelay();
   }
 
@@ -311,6 +322,31 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       context: ToastProvider.context,
     );
     if (Navigation.instance.canPop()) Navigation.instance.pop();
+  }
+
+  Future<void> generateTripSummary() async {
+    print('Generating trip summary');
+    final tripSummary = TripSummary(
+      id: const Uuid().v1(),
+      distance: state.tripRecord.distance,
+      gpsDistance: state.tripRecord.gpsDistance,
+      avgSpeed: state.tripRecord.averageSpeed,
+      fuelUsed: state.tripRecord.usedFuel,
+      tripSeconds: state.tripRecord.tripSeconds,
+      idleTripSeconds: state.tripRecord.idleTripSeconds,
+      rapidAccelerations: state.tripRecord.rapidAccelerations,
+      rapidBreakings: state.tripRecord.rapidBreakings,
+      startFuelLvl: state.tripRecord.startFuelLvl,
+      endFuelLvl: state.tripRecord.currentFuelLvl,
+      fuelPrice: state.fuelPrice,
+      avgFuelConsumption: state.tripRecord.avgFuelConsumption,
+      savedFuel: state.tripRecord.savedFuel,
+      idleFuel: state.tripRecord.idleUsedFuel,
+      driveFuel: state.tripRecord.usedFuel,
+      startLocation: state.firstLocation?.toLatLng,
+      endLocation: state.lastLocation?.toLatLng,
+    );
+    await FirestoreHandler.saveTripSummary(tripSummary);
   }
 
   /// Save commands for future local testing
@@ -334,6 +370,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   /// Processing fetched data from OBD II
   void _onDataReceived(Uint8List data) {
+    if (isClosed) return;
     try {
       String dataString = String.fromCharCodes(data);
       if (dataString.trim().isEmpty) {
@@ -534,6 +571,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   @override
   Future<void> close() async {
     _everySecondTimer?.cancel();
+    await generateTripSummary();
     await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();

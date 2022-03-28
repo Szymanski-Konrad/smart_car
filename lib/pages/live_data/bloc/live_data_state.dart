@@ -37,6 +37,7 @@ class LiveDataState with _$LiveDataState {
   factory LiveDataState({
     // Live data
     required TripRecord tripRecord,
+    LocationData? firstLocation,
     LocationData? lastLocation,
     // @Default(TripStatus.idle) TripStatus tripStatus,
     @Default(false) bool isLocalMode,

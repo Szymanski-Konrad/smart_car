@@ -20,6 +20,7 @@ class _$LiveDataStateTearOff {
 
   _LiveDataState call(
       {required TripRecord tripRecord,
+      LocationData? firstLocation,
       LocationData? lastLocation,
       bool isLocalMode = false,
       double fuelPrice = 0,
@@ -49,6 +50,7 @@ class _$LiveDataStateTearOff {
       List<String> errors = const []}) {
     return _LiveDataState(
       tripRecord: tripRecord,
+      firstLocation: firstLocation,
       lastLocation: lastLocation,
       isLocalMode: isLocalMode,
       fuelPrice: fuelPrice,
@@ -87,6 +89,7 @@ const $LiveDataState = _$LiveDataStateTearOff();
 mixin _$LiveDataState {
 // Live data
   TripRecord get tripRecord => throw _privateConstructorUsedError;
+  LocationData? get firstLocation => throw _privateConstructorUsedError;
   LocationData? get lastLocation =>
       throw _privateConstructorUsedError; // @Default(TripStatus.idle) TripStatus tripStatus,
   bool get isLocalMode => throw _privateConstructorUsedError;
@@ -129,6 +132,7 @@ abstract class $LiveDataStateCopyWith<$Res> {
       _$LiveDataStateCopyWithImpl<$Res>;
   $Res call(
       {TripRecord tripRecord,
+      LocationData? firstLocation,
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
@@ -173,6 +177,7 @@ class _$LiveDataStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? tripRecord = freezed,
+    Object? firstLocation = freezed,
     Object? lastLocation = freezed,
     Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
@@ -206,6 +211,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.tripRecord
           : tripRecord // ignore: cast_nullable_to_non_nullable
               as TripRecord,
+      firstLocation: firstLocation == freezed
+          ? _value.firstLocation
+          : firstLocation // ignore: cast_nullable_to_non_nullable
+              as LocationData?,
       lastLocation: lastLocation == freezed
           ? _value.lastLocation
           : lastLocation // ignore: cast_nullable_to_non_nullable
@@ -341,6 +350,7 @@ abstract class _$LiveDataStateCopyWith<$Res>
   @override
   $Res call(
       {TripRecord tripRecord,
+      LocationData? firstLocation,
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
@@ -389,6 +399,7 @@ class __$LiveDataStateCopyWithImpl<$Res>
   @override
   $Res call({
     Object? tripRecord = freezed,
+    Object? firstLocation = freezed,
     Object? lastLocation = freezed,
     Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
@@ -422,6 +433,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.tripRecord
           : tripRecord // ignore: cast_nullable_to_non_nullable
               as TripRecord,
+      firstLocation: firstLocation == freezed
+          ? _value.firstLocation
+          : firstLocation // ignore: cast_nullable_to_non_nullable
+              as LocationData?,
       lastLocation: lastLocation == freezed
           ? _value.lastLocation
           : lastLocation // ignore: cast_nullable_to_non_nullable
@@ -539,6 +554,7 @@ class __$LiveDataStateCopyWithImpl<$Res>
 class _$_LiveDataState implements _LiveDataState {
   _$_LiveDataState(
       {required this.tripRecord,
+      this.firstLocation,
       this.lastLocation,
       this.isLocalMode = false,
       this.fuelPrice = 0,
@@ -569,6 +585,8 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override // Live data
   final TripRecord tripRecord;
+  @override
+  final LocationData? firstLocation;
   @override
   final LocationData? lastLocation;
   @JsonKey()
@@ -651,7 +669,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(tripRecord: $tripRecord, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, isTemperatureAvaliable: $isTemperatureAvaliable, isBarometrAvaliable: $isBarometrAvaliable, temperature: $temperature, errors: $errors)';
+    return 'LiveDataState(tripRecord: $tripRecord, firstLocation: $firstLocation, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccelerometer: $xAccelerometer, yAccelerometer: $yAccelerometer, zAccelerometer: $zAccelerometer, isTemperatureAvaliable: $isTemperatureAvaliable, isBarometrAvaliable: $isBarometrAvaliable, temperature: $temperature, errors: $errors)';
   }
 
   @override
@@ -661,6 +679,8 @@ class _$_LiveDataState implements _LiveDataState {
             other is _LiveDataState &&
             const DeepCollectionEquality()
                 .equals(other.tripRecord, tripRecord) &&
+            const DeepCollectionEquality()
+                .equals(other.firstLocation, firstLocation) &&
             const DeepCollectionEquality()
                 .equals(other.lastLocation, lastLocation) &&
             const DeepCollectionEquality()
@@ -715,6 +735,7 @@ class _$_LiveDataState implements _LiveDataState {
   int get hashCode => Object.hashAll([
         runtimeType,
         const DeepCollectionEquality().hash(tripRecord),
+        const DeepCollectionEquality().hash(firstLocation),
         const DeepCollectionEquality().hash(lastLocation),
         const DeepCollectionEquality().hash(isLocalMode),
         const DeepCollectionEquality().hash(fuelPrice),
@@ -753,6 +774,7 @@ class _$_LiveDataState implements _LiveDataState {
 abstract class _LiveDataState implements LiveDataState {
   factory _LiveDataState(
       {required TripRecord tripRecord,
+      LocationData? firstLocation,
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
@@ -783,6 +805,8 @@ abstract class _LiveDataState implements LiveDataState {
 
   @override // Live data
   TripRecord get tripRecord;
+  @override
+  LocationData? get firstLocation;
   @override
   LocationData? get lastLocation;
   @override // @Default(TripStatus.idle) TripStatus tripStatus,

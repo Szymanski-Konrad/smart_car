@@ -90,3 +90,7 @@ abstract class LocationHelper {
         'coordinates': [latLng.longitude, latLng.latitude]
       };
 }
+
+extension LocationDataExtension on LocationData {
+  LatLng get toLatLng => LatLng(latitude ?? 0, longitude ?? 0);
+}

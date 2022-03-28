@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
+import 'package:smart_car/models/trip_summary/trip_summary.dart';
 
 abstract class FirestoreHandler {
   static const kStationsCollection = 'stations';
   static const kFuelLogCollection = 'fuelLogs';
+  static const kTripSummaryCollection = 'tripSummary';
   static const kChunkSize = 10;
 
   /// Save info about [station]
@@ -68,5 +70,13 @@ abstract class FirestoreHandler {
     final query =
         await FirebaseFirestore.instance.collection(kFuelLogCollection).get();
     return query.docs.map((e) => FuelLog.fromJson(e.data())).toList();
+  }
+
+  /// Save [tripSummary] on server
+  static Future<void> saveTripSummary(TripSummary tripSummary) async {
+    await FirebaseFirestore.instance
+        .collection(kTripSummaryCollection)
+        .doc(tripSummary.id)
+        .set(tripSummary.toJson());
   }
 }
