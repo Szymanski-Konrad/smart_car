@@ -78,8 +78,7 @@ extension CreateFuelLogStateExtension on CreateFuelLogState {
   String get fuelCons => '${fuelConsumption.toStringAsFixed(2)}  l/100km';
 
   String get dateDesc => date.toDateFormat;
-  String get timeDesc =>
-      '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  String get timeDesc => date.toTimeFormat;
 
   bool get isDistanceMode => odometerInputType == OdometerInputType.diff;
 

@@ -121,6 +121,13 @@ class _AppState extends State<App> {
                     },
                   ),
                 ),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text('Statystyki jazd'),
+                  onPressed: () =>
+                      Navigation.instance.push(SharedRoutes.tripSummary),
+                ),
+              ),
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
               const SectionTitle(title: Strings.fuelSection),

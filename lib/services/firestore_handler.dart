@@ -79,4 +79,12 @@ abstract class FirestoreHandler {
         .doc(tripSummary.id)
         .set(tripSummary.toJson());
   }
+
+  /// Fetch trip summaries for account
+  static Future<List<TripSummary>> fetchTripSummaries() async {
+    final query = await FirebaseFirestore.instance
+        .collection(kTripSummaryCollection)
+        .get();
+    return query.docs.map((e) => TripSummary.fromJson(e.data())).toList();
+  }
 }

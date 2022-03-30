@@ -11,6 +11,7 @@ import 'package:smart_car/pages/fuel_stations/ui/fuel_stations_page.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/ui/settings_page.dart';
 import 'package:smart_car/pages/station_details/ui/station_details_page.dart';
+import 'package:smart_car/pages/trip_summary/ui/trip_summary_page.dart';
 
 abstract class AppRouter {
   const AppRouter._();
@@ -45,6 +46,8 @@ extension on RouteSettings {
         return const FuelStationsPage();
       case SharedRoutes.stationDetails:
         return const StationDetailsPage();
+      case SharedRoutes.tripSummary:
+        return const TripSummaryPage();
       default:
         return const App();
     }

@@ -26,6 +26,7 @@ class TripRecord with _$TripRecord {
     @Default(0.0) double gpsDistance,
 
     // Time
+    required DateTime startTripDate,
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
     @Default(0) int currentDriveInterval,

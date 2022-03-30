@@ -8,4 +8,7 @@ extension DateExtension on DateTime {
 
   String get toDateFormat => DateFormats.dateFormat.format(toMidnight);
   TimeOfDay get time => TimeOfDay(hour: hour, minute: minute);
+
+  String get toTimeFormat =>
+      '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 }

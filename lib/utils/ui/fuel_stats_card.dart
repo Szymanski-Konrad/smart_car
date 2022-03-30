@@ -47,7 +47,7 @@ class FuelStatsCard extends StatelessWidget {
                         ),
                         _buildIconText(
                           logs.totalDistanceFormatted(),
-                          Icons.route,
+                          Icons.add_road_outlined,
                         ),
                       ],
                     ),

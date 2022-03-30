@@ -86,6 +86,11 @@ abstract class LocationHelper {
     return serviceEnabled;
   }
 
+  static Map<String, dynamic>? tryCoordsToJson(LatLng? latLng) {
+    if (latLng == null) return null;
+    return coordsToJson(latLng);
+  }
+
   static Map<String, dynamic> coordsToJson(LatLng latLng) => {
         'coordinates': [latLng.longitude, latLng.latitude]
       };

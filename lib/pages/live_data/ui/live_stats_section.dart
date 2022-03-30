@@ -22,6 +22,8 @@ class LiveStatsSection extends StatelessWidget {
         runSpacing: 8.0,
         spacing: 8.0,
         children: [
+          Text(
+              'Time since last command: ${DateTime.now().difference(cubit.lastReciveCommandTime).inMilliseconds} ms'),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

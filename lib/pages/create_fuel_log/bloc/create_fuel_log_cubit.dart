@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
@@ -152,6 +153,8 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
         station: station.updatePrice(state.fuelType, state.fuelPrice),
       );
     }
+    Storage.updateFuelPrice(state.fuelPrice);
+    GlobalBlocs.settings.loadSettings();
     emit(state.copyWith(isSaving: false));
     Navigation.instance.pop();
   }

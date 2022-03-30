@@ -86,7 +86,8 @@ class LiveDataState with _$LiveDataState {
     required double fuelPrice,
   }) {
     return LiveDataState(
-      tripRecord: TripRecord(fuelPrice: fuelPrice),
+      tripRecord:
+          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
       pidsChecker: PidsChecker(),
       supportedPids: pids,
       isConnecting: false,
@@ -100,7 +101,8 @@ class LiveDataState with _$LiveDataState {
 extension LiveDataStateExtension on LiveDataState {
   LiveDataState clear() {
     return LiveDataState(
-      tripRecord: TripRecord(fuelPrice: fuelPrice),
+      tripRecord:
+          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
@@ -111,7 +113,8 @@ extension LiveDataStateExtension on LiveDataState {
 
   LiveDataState localMode() {
     return LiveDataState(
-      tripRecord: TripRecord(fuelPrice: fuelPrice),
+      tripRecord:
+          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,

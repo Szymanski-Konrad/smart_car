@@ -29,6 +29,7 @@ class _$TripRecordTearOff {
       double fuelPrice = 0,
       double gpsSpeed = -1.0,
       double gpsDistance = 0.0,
+      required DateTime startTripDate,
       int tripSeconds = 0,
       int idleTripSeconds = 0,
       int currentDriveInterval = 0,
@@ -53,6 +54,7 @@ class _$TripRecordTearOff {
       fuelPrice: fuelPrice,
       gpsSpeed: gpsSpeed,
       gpsDistance: gpsDistance,
+      startTripDate: startTripDate,
       tripSeconds: tripSeconds,
       idleTripSeconds: idleTripSeconds,
       currentDriveInterval: currentDriveInterval,
@@ -86,6 +88,7 @@ mixin _$TripRecord {
   double get fuelPrice => throw _privateConstructorUsedError; // Gps
   double get gpsSpeed => throw _privateConstructorUsedError;
   double get gpsDistance => throw _privateConstructorUsedError; // Time
+  DateTime get startTripDate => throw _privateConstructorUsedError;
   int get tripSeconds => throw _privateConstructorUsedError;
   int get idleTripSeconds => throw _privateConstructorUsedError;
   int get currentDriveInterval => throw _privateConstructorUsedError;
@@ -123,6 +126,7 @@ abstract class $TripRecordCopyWith<$Res> {
       double fuelPrice,
       double gpsSpeed,
       double gpsDistance,
+      DateTime startTripDate,
       int tripSeconds,
       int idleTripSeconds,
       int currentDriveInterval,
@@ -158,6 +162,7 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? fuelPrice = freezed,
     Object? gpsSpeed = freezed,
     Object? gpsDistance = freezed,
+    Object? startTripDate = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
     Object? currentDriveInterval = freezed,
@@ -213,6 +218,10 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.gpsDistance
           : gpsDistance // ignore: cast_nullable_to_non_nullable
               as double,
+      startTripDate: startTripDate == freezed
+          ? _value.startTripDate
+          : startTripDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       tripSeconds: tripSeconds == freezed
           ? _value.tripSeconds
           : tripSeconds // ignore: cast_nullable_to_non_nullable
@@ -286,6 +295,7 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       double fuelPrice,
       double gpsSpeed,
       double gpsDistance,
+      DateTime startTripDate,
       int tripSeconds,
       int idleTripSeconds,
       int currentDriveInterval,
@@ -323,6 +333,7 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? fuelPrice = freezed,
     Object? gpsSpeed = freezed,
     Object? gpsDistance = freezed,
+    Object? startTripDate = freezed,
     Object? tripSeconds = freezed,
     Object? idleTripSeconds = freezed,
     Object? currentDriveInterval = freezed,
@@ -378,6 +389,10 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.gpsDistance
           : gpsDistance // ignore: cast_nullable_to_non_nullable
               as double,
+      startTripDate: startTripDate == freezed
+          ? _value.startTripDate
+          : startTripDate // ignore: cast_nullable_to_non_nullable
+              as DateTime,
       tripSeconds: tripSeconds == freezed
           ? _value.tripSeconds
           : tripSeconds // ignore: cast_nullable_to_non_nullable
@@ -448,6 +463,7 @@ class _$_TripRecord implements _TripRecord {
       this.fuelPrice = 0,
       this.gpsSpeed = -1.0,
       this.gpsDistance = 0.0,
+      required this.startTripDate,
       this.tripSeconds = 0,
       this.idleTripSeconds = 0,
       this.currentDriveInterval = 0,
@@ -492,8 +508,10 @@ class _$_TripRecord implements _TripRecord {
   @JsonKey()
   @override
   final double gpsDistance;
-  @JsonKey()
   @override // Time
+  final DateTime startTripDate;
+  @JsonKey()
+  @override
   final int tripSeconds;
   @JsonKey()
   @override
@@ -534,7 +552,7 @@ class _$_TripRecord implements _TripRecord {
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, instFuelConsumption: $instFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, tankSize: $tankSize, fuelPrice: $fuelPrice, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, updateTime: $updateTime, distance: $distance, range: $range, currentSpeed: $currentSpeed, tripStatus: $tripStatus, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, instFuelConsumption: $instFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, tankSize: $tankSize, fuelPrice: $fuelPrice, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, startTripDate: $startTripDate, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, updateTime: $updateTime, distance: $distance, range: $range, currentSpeed: $currentSpeed, tripStatus: $tripStatus, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime)';
   }
 
   @override
@@ -557,6 +575,8 @@ class _$_TripRecord implements _TripRecord {
             const DeepCollectionEquality().equals(other.gpsSpeed, gpsSpeed) &&
             const DeepCollectionEquality()
                 .equals(other.gpsDistance, gpsDistance) &&
+            const DeepCollectionEquality()
+                .equals(other.startTripDate, startTripDate) &&
             const DeepCollectionEquality()
                 .equals(other.tripSeconds, tripSeconds) &&
             const DeepCollectionEquality()
@@ -596,6 +616,7 @@ class _$_TripRecord implements _TripRecord {
         const DeepCollectionEquality().hash(fuelPrice),
         const DeepCollectionEquality().hash(gpsSpeed),
         const DeepCollectionEquality().hash(gpsDistance),
+        const DeepCollectionEquality().hash(startTripDate),
         const DeepCollectionEquality().hash(tripSeconds),
         const DeepCollectionEquality().hash(idleTripSeconds),
         const DeepCollectionEquality().hash(currentDriveInterval),
@@ -629,6 +650,7 @@ abstract class _TripRecord implements TripRecord {
       double fuelPrice,
       double gpsSpeed,
       double gpsDistance,
+      required DateTime startTripDate,
       int tripSeconds,
       int idleTripSeconds,
       int currentDriveInterval,
@@ -664,6 +686,8 @@ abstract class _TripRecord implements TripRecord {
   @override
   double get gpsDistance;
   @override // Time
+  DateTime get startTripDate;
+  @override
   int get tripSeconds;
   @override
   int get idleTripSeconds;

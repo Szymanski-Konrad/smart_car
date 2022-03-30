@@ -202,6 +202,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       const Duration(seconds: 1),
       (timer) {
         final now = DateTime.now();
+        print(
+            'No command received time: ${now.difference(lastReciveCommandTime).inSeconds}');
         if (now.difference(lastReciveCommandTime).inSeconds >=
                 Durations.maxNoDataReciveSeconds &&
             !state.isTripClosing) {
@@ -307,8 +309,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       isTripEnded: true,
     ));
     BTConnection().close();
-    saveCommands();
-    await generateTripSummary();
+    if (state.tripRecord.totalTripSeconds > 30) {
+      saveCommands();
+      await generateTripSummary();
+    }
     await goBackWithDelay();
   }
 
@@ -325,9 +329,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> generateTripSummary() async {
-    print('Generating trip summary');
     final tripSummary = TripSummary(
       id: const Uuid().v1(),
+      startTripTime: state.tripRecord.startTripDate,
+      endTripTime: DateTime.now(),
       distance: state.tripRecord.distance,
       gpsDistance: state.tripRecord.gpsDistance,
       avgSpeed: state.tripRecord.averageSpeed,
@@ -373,6 +378,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (isClosed) return;
     try {
       String dataString = String.fromCharCodes(data);
+      _logToFile('Data received: $data, dataString: $dataString');
       if (dataString.trim().isEmpty) {
         return;
       }
@@ -480,7 +486,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           _insertError(error);
         }
       } else {
-        _insertError('Not recognized data: $dataString');
+        _insertError('Not recognized data: $dataString, values: $data');
       }
     } catch (e) {
       _insertError(e.toString());
@@ -546,6 +552,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     return ReceivedData(data: data, command: splitted[1], splitted: splitted);
   }
 
+  void _logToFile(String log) {
+    Logger.logToFile(log);
+  }
+
   void _insertError(String error) {
     final errors = List<String>.from(state.errors);
     errors.add(error);
@@ -571,7 +581,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   @override
   Future<void> close() async {
     _everySecondTimer?.cancel();
-    await generateTripSummary();
     await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();
