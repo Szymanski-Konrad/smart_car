@@ -78,6 +78,14 @@ class TripCard extends StatelessWidget {
                             Icons.local_fire_department_sharp),
                         _buildIconText(
                             trip.fuelPriceFormat, Icons.attach_money),
+                        _buildIconText(
+                          trip.savedCarboFormat,
+                          Icons.co2,
+                        ),
+                        _buildIconText(
+                          trip.producedCarboFormat,
+                          Icons.co2,
+                        ),
                       ],
                     ),
                   ),
@@ -159,6 +167,10 @@ class TripSummaryCard extends StatelessWidget {
                         trips.totalDistanceFormatted(),
                         Icons.add_road,
                       ),
+                      _buildIconText(
+                          trips.totalCarboProducedFormatted(), Icons.co2),
+                      _buildIconText(
+                          trips.totalCarboSavedFormatted(), Icons.co2),
                     ],
                   ),
                 ),

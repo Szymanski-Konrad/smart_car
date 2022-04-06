@@ -5,6 +5,7 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/utils/date_extension.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
+import 'package:smart_car/utils/useful_functions.dart';
 
 part 'trip_record.freezed.dart';
 
@@ -204,7 +205,7 @@ extension TripRecordExtension on TripRecord {
       );
 
   OtherTileData get instFuelDetails => OtherTileData(
-        value: instFuelConsumption,
+        value: tripStatus == TripStatus.savingFuel ? 0.0 : instFuelConsumption,
         title: Strings.instantFuelConsumption,
         unit: currentSpeed > 0 ? 'l/100km' : 'l/h',
         digits: 1,
@@ -291,25 +292,21 @@ extension TripRecordExtension on TripRecord {
       );
 
   OtherTileData get producedCarboDetails => OtherTileData(
-        value: totalFuelUsed * 0.75 * 0.87 * Constants.co2GenerationRatio,
+        value: Functions.fuelToCarboKg(totalFuelUsed),
         digits: 2,
         title: Strings.burntCO2,
         unit: 'kg',
       );
 
   OtherTileData get savedCarboDetails => OtherTileData(
-        value: savedFuel * 0.75 * 0.87 * Constants.co2GenerationRatio,
+        value: Functions.fuelToCarboKg(savedFuel),
         digits: 2,
         title: Strings.savedCO2,
         unit: 'kg',
       );
 
   OtherTileData get carboPerKmDetails => OtherTileData(
-        value: (avgFuelConsumption / 100) *
-            0.75 *
-            0.87 *
-            Constants.co2GenerationRatio *
-            1000,
+        value: Functions.fuelToCarboGrams(avgFuelConsumption) / 100,
         digits: 0,
         title: Strings.averageCO2,
         unit: 'g/km',

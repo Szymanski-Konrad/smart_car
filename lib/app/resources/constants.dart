@@ -8,7 +8,7 @@ abstract class Constants {
   static const rapidBreaking = -2; // acceleration in m/s2
   static const rapidAcceleration = 1.5; // acceleration in m/s2
   static const minRapidSpeedTimeThreshold = 30; // s
-  static const co2GenerationRatio = 11 / 3;
+  static const co2GramsPerFuelLiter = 2392;
   static const minModuleVoltage = 13.3;
   static const idleSpeedLimit = 0;
   static const defaultLocalFile = 'work';

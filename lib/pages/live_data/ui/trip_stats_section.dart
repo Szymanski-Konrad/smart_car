@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/utils/ui/acc_info_tile.dart';
 import 'package:smart_car/utils/ui/info_tile.dart';
 
 class TripStatsSection extends StatelessWidget {
@@ -23,10 +24,13 @@ class TripStatsSection extends StatelessWidget {
         children: [
           if (state.isTemperatureAvaliable)
             OtherInfoTile(data: state.indoorTempData),
+          AccDataTile(values: state.xAccData, title: 'xAcc'),
+          AccDataTile(values: state.yAccData, title: 'yAcc'),
+          AccDataTile(values: state.zAccData, title: 'zAcc'),
+          AccDataTile(values: state.xGyroData, title: 'xGyro'),
+          AccDataTile(values: state.yGyroData, title: 'yGyro'),
+          AccDataTile(values: state.zGyroData, title: 'zGyro'),
           OtherInfoTile(data: state.gForceData),
-          OtherInfoTile(data: state.gForceDataX),
-          OtherInfoTile(data: state.gForceDataY),
-          OtherInfoTile(data: state.gForceDataZ),
           OtherInfoTile(data: state.locationHeightData),
           OtherInfoTile(data: state.directionData),
           OtherInfoTile(data: state.locationSlopeData),

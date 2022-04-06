@@ -69,11 +69,13 @@ class LiveDataState with _$LiveDataState {
     @Default(0) int totalResponseTime,
 
     // Sensors
-    @Default(0) double xAccelerometer,
-    @Default(0) double yAccelerometer,
-    @Default(0) double zAccelerometer,
+    @Default([]) List<double> xAccData,
+    @Default([]) List<double> yAccData,
+    @Default([]) List<double> zAccData,
+    @Default([]) List<double> xGyroData,
+    @Default([]) List<double> yGyroData,
+    @Default([]) List<double> zGyroData,
     @Default(false) bool isTemperatureAvaliable,
-    @Default(false) bool isBarometrAvaliable,
     @Default(0.0) double temperature,
 
     // Errors
@@ -179,7 +181,7 @@ extension LiveDataStateExtension on LiveDataState {
       );
 
   OtherTileData get locationSlopeData => OtherTileData(
-        digits: 2,
+        digits: 1,
         unit: '%',
         title: 'Nachylenie',
         value: locationSlope.abs(),
@@ -197,21 +199,21 @@ extension LiveDataStateExtension on LiveDataState {
         digits: 2,
         unit: 'g',
         title: Strings.gForce + ' X',
-        value: xAccelerometer.abs() / 9.8,
+        value: xAccData.last,
       );
 
   OtherTileData get gForceDataY => OtherTileData(
         digits: 2,
         unit: 'g',
         title: Strings.gForce + ' Y',
-        value: yAccelerometer.abs() / 9.8,
+        value: yAccData.last,
       );
 
   OtherTileData get gForceDataZ => OtherTileData(
         digits: 2,
         unit: 'g',
         title: Strings.gForce + ' Z',
-        value: zAccelerometer.abs() / 9.8,
+        value: zAccData.last,
       );
 
   OtherTileData get indoorTempData => OtherTileData(
@@ -232,10 +234,10 @@ extension LiveDataStateExtension on LiveDataState {
   String get getTemperature => temperature.toStringAsFixed(1);
 
   double get _accelerationSum =>
-      (pow(xAccelerometer, 2) + pow(yAccelerometer, 2) + pow(zAccelerometer, 2))
+      (pow(xAccData.last, 2) + pow(yAccData.last, 2) + pow(zAccData.last, 2))
           .toDouble();
 
-  double get gForce => sqrt(_accelerationSum) / 9.8;
+  double get gForce => 1 + sqrt(_accelerationSum) / 9.8;
 
   Color get gForceColor {
     if (gForce > 1.3) return Colors.red;

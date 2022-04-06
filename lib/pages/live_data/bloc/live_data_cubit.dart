@@ -62,6 +62,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   StreamSubscription<LocationData>? locationSub;
   StreamSubscription<SensorEvent>? _accSubscription;
+  StreamSubscription<SensorEvent>? _gyroSubsription;
   StreamSubscription? _tempSubscription;
   Timer? _everySecondTimer;
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
@@ -82,16 +83,41 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> _listenForSensors() async {
-    final stream = await SensorManager().sensorUpdates(
-      sensorId: Sensors.ACCELEROMETER,
+    final gyroStream = await SensorManager().sensorUpdates(
+      sensorId: Sensors.GYROSCOPE,
       interval: Sensors.SENSOR_DELAY_NORMAL,
     );
 
-    _accSubscription = stream.listen((event) {
+    final accStream = await SensorManager().sensorUpdates(
+      sensorId: Sensors.LINEAR_ACCELERATION,
+      interval: Sensors.SENSOR_DELAY_NORMAL,
+    );
+
+    _accSubscription = accStream.listen((event) {
+      final xData = List<double>.from(state.xAccData);
+      final yData = List<double>.from(state.yAccData);
+      final zData = List<double>.from(state.zAccData);
+      xData.addWithMax(event.data[0], 100);
+      yData.addWithMax(event.data[1], 100);
+      zData.addWithMax(event.data[2], 100);
       emit(state.copyWith(
-        xAccelerometer: event.data[0],
-        yAccelerometer: event.data[1],
-        zAccelerometer: event.data[2],
+        xAccData: xData,
+        yAccData: yData,
+        zAccData: zData,
+      ));
+    });
+
+    _gyroSubsription = gyroStream.listen((event) {
+      final xData = List<double>.from(state.xGyroData);
+      final yData = List<double>.from(state.yGyroData);
+      final zData = List<double>.from(state.zGyroData);
+      xData.addWithMax(event.data[0], 100);
+      yData.addWithMax(event.data[1], 100);
+      zData.addWithMax(event.data[2], 100);
+      emit(state.copyWith(
+        xGyroData: xData,
+        yGyroData: yData,
+        zGyroData: zData,
       ));
     });
 
@@ -383,10 +409,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
 
-      if ((dataString.contains('.') ||
-              dataString.contains('V') ||
-              dataString.contains('ATRV')) &&
-          !dataString.contains('ELM')) {
+      if (dataString.contains('.') && dataString.contains('V')) {
         _processBatteryVoltageCommand(dataString, data);
       }
 
@@ -585,6 +608,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     await BTConnection().close();
     await locationSub?.cancel();
     await _accSubscription?.cancel();
+    await _gyroSubsription?.cancel();
     await _tempSubscription?.cancel();
     super.close();
   }

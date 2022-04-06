@@ -50,7 +50,7 @@ abstract class LocationHelper {
     final previousAlt = previous.altitude ?? 0;
     final hightDiff = currentAlt - previousAlt;
     final c = sqrt(pow(_distance, 2) + pow(hightDiff, 2));
-    return asin(hightDiff / c);
+    return asin(hightDiff / c) * 100;
   }
 
   /// Check if GPS is already enabled and is turn on

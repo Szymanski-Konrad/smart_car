@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/utils/date_extension.dart';
 import 'package:smart_car/utils/location_helper.dart';
+import 'package:smart_car/utils/useful_functions.dart';
 
 part 'trip_summary.freezed.dart';
 part 'trip_summary.g.dart';
@@ -39,6 +40,12 @@ class TripSummary with _$TripSummary {
 
 extension TripSummaryExtension on TripSummary {
   int get driveTime => tripSeconds - idleTripSeconds;
+  double get producedCarbo => Functions.fuelToCarboKg(idleFuel + driveFuel);
+  double get savedCarbo => Functions.fuelToCarboKg(savedFuel);
+
+  String get producedCarboFormat =>
+      '${producedCarbo.toStringAsFixed(2)} kg (produced)';
+  String get savedCarboFormat => '${savedCarbo.toStringAsFixed(2)} kg (saved)';
   String get toStartDateTimeFormat =>
       '${startTripTime.toDateFormat} ${startTripTime.toTimeFormat}';
   String get toEndDateTimeFormat =>
@@ -70,9 +77,17 @@ extension TripsSummaryExtension on List<TripSummary> {
       fold(0, (previous, element) => previous + element.savedFuel);
   int get totalSeconds =>
       fold(0, (previous, element) => previous + element.tripSeconds);
+  double get totalCarboProduced =>
+      fold(0, (previous, element) => previous + element.producedCarbo);
+  double get totalCarboSaved =>
+      fold(0, (previous, element) => previous + element.savedCarbo);
 
   String totalDistanceFormatted() => '${totalDistance.toStringAsFixed(0)} km';
   String totalFuelFormatted() => '${totalFuel.toStringAsFixed(2)} l';
+  String totalCarboProducedFormatted() =>
+      '${totalCarboProduced.toStringAsFixed(2)} kg (produced)';
+  String totalCarboSavedFormatted() =>
+      '${totalCarboSaved.toStringAsFixed(2)} kg (saved)';
 
   // average
   double get avgDistance => totalDistance / length;
