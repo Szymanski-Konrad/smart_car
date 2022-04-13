@@ -42,7 +42,10 @@ class _$TripRecordTearOff {
       int rapidAccelerations = 0,
       int rapidBreakings = 0,
       int lastAccelerationTime = 0,
-      int lastBreakingTime = 0}) {
+      int lastBreakingTime = 0,
+      int leftTurns = 0,
+      int rightTurns = 0,
+      int highGforce = 0}) {
     return _TripRecord(
       startFuelLvl: startFuelLvl,
       currentFuelLvl: currentFuelLvl,
@@ -68,6 +71,9 @@ class _$TripRecordTearOff {
       rapidBreakings: rapidBreakings,
       lastAccelerationTime: lastAccelerationTime,
       lastBreakingTime: lastBreakingTime,
+      leftTurns: leftTurns,
+      rightTurns: rightTurns,
+      highGforce: highGforce,
     );
   }
 }
@@ -104,6 +110,9 @@ mixin _$TripRecord {
   int get rapidBreakings => throw _privateConstructorUsedError;
   int get lastAccelerationTime => throw _privateConstructorUsedError;
   int get lastBreakingTime => throw _privateConstructorUsedError;
+  int get leftTurns => throw _privateConstructorUsedError;
+  int get rightTurns => throw _privateConstructorUsedError;
+  int get highGforce => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TripRecordCopyWith<TripRecord> get copyWith =>
@@ -139,7 +148,10 @@ abstract class $TripRecordCopyWith<$Res> {
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
-      int lastBreakingTime});
+      int lastBreakingTime,
+      int leftTurns,
+      int rightTurns,
+      int highGforce});
 }
 
 /// @nodoc
@@ -176,6 +188,9 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
     Object? lastBreakingTime = freezed,
+    Object? leftTurns = freezed,
+    Object? rightTurns = freezed,
+    Object? highGforce = freezed,
   }) {
     return _then(_value.copyWith(
       startFuelLvl: startFuelLvl == freezed
@@ -274,6 +289,18 @@ class _$TripRecordCopyWithImpl<$Res> implements $TripRecordCopyWith<$Res> {
           ? _value.lastBreakingTime
           : lastBreakingTime // ignore: cast_nullable_to_non_nullable
               as int,
+      leftTurns: leftTurns == freezed
+          ? _value.leftTurns
+          : leftTurns // ignore: cast_nullable_to_non_nullable
+              as int,
+      rightTurns: rightTurns == freezed
+          ? _value.rightTurns
+          : rightTurns // ignore: cast_nullable_to_non_nullable
+              as int,
+      highGforce: highGforce == freezed
+          ? _value.highGforce
+          : highGforce // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -308,7 +335,10 @@ abstract class _$TripRecordCopyWith<$Res> implements $TripRecordCopyWith<$Res> {
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
-      int lastBreakingTime});
+      int lastBreakingTime,
+      int leftTurns,
+      int rightTurns,
+      int highGforce});
 }
 
 /// @nodoc
@@ -347,6 +377,9 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
     Object? rapidBreakings = freezed,
     Object? lastAccelerationTime = freezed,
     Object? lastBreakingTime = freezed,
+    Object? leftTurns = freezed,
+    Object? rightTurns = freezed,
+    Object? highGforce = freezed,
   }) {
     return _then(_TripRecord(
       startFuelLvl: startFuelLvl == freezed
@@ -445,6 +478,18 @@ class __$TripRecordCopyWithImpl<$Res> extends _$TripRecordCopyWithImpl<$Res>
           ? _value.lastBreakingTime
           : lastBreakingTime // ignore: cast_nullable_to_non_nullable
               as int,
+      leftTurns: leftTurns == freezed
+          ? _value.leftTurns
+          : leftTurns // ignore: cast_nullable_to_non_nullable
+              as int,
+      rightTurns: rightTurns == freezed
+          ? _value.rightTurns
+          : rightTurns // ignore: cast_nullable_to_non_nullable
+              as int,
+      highGforce: highGforce == freezed
+          ? _value.highGforce
+          : highGforce // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -476,7 +521,10 @@ class _$_TripRecord implements _TripRecord {
       this.rapidAccelerations = 0,
       this.rapidBreakings = 0,
       this.lastAccelerationTime = 0,
-      this.lastBreakingTime = 0});
+      this.lastBreakingTime = 0,
+      this.leftTurns = 0,
+      this.rightTurns = 0,
+      this.highGforce = 0});
 
   @JsonKey()
   @override // Fuel info
@@ -549,10 +597,19 @@ class _$_TripRecord implements _TripRecord {
   @JsonKey()
   @override
   final int lastBreakingTime;
+  @JsonKey()
+  @override
+  final int leftTurns;
+  @JsonKey()
+  @override
+  final int rightTurns;
+  @JsonKey()
+  @override
+  final int highGforce;
 
   @override
   String toString() {
-    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, instFuelConsumption: $instFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, tankSize: $tankSize, fuelPrice: $fuelPrice, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, startTripDate: $startTripDate, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, updateTime: $updateTime, distance: $distance, range: $range, currentSpeed: $currentSpeed, tripStatus: $tripStatus, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime)';
+    return 'TripRecord(startFuelLvl: $startFuelLvl, currentFuelLvl: $currentFuelLvl, instFuelConsumption: $instFuelConsumption, usedFuel: $usedFuel, idleUsedFuel: $idleUsedFuel, savedFuel: $savedFuel, tankSize: $tankSize, fuelPrice: $fuelPrice, gpsSpeed: $gpsSpeed, gpsDistance: $gpsDistance, startTripDate: $startTripDate, tripSeconds: $tripSeconds, idleTripSeconds: $idleTripSeconds, currentDriveInterval: $currentDriveInterval, currentDriveIntervalFuel: $currentDriveIntervalFuel, updateTime: $updateTime, distance: $distance, range: $range, currentSpeed: $currentSpeed, tripStatus: $tripStatus, rapidAccelerations: $rapidAccelerations, rapidBreakings: $rapidBreakings, lastAccelerationTime: $lastAccelerationTime, lastBreakingTime: $lastBreakingTime, leftTurns: $leftTurns, rightTurns: $rightTurns, highGforce: $highGforce)';
   }
 
   @override
@@ -600,7 +657,12 @@ class _$_TripRecord implements _TripRecord {
             const DeepCollectionEquality()
                 .equals(other.lastAccelerationTime, lastAccelerationTime) &&
             const DeepCollectionEquality()
-                .equals(other.lastBreakingTime, lastBreakingTime));
+                .equals(other.lastBreakingTime, lastBreakingTime) &&
+            const DeepCollectionEquality().equals(other.leftTurns, leftTurns) &&
+            const DeepCollectionEquality()
+                .equals(other.rightTurns, rightTurns) &&
+            const DeepCollectionEquality()
+                .equals(other.highGforce, highGforce));
   }
 
   @override
@@ -629,7 +691,10 @@ class _$_TripRecord implements _TripRecord {
         const DeepCollectionEquality().hash(rapidAccelerations),
         const DeepCollectionEquality().hash(rapidBreakings),
         const DeepCollectionEquality().hash(lastAccelerationTime),
-        const DeepCollectionEquality().hash(lastBreakingTime)
+        const DeepCollectionEquality().hash(lastBreakingTime),
+        const DeepCollectionEquality().hash(leftTurns),
+        const DeepCollectionEquality().hash(rightTurns),
+        const DeepCollectionEquality().hash(highGforce)
       ]);
 
   @JsonKey(ignore: true)
@@ -663,7 +728,10 @@ abstract class _TripRecord implements TripRecord {
       int rapidAccelerations,
       int rapidBreakings,
       int lastAccelerationTime,
-      int lastBreakingTime}) = _$_TripRecord;
+      int lastBreakingTime,
+      int leftTurns,
+      int rightTurns,
+      int highGforce}) = _$_TripRecord;
 
   @override // Fuel info
   double get startFuelLvl;
@@ -713,6 +781,12 @@ abstract class _TripRecord implements TripRecord {
   int get lastAccelerationTime;
   @override
   int get lastBreakingTime;
+  @override
+  int get leftTurns;
+  @override
+  int get rightTurns;
+  @override
+  int get highGforce;
   @override
   @JsonKey(ignore: true)
   _$TripRecordCopyWith<_TripRecord> get copyWith =>

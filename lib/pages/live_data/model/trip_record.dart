@@ -45,6 +45,9 @@ class TripRecord with _$TripRecord {
     @Default(0) int rapidBreakings,
     @Default(0) int lastAccelerationTime,
     @Default(0) int lastBreakingTime,
+    @Default(0) int leftTurns,
+    @Default(0) int rightTurns,
+    @Default(0) int highGforce,
   }) = _TripRecord;
 }
 
@@ -56,6 +59,9 @@ extension TripRecordExtension on TripRecord {
     if (distance == 0) return 100 * totalFuelUsed;
     return 100 * totalFuelUsed / distance;
   }
+
+  double get drivingHours => totalTripSeconds / 3600;
+  double get avgFuelPerH => totalFuelUsed / drivingHours;
 
   double get fuelCosts => totalFuelUsed * fuelPrice;
   double get averageSpeed => distance / (totalTripSeconds / 3600);
@@ -116,6 +122,15 @@ extension TripRecordExtension on TripRecord {
     }
   }
 
+  TripRecord updateHighGForce() {
+    return copyWith(highGforce: highGforce + 1);
+  }
+
+  TripRecord updateTurning(bool isLeft) {
+    if (isLeft) return copyWith(leftTurns: leftTurns + 1);
+    return copyWith(rightTurns: rightTurns + 1);
+  }
+
   TripRecord updateRapidAcceleration({required double acceleration}) {
     final secondsSinceEpoch = DateTime.now().secondsSinceEpoch;
     final seconds = secondsSinceEpoch - lastAccelerationTime;
@@ -151,6 +166,7 @@ extension TripRecordExtension on TripRecord {
 
   List<OtherTileData> get otherInfoSection => [
         avgFuelDetails,
+        avgFuelPerHDetails,
         instFuelDetails,
         fuelCostsDetails,
         carboPerKmDetails,
@@ -164,6 +180,9 @@ extension TripRecordExtension on TripRecord {
         gpsSpeedDetails,
         rapidAccelerationsDetails,
         rapidBrakingDetails,
+        highGForceDetails,
+        leftTurnsDetails,
+        rightTurnsDetails,
       ];
 
   OtherTileData get fuelCostsDetails => OtherTileData(
@@ -215,6 +234,13 @@ extension TripRecordExtension on TripRecord {
         value: avgFuelConsumption,
         title: Strings.averageFuelConsumption,
         unit: distance > 0 ? 'l/100km' : 'l/h',
+        digits: 1,
+      );
+
+  OtherTileData get avgFuelPerHDetails => OtherTileData(
+        value: avgFuelPerH,
+        title: Strings.averageFuelConsumption,
+        unit: 'l/h',
         digits: 1,
       );
 
@@ -288,6 +314,27 @@ extension TripRecordExtension on TripRecord {
         value: rapidBreakings,
         digits: 0,
         title: Strings.rapidBraking,
+        unit: '',
+      );
+
+  OtherTileData get leftTurnsDetails => OtherTileData(
+        value: leftTurns,
+        digits: 0,
+        title: Strings.leftTurns,
+        unit: '',
+      );
+
+  OtherTileData get rightTurnsDetails => OtherTileData(
+        value: rightTurns,
+        digits: 0,
+        title: Strings.rightTurns,
+        unit: '',
+      );
+
+  OtherTileData get highGForceDetails => OtherTileData(
+        value: highGforce,
+        digits: 0,
+        title: Strings.gForce,
         unit: '',
       );
 

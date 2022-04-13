@@ -69,14 +69,16 @@ class LiveDataState with _$LiveDataState {
     @Default(0) int totalResponseTime,
 
     // Sensors
-    @Default([]) List<double> xAccData,
-    @Default([]) List<double> yAccData,
-    @Default([]) List<double> zAccData,
-    @Default([]) List<double> xGyroData,
-    @Default([]) List<double> yGyroData,
-    @Default([]) List<double> zGyroData,
+    @Default([0]) List<double> xAccData,
+    @Default([0]) List<double> yAccData,
+    @Default([0]) List<double> zAccData,
+    @Default([0]) List<double> xGyroData,
+    @Default([0]) List<double> yGyroData,
+    @Default([0]) List<double> zGyroData,
     @Default(false) bool isTemperatureAvaliable,
     @Default(0.0) double temperature,
+    @Default(false) bool isTurning,
+    @Default(false) bool isHighGforce,
 
     // Errors
     @Default([]) List<String> errors,
@@ -86,10 +88,14 @@ class LiveDataState with _$LiveDataState {
     List<String> pids = const [],
     String? localFile,
     required double fuelPrice,
+    required double tankSize,
   }) {
     return LiveDataState(
-      tripRecord:
-          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
+      tripRecord: TripRecord(
+        fuelPrice: fuelPrice,
+        tankSize: tankSize,
+        startTripDate: DateTime.now(),
+      ),
       pidsChecker: PidsChecker(),
       supportedPids: pids,
       isConnecting: false,

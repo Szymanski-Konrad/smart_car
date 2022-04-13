@@ -79,7 +79,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void updateTankSize(String input) {
-    final value = int.tryParse(input);
+    final value = double.tryParse(input);
     if (value != null) {
       emit(state.copyWith(settings: state.settings.copyWith(tankSize: value)));
       startTimer();

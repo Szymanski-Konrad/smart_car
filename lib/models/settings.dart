@@ -16,8 +16,8 @@ class Settings with _$Settings {
   factory Settings({
     @Default(0) int engineCapacity,
     @Default(0) int horsepower,
-    @Default(0) int tankSize,
-    @Default(0.0) double fuelPrice,
+    @Default(0.0) double tankSize,
+    @Default(4.5) double fuelPrice,
     @Default(FuelType.gasoline) FuelType fuelType,
     @Default(Constants.defaultLocalFile) String selectedJson,
     String? deviceAddress,

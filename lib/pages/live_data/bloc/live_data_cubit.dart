@@ -43,9 +43,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     required this.address,
     String? localFile,
     required double fuelPrice,
+    required double tankSize,
   }) : super(LiveDataState.init(
           localFile: localFile,
           fuelPrice: fuelPrice,
+          tankSize: tankSize,
         )) {
     init();
   }
@@ -82,6 +84,45 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isConnnectingError: true));
   }
 
+  /// High-pass filter
+  double filterValue(double previous, double current) {
+    const alpha = 0.8;
+
+    final gravity = alpha * previous + (1 - alpha) * current;
+    return current - gravity;
+  }
+
+  void checkGforce() {
+    if (!state.isHighGforce) {
+      if (state.gForce > 1.3) {
+        emit(
+          state.copyWith(
+            isHighGforce: true,
+            tripRecord: state.tripRecord.updateHighGForce(),
+          ),
+        );
+      }
+    } else if (state.gForce < 1.3) {
+      emit(state.copyWith(isHighGforce: false));
+    }
+  }
+
+  void checkTurning() {
+    final rotation = state.yGyroData.last;
+    if (!state.isTurning) {
+      if (rotation.abs() > 0.25) {
+        emit(
+          state.copyWith(
+            isTurning: true,
+            tripRecord: state.tripRecord.updateTurning(rotation > 0),
+          ),
+        );
+      }
+    } else if (rotation.abs() < 0.25) {
+      emit(state.copyWith(isTurning: false));
+    }
+  }
+
   Future<void> _listenForSensors() async {
     final gyroStream = await SensorManager().sensorUpdates(
       sensorId: Sensors.GYROSCOPE,
@@ -89,22 +130,23 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
 
     final accStream = await SensorManager().sensorUpdates(
-      sensorId: Sensors.LINEAR_ACCELERATION,
-      interval: Sensors.SENSOR_DELAY_NORMAL,
+      sensorId: Sensors.ACCELEROMETER,
+      interval: Sensors.SENSOR_DELAY_UI,
     );
 
     _accSubscription = accStream.listen((event) {
       final xData = List<double>.from(state.xAccData);
       final yData = List<double>.from(state.yAccData);
       final zData = List<double>.from(state.zAccData);
-      xData.addWithMax(event.data[0], 100);
-      yData.addWithMax(event.data[1], 100);
-      zData.addWithMax(event.data[2], 100);
+      xData.addWithMax(filterValue(xData.last, event.data[0]), 50);
+      yData.addWithMax(filterValue(yData.last, event.data[1]), 50);
+      zData.addWithMax(filterValue(zData.last, event.data[2] - 9.81), 50);
       emit(state.copyWith(
         xAccData: xData,
         yAccData: yData,
         zAccData: zData,
       ));
+      checkGforce();
     });
 
     _gyroSubsription = gyroStream.listen((event) {
@@ -119,6 +161,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         yGyroData: yData,
         zGyroData: zData,
       ));
+      checkTurning();
     });
 
     final isTemperatureAvailable = await EnvironmentSensors()
@@ -130,10 +173,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
 
     emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
-
-    Location.instance.changeSettings(
-      accuracy: LocationAccuracy.high,
-    );
+    Location.instance.changeSettings(accuracy: LocationAccuracy.powerSave);
   }
 
   void _onLocationChanged(LocationData currLocation) {
@@ -207,6 +247,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       pids: state.supportedPids,
       localFile: state.localData,
       fuelPrice: state.fuelPrice,
+      tankSize: state.tripRecord.tankSize,
     ));
     await _sendInitializeCommands();
     emit(state.copyWith(isRunning: true));
@@ -228,8 +269,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       const Duration(seconds: 1),
       (timer) {
         final now = DateTime.now();
-        print(
-            'No command received time: ${now.difference(lastReciveCommandTime).inSeconds}');
         if (now.difference(lastReciveCommandTime).inSeconds >=
                 Durations.maxNoDataReciveSeconds &&
             !state.isTripClosing) {
@@ -376,6 +415,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       driveFuel: state.tripRecord.usedFuel,
       startLocation: state.firstLocation?.toLatLng,
       endLocation: state.lastLocation?.toLatLng,
+      hightGforce: state.tripRecord.highGforce,
+      leftTurns: state.tripRecord.leftTurns,
+      rightTurns: state.tripRecord.rightTurns,
+      tankSize: state.tripRecord.tankSize,
     );
     await FirestoreHandler.saveTripSummary(tripSummary);
   }
@@ -404,7 +447,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (isClosed) return;
     try {
       String dataString = String.fromCharCodes(data);
-      _logToFile('Data received: $data, dataString: $dataString');
       if (dataString.trim().isEmpty) {
         return;
       }
@@ -573,10 +615,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         splitted.skip(2).map((hex) => int.parse(hex, radix: 16)).toList();
 
     return ReceivedData(data: data, command: splitted[1], splitted: splitted);
-  }
-
-  void _logToFile(String log) {
-    Logger.logToFile(log);
   }
 
   void _insertError(String error) {

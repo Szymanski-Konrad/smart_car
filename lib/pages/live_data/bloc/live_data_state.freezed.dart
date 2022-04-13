@@ -41,14 +41,16 @@ class _$LiveDataStateTearOff {
       FuelSystemStatus fuelSystemStatus = FuelSystemStatus.motorOff,
       int averageResponseTime = 0,
       int totalResponseTime = 0,
-      List<double> xAccData = const [],
-      List<double> yAccData = const [],
-      List<double> zAccData = const [],
-      List<double> xGyroData = const [],
-      List<double> yGyroData = const [],
-      List<double> zGyroData = const [],
+      List<double> xAccData = const [0],
+      List<double> yAccData = const [0],
+      List<double> zAccData = const [0],
+      List<double> xGyroData = const [0],
+      List<double> yGyroData = const [0],
+      List<double> zGyroData = const [0],
       bool isTemperatureAvaliable = false,
       double temperature = 0.0,
+      bool isTurning = false,
+      bool isHighGforce = false,
       List<String> errors = const []}) {
     return _LiveDataState(
       tripRecord: tripRecord,
@@ -81,6 +83,8 @@ class _$LiveDataStateTearOff {
       zGyroData: zGyroData,
       isTemperatureAvaliable: isTemperatureAvaliable,
       temperature: temperature,
+      isTurning: isTurning,
+      isHighGforce: isHighGforce,
       errors: errors,
     );
   }
@@ -123,7 +127,9 @@ mixin _$LiveDataState {
   List<double> get yGyroData => throw _privateConstructorUsedError;
   List<double> get zGyroData => throw _privateConstructorUsedError;
   bool get isTemperatureAvaliable => throw _privateConstructorUsedError;
-  double get temperature => throw _privateConstructorUsedError; // Errors
+  double get temperature => throw _privateConstructorUsedError;
+  bool get isTurning => throw _privateConstructorUsedError;
+  bool get isHighGforce => throw _privateConstructorUsedError; // Errors
   List<String> get errors => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -167,6 +173,8 @@ abstract class $LiveDataStateCopyWith<$Res> {
       List<double> zGyroData,
       bool isTemperatureAvaliable,
       double temperature,
+      bool isTurning,
+      bool isHighGforce,
       List<String> errors});
 
   $TripRecordCopyWith<$Res> get tripRecord;
@@ -214,6 +222,8 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? zGyroData = freezed,
     Object? isTemperatureAvaliable = freezed,
     Object? temperature = freezed,
+    Object? isTurning = freezed,
+    Object? isHighGforce = freezed,
     Object? errors = freezed,
   }) {
     return _then(_value.copyWith(
@@ -337,6 +347,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
               as double,
+      isTurning: isTurning == freezed
+          ? _value.isTurning
+          : isTurning // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isHighGforce: isHighGforce == freezed
+          ? _value.isHighGforce
+          : isHighGforce // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -397,6 +415,8 @@ abstract class _$LiveDataStateCopyWith<$Res>
       List<double> zGyroData,
       bool isTemperatureAvaliable,
       double temperature,
+      bool isTurning,
+      bool isHighGforce,
       List<String> errors});
 
   @override
@@ -448,6 +468,8 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? zGyroData = freezed,
     Object? isTemperatureAvaliable = freezed,
     Object? temperature = freezed,
+    Object? isTurning = freezed,
+    Object? isHighGforce = freezed,
     Object? errors = freezed,
   }) {
     return _then(_LiveDataState(
@@ -571,6 +593,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.temperature
           : temperature // ignore: cast_nullable_to_non_nullable
               as double,
+      isTurning: isTurning == freezed
+          ? _value.isTurning
+          : isTurning // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isHighGforce: isHighGforce == freezed
+          ? _value.isHighGforce
+          : isHighGforce // ignore: cast_nullable_to_non_nullable
+              as bool,
       errors: errors == freezed
           ? _value.errors
           : errors // ignore: cast_nullable_to_non_nullable
@@ -605,14 +635,16 @@ class _$_LiveDataState implements _LiveDataState {
       this.fuelSystemStatus = FuelSystemStatus.motorOff,
       this.averageResponseTime = 0,
       this.totalResponseTime = 0,
-      this.xAccData = const [],
-      this.yAccData = const [],
-      this.zAccData = const [],
-      this.xGyroData = const [],
-      this.yGyroData = const [],
-      this.zGyroData = const [],
+      this.xAccData = const [0],
+      this.yAccData = const [0],
+      this.zAccData = const [0],
+      this.xGyroData = const [0],
+      this.yGyroData = const [0],
+      this.zGyroData = const [0],
       this.isTemperatureAvaliable = false,
       this.temperature = 0.0,
+      this.isTurning = false,
+      this.isHighGforce = false,
       this.errors = const []});
 
   @override // Live data
@@ -702,12 +734,18 @@ class _$_LiveDataState implements _LiveDataState {
   @override
   final double temperature;
   @JsonKey()
+  @override
+  final bool isTurning;
+  @JsonKey()
+  @override
+  final bool isHighGforce;
+  @JsonKey()
   @override // Errors
   final List<String> errors;
 
   @override
   String toString() {
-    return 'LiveDataState(tripRecord: $tripRecord, firstLocation: $firstLocation, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccData: $xAccData, yAccData: $yAccData, zAccData: $zAccData, xGyroData: $xGyroData, yGyroData: $yGyroData, zGyroData: $zGyroData, isTemperatureAvaliable: $isTemperatureAvaliable, temperature: $temperature, errors: $errors)';
+    return 'LiveDataState(tripRecord: $tripRecord, firstLocation: $firstLocation, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccData: $xAccData, yAccData: $yAccData, zAccData: $zAccData, xGyroData: $xGyroData, yGyroData: $yGyroData, zGyroData: $zGyroData, isTemperatureAvaliable: $isTemperatureAvaliable, temperature: $temperature, isTurning: $isTurning, isHighGforce: $isHighGforce, errors: $errors)';
   }
 
   @override
@@ -764,6 +802,9 @@ class _$_LiveDataState implements _LiveDataState {
                 .equals(other.isTemperatureAvaliable, isTemperatureAvaliable) &&
             const DeepCollectionEquality()
                 .equals(other.temperature, temperature) &&
+            const DeepCollectionEquality().equals(other.isTurning, isTurning) &&
+            const DeepCollectionEquality()
+                .equals(other.isHighGforce, isHighGforce) &&
             const DeepCollectionEquality().equals(other.errors, errors));
   }
 
@@ -800,6 +841,8 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(zGyroData),
         const DeepCollectionEquality().hash(isTemperatureAvaliable),
         const DeepCollectionEquality().hash(temperature),
+        const DeepCollectionEquality().hash(isTurning),
+        const DeepCollectionEquality().hash(isHighGforce),
         const DeepCollectionEquality().hash(errors)
       ]);
 
@@ -841,6 +884,8 @@ abstract class _LiveDataState implements LiveDataState {
       List<double> zGyroData,
       bool isTemperatureAvaliable,
       double temperature,
+      bool isTurning,
+      bool isHighGforce,
       List<String> errors}) = _$_LiveDataState;
 
   @override // Live data
@@ -903,6 +948,10 @@ abstract class _LiveDataState implements LiveDataState {
   bool get isTemperatureAvaliable;
   @override
   double get temperature;
+  @override
+  bool get isTurning;
+  @override
+  bool get isHighGforce;
   @override // Errors
   List<String> get errors;
   @override

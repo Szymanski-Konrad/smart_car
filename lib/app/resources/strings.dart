@@ -95,6 +95,8 @@ abstract class Strings {
   static const String averageSpeed = 'Śr. prędkość';
   static const String rapidAcceleration = 'Przysp.';
   static const String rapidBraking = 'Hamowania';
+  static const String leftTurns = 'Skręty w lewo';
+  static const String rightTurns = 'Skręty w prawo';
   static const String burntCO2 = 'Wyemitowane CO2';
   static const String savedCO2 = 'Uratowane CO2';
   static const String averageCO2 = 'Śr. CO2';
