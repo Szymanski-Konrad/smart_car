@@ -130,7 +130,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
 
     final accStream = await SensorManager().sensorUpdates(
-      sensorId: Sensors.ACCELEROMETER,
+      sensorId: Sensors.LINEAR_ACCELERATION,
       interval: Sensors.SENSOR_DELAY_UI,
     );
 
@@ -140,7 +140,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       final zData = List<double>.from(state.zAccData);
       xData.addWithMax(filterValue(xData.last, event.data[0]), 50);
       yData.addWithMax(filterValue(yData.last, event.data[1]), 50);
-      zData.addWithMax(filterValue(zData.last, event.data[2] - 9.81), 50);
+      zData.addWithMax(filterValue(zData.last, event.data[2]), 50);
       emit(state.copyWith(
         xAccData: xData,
         yAccData: yData,
@@ -173,7 +173,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
 
     emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
-    Location.instance.changeSettings(accuracy: LocationAccuracy.powerSave);
+    Location.instance.changeSettings(accuracy: LocationAccuracy.navigation);
   }
 
   void _onLocationChanged(LocationData currLocation) {
@@ -191,8 +191,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
-    final angle = LocationHelper.calculateAngle(lastLocation, currLocation,
-        distance: distance);
+    final angle = LocationHelper.calculateAngle(
+      lastLocation,
+      currLocation,
+      distance: distance,
+    );
     final totalDistance = state.tripRecord.gpsDistance + (distance / 1000);
     emit(state.copyWith(
       lastLocation: currLocation,

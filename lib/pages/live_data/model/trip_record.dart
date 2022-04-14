@@ -165,24 +165,25 @@ extension TripRecordExtension on TripRecord {
       ];
 
   List<OtherTileData> get otherInfoSection => [
-        avgFuelDetails,
-        avgFuelPerHDetails,
-        instFuelDetails,
-        fuelCostsDetails,
-        carboPerKmDetails,
-        producedCarboDetails,
-        savedCarboDetails,
-        avgSpeedDetails,
-        currSpeedDetails,
-        distanceDetails,
-        rangeDetails,
-        gpsDistanceDetails,
-        gpsSpeedDetails,
-        rapidAccelerationsDetails,
-        rapidBrakingDetails,
         highGForceDetails,
         leftTurnsDetails,
         rightTurnsDetails,
+        tankDifferenceDetails,
+        avgFuelPerHDetails,
+        avgFuelDetails,
+        instFuelDetails,
+        avgSpeedDetails,
+        currSpeedDetails,
+        gpsSpeedDetails,
+        gpsDistanceDetails,
+        distanceDetails,
+        rangeDetails,
+        fuelCostsDetails,
+        rapidAccelerationsDetails,
+        rapidBrakingDetails,
+        carboPerKmDetails,
+        producedCarboDetails,
+        savedCarboDetails,
       ];
 
   OtherTileData get fuelCostsDetails => OtherTileData(
@@ -214,6 +215,13 @@ extension TripRecordExtension on TripRecord {
         unit: 'l',
         digits: 3,
         tripStatus: TripStatus.idle,
+      );
+
+  OtherTileData get tankDifferenceDetails => OtherTileData(
+        value: (startFuelLvl - currentFuelLvl) * tankSize / 100,
+        digits: 3,
+        title: 'Bak',
+        unit: 'l',
       );
 
   OtherTileData get distanceDetails => OtherTileData(

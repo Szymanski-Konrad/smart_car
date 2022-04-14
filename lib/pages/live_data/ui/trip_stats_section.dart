@@ -22,8 +22,8 @@ class TripStatsSection extends StatelessWidget {
         runSpacing: 8.0,
         spacing: 8.0,
         children: [
-          if (state.isTemperatureAvaliable)
-            OtherInfoTile(data: state.indoorTempData),
+          // if (state.isTemperatureAvaliable)
+          //   OtherInfoTile(data: state.indoorTempData),
           AccDataTile(values: state.xAccData, title: 'xAcc'),
           AccDataTile(values: state.yAccData, title: 'yAcc'),
           AccDataTile(values: state.zAccData, title: 'zAcc'),
@@ -31,7 +31,7 @@ class TripStatsSection extends StatelessWidget {
           AccDataTile(values: state.yGyroData, title: 'yGyro'),
           AccDataTile(values: state.zGyroData, title: 'zGyro'),
           OtherInfoTile(data: state.gForceData),
-          OtherInfoTile(data: state.locationHeightData),
+          // OtherInfoTile(data: state.locationHeightData),
           OtherInfoTile(data: state.directionData),
           OtherInfoTile(data: state.locationSlopeData),
           ...state.tripRecord.timeSection.map(

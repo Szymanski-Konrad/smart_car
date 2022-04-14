@@ -194,7 +194,7 @@ extension LiveDataStateExtension on LiveDataState {
       );
 
   OtherTileData get gForceData => OtherTileData(
-        digits: 2,
+        digits: 1,
         unit: 'g',
         title: Strings.gForce,
         value: gForce,
