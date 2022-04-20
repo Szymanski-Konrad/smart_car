@@ -86,6 +86,16 @@ class TripCard extends StatelessWidget {
                           trip.producedCarboFormat,
                           Icons.co2,
                         ),
+                        if (trip.fuelDiff > 0)
+                          _buildIconText(
+                            trip.fuelDiffFormat,
+                            Icons.battery_full_rounded,
+                          ),
+                        if (trip.fuelDiff > 0)
+                          _buildIconText(
+                            trip.fuelRatioFormat,
+                            Icons.aspect_ratio,
+                          ),
                       ],
                     ),
                   ),

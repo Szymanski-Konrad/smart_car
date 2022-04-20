@@ -11,13 +11,48 @@ enum FuelType {
   lpg,
 }
 
+extension FuelTypeExtension on FuelType {
+  double get airFuelRatio {
+    switch (this) {
+      case FuelType.gasoline:
+        return 14.7;
+      case FuelType.diesel:
+        return 14.5;
+      case FuelType.lpg:
+        return 16.1;
+    }
+  }
+
+  double get density {
+    switch (this) {
+      case FuelType.gasoline:
+        return 820;
+      case FuelType.diesel:
+        return 750;
+      case FuelType.lpg:
+        return 510;
+    }
+  }
+
+  double get carbonPercentage {
+    switch (this) {
+      case FuelType.gasoline:
+        return 0.87;
+      case FuelType.diesel:
+        return 0.862;
+      case FuelType.lpg:
+        return 0.825;
+    }
+  }
+}
+
 @freezed
 class Settings with _$Settings {
   factory Settings({
     @Default(0) int engineCapacity,
     @Default(0) int horsepower,
     @Default(0.0) double tankSize,
-    @Default(4.5) double fuelPrice,
+    @Default(6.0) double fuelPrice,
     @Default(FuelType.gasoline) FuelType fuelType,
     @Default(Constants.defaultLocalFile) String selectedJson,
     String? deviceAddress,

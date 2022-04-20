@@ -245,8 +245,6 @@ enum PID {
   engineReferenceTorque,
   odometer,
   commandedSecondaryAirStatus,
-  oxygenSensorsPresents2B,
-  oxygenSensorsPresents4B,
   auxiliaryInputStatus,
   oxygenSensor1B,
   oxygenSensor2B,
@@ -274,7 +272,6 @@ enum PID {
   catalystTemperatureB2S1,
   catalystTemperatureB1S2,
   catalystTemperatureB2S2,
-  monitorStatusDriveCycle,
   absoluteLoadValue,
   absoluteThrottlePositionB,
   absoluteThrottlePositionC,
@@ -297,10 +294,6 @@ extension PIDExtension on PID {
         return PID.cylinderFuelRate;
       case Pids.commandedSecondaryAirStatus:
         return PID.commandedSecondaryAirStatus;
-      case Pids.oxygenSensorsPresents2B:
-        return PID.oxygenSensorsPresents2B;
-      case Pids.oxygenSensorsPresents4B:
-        return PID.oxygenSensorsPresents4B;
       case Pids.auxiliaryInputStatus:
         return PID.auxiliaryInputStatus;
       case Pids.oxygenSensor1B:
@@ -355,8 +348,6 @@ extension PIDExtension on PID {
         return PID.catalystTemperatureB1S2;
       case Pids.catalystTemperatureB2S2:
         return PID.catalystTemperatureB2S2;
-      case Pids.monitorStatusDriveCycle:
-        return PID.monitorStatusDriveCycle;
       case Pids.absoluteLoadValue:
         return PID.absoluteLoadValue;
       case Pids.absoluteThrottlePositionB:
@@ -550,12 +541,6 @@ extension PIDExtension on PID {
         return FuelInjectionTime();
       case PID.commandedSecondaryAirStatus:
         return CommandedSecondaryAirStatusCommand();
-      case PID.oxygenSensorsPresents2B:
-        // TODO: Handle this case.
-        break;
-      case PID.oxygenSensorsPresents4B:
-        // TODO: Handle this case.
-        break;
       case PID.auxiliaryInputStatus:
         return AuxiliaryInputStatus();
       case PID.oxygenSensor1B:
@@ -610,9 +595,6 @@ extension PIDExtension on PID {
         return CatalystTemperatureB1S2Command();
       case PID.catalystTemperatureB2S2:
         return CatalystTemperatureB2S2Command();
-      case PID.monitorStatusDriveCycle:
-        // TODO: Handle this case.
-        break;
       case PID.absoluteLoadValue:
         return AbsoluteLoadValueCommand();
       case PID.absoluteThrottlePositionB:
@@ -638,7 +620,6 @@ extension PIDExtension on PID {
       case PID.cylinderFuelRate:
         return CylinderFuelRateCommand();
     }
-    return null;
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
+import 'package:smart_car/pages/live_data/ui/direction_tile.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_tile.dart';
 
 class LiveStatsSection extends StatelessWidget {
@@ -22,8 +23,6 @@ class LiveStatsSection extends StatelessWidget {
         runSpacing: 8.0,
         spacing: 8.0,
         children: [
-          Text(
-              'Time since last command: ${DateTime.now().difference(cubit.lastReciveCommandTime).inMilliseconds} ms'),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -31,6 +30,13 @@ class LiveStatsSection extends StatelessWidget {
               Text(Strings.totalResponse(state.totalResponseTime)),
             ],
           ),
+          DirectionTile(
+            direction: state.direction,
+            title: 'GPS',
+          ),
+          DirectionTile(
+              direction: state.yGyroData.last * 57.2957795,
+              title: 'Kierunek jazdy'),
           if (cubit.commands.isNotEmpty)
             ...cubit.commands
                 .whereType<VisibleObdCommand>()

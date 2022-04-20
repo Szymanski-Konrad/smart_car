@@ -12,6 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Machine learning
+  ml_algo: ^16.5.2
+  ml_dataframe: ^0.5.1
+  ml_preprocessing: ^6.0.0
+
   # Bluetooth
   flutter_bluetooth_serial: ^0.4.0
 
@@ -24,7 +29,6 @@ dependencies:
   flutter_logs: ^2.1.4
 
   # GPS
-  geolocator: ^8.2.0
   location: ^4.3.0
   haversine_distance: ^1.2.1
 

@@ -3,8 +3,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:smart_car/utils/date_extension.dart';
+import 'package:smart_car/utils/fuel_helper.dart';
 import 'package:smart_car/utils/location_helper.dart';
-import 'package:smart_car/utils/useful_functions.dart';
 
 part 'trip_summary.freezed.dart';
 part 'trip_summary.g.dart';
@@ -24,6 +24,7 @@ class TripSummary with _$TripSummary {
     @Default(0) double savedFuel,
     @Default(0) double idleFuel,
     @Default(0) double driveFuel,
+    @Default(0) double tankSize,
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
     @Default(0) int rapidAccelerations,
@@ -33,7 +34,6 @@ class TripSummary with _$TripSummary {
     @Default(0) int hightGforce,
     required DateTime startTripTime,
     required DateTime endTripTime,
-    double? tankSize,
     @JsonKey(toJson: LocationHelper.tryCoordsToJson) LatLng? startLocation,
     @JsonKey(toJson: LocationHelper.tryCoordsToJson) LatLng? endLocation,
   }) = _TripSummary;
@@ -44,8 +44,14 @@ class TripSummary with _$TripSummary {
 
 extension TripSummaryExtension on TripSummary {
   int get driveTime => tripSeconds - idleTripSeconds;
-  double get producedCarbo => Functions.fuelToCarboKg(idleFuel + driveFuel);
-  double get savedCarbo => Functions.fuelToCarboKg(savedFuel);
+  double get producedCarbo => FuelHelper.co2EmissionInKg(idleFuel + driveFuel);
+  double get savedCarbo => FuelHelper.co2EmissionInKg(savedFuel);
+  double get fuelDiff => (startFuelLvl - endFuelLvl) * tankSize / 100;
+
+  String get fuelDiffFormat => '${fuelDiff.toStringAsFixed(3)} l';
+
+  String get fuelRatioFormat =>
+      '${(fuelDiff / fuelUsed).toStringAsFixed(3)} ratio';
 
   String get producedCarboFormat =>
       '${producedCarbo.toStringAsFixed(2)} kg (produced)';

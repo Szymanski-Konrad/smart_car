@@ -6,9 +6,9 @@ import 'package:smart_car/utils/info_tile_data.dart';
 import 'package:smart_car/utils/media_query_extensions.dart';
 
 class OtherInfoTile extends StatelessWidget {
-  const OtherInfoTile({
+  const OtherInfoTile(
+    this.data, {
     Key? key,
-    required this.data,
   }) : super(key: key);
 
   final OtherTileData data;

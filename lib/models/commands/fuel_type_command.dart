@@ -1,6 +1,6 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 
-enum FuelType {
+enum CarFuelType {
   notAvaiable,
   gasoline,
   methanol,
@@ -27,56 +27,56 @@ enum FuelType {
   bifuelDiesel,
 }
 
-extension FuelTypeExtension on FuelType {
+extension CarFuelTypeExtension on CarFuelType {
   String get description {
     switch (this) {
-      case FuelType.notAvaiable:
+      case CarFuelType.notAvaiable:
         return 'Not avaliable';
-      case FuelType.gasoline:
+      case CarFuelType.gasoline:
         return 'Gasoline';
-      case FuelType.methanol:
+      case CarFuelType.methanol:
         return 'Methanol';
-      case FuelType.ethanol:
+      case CarFuelType.ethanol:
         return 'Ethanol';
-      case FuelType.diesel:
+      case CarFuelType.diesel:
         return 'Diesel';
-      case FuelType.lpg:
+      case CarFuelType.lpg:
         return 'LPG';
-      case FuelType.cng:
+      case CarFuelType.cng:
         return 'CNG';
-      case FuelType.propane:
+      case CarFuelType.propane:
         return 'Propane';
-      case FuelType.electric:
+      case CarFuelType.electric:
         return 'Electric';
-      case FuelType.bifuelGasoline:
+      case CarFuelType.bifuelGasoline:
         return 'Bifuel running Gasoline';
-      case FuelType.bifuelMethanol:
+      case CarFuelType.bifuelMethanol:
         return 'Bifuel running Methanol';
-      case FuelType.bifuelEthanol:
+      case CarFuelType.bifuelEthanol:
         return 'Bifuel running Ethanol';
-      case FuelType.bifuelLpg:
+      case CarFuelType.bifuelLpg:
         return 'Bifuel running LPG';
-      case FuelType.bifuelCng:
+      case CarFuelType.bifuelCng:
         return 'Bifuel running CNG';
-      case FuelType.bifuelPropane:
+      case CarFuelType.bifuelPropane:
         return 'Bifuel running Propane';
-      case FuelType.bifuelElectricity:
+      case CarFuelType.bifuelElectricity:
         return 'Bifuel running Electricity';
-      case FuelType.bifuelElectricCombustion:
+      case CarFuelType.bifuelElectricCombustion:
         return 'Bifuel running electric and combustion engine';
-      case FuelType.hybridGasoline:
+      case CarFuelType.hybridGasoline:
         return 'Hybrid gasoline';
-      case FuelType.hybridEthanol:
+      case CarFuelType.hybridEthanol:
         return 'Hybrid Ethanol';
-      case FuelType.hybridDiesel:
+      case CarFuelType.hybridDiesel:
         return 'Hybrid Diesel';
-      case FuelType.hybridElectric:
+      case CarFuelType.hybridElectric:
         return 'Hybrid Electric';
-      case FuelType.hybridElectricCombustion:
+      case CarFuelType.hybridElectricCombustion:
         return 'Hybrid running electric and combustion engine';
-      case FuelType.hybridRegenerative:
+      case CarFuelType.hybridRegenerative:
         return 'Hybrid Regenerative';
-      case FuelType.bifuelDiesel:
+      case CarFuelType.bifuelDiesel:
         return 'Bifuel running diesel';
     }
   }
@@ -93,58 +93,58 @@ class FuelTypeCommand extends ObdCommand {
     }
   }
 
-  FuelType get type {
+  CarFuelType get type {
     switch (result) {
       case 0:
-        return FuelType.notAvaiable;
+        return CarFuelType.notAvaiable;
       case 1:
-        return FuelType.gasoline;
+        return CarFuelType.gasoline;
       case 2:
-        return FuelType.methanol;
+        return CarFuelType.methanol;
       case 3:
-        return FuelType.ethanol;
+        return CarFuelType.ethanol;
       case 4:
-        return FuelType.diesel;
+        return CarFuelType.diesel;
       case 5:
-        return FuelType.lpg;
+        return CarFuelType.lpg;
       case 6:
-        return FuelType.cng;
+        return CarFuelType.cng;
       case 7:
-        return FuelType.propane;
+        return CarFuelType.propane;
       case 8:
-        return FuelType.electric;
+        return CarFuelType.electric;
       case 9:
-        return FuelType.bifuelGasoline;
+        return CarFuelType.bifuelGasoline;
       case 10:
-        return FuelType.bifuelMethanol;
+        return CarFuelType.bifuelMethanol;
       case 11:
-        return FuelType.bifuelEthanol;
+        return CarFuelType.bifuelEthanol;
       case 12:
-        return FuelType.bifuelLpg;
+        return CarFuelType.bifuelLpg;
       case 13:
-        return FuelType.bifuelCng;
+        return CarFuelType.bifuelCng;
       case 14:
-        return FuelType.bifuelPropane;
+        return CarFuelType.bifuelPropane;
       case 15:
-        return FuelType.bifuelElectricity;
+        return CarFuelType.bifuelElectricity;
       case 16:
-        return FuelType.bifuelElectricCombustion;
+        return CarFuelType.bifuelElectricCombustion;
       case 17:
-        return FuelType.hybridGasoline;
+        return CarFuelType.hybridGasoline;
       case 18:
-        return FuelType.hybridEthanol;
+        return CarFuelType.hybridEthanol;
       case 19:
-        return FuelType.hybridDiesel;
+        return CarFuelType.hybridDiesel;
       case 20:
-        return FuelType.hybridElectric;
+        return CarFuelType.hybridElectric;
       case 21:
-        return FuelType.hybridElectricCombustion;
+        return CarFuelType.hybridElectricCombustion;
       case 22:
-        return FuelType.hybridRegenerative;
+        return CarFuelType.hybridRegenerative;
       case 23:
-        return FuelType.bifuelDiesel;
+        return CarFuelType.bifuelDiesel;
       default:
-        return FuelType.notAvaiable;
+        return CarFuelType.notAvaiable;
     }
   }
 }

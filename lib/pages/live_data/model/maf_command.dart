@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
+import 'package:smart_car/utils/fuel_helper.dart';
 
 class MafCommand extends VisibleObdCommand {
   MafCommand() : super('0110', min: 0, max: 100, prio: 0, enableHistory: true);
@@ -20,7 +21,7 @@ class MafCommand extends VisibleObdCommand {
   @override
   void performCalculations(List<int> data) {
     if (data.length >= 2) {
-      result = 2 * (256 * data[0] + data[1]) / 100;
+      result = (256 * data[0] + data[1]) / 100;
       super.performCalculations(data);
     }
   }
@@ -35,10 +36,11 @@ class MafCommand extends VisibleObdCommand {
   /// [fuelDensity] - kilograms of fuel in m3
   /// [airFuelRatio] - current air fuel ratio for fuel type
   void calculateFuelFlow({
-    double fuelDensity = 740,
-    double airFuelRatio = 14.7,
+    double ratio = 1.0,
     double trimTerm = 1.0,
   }) {
+    final airFuelRatio = FuelHelper.airFuelAspectRatio() * ratio;
+    final fuelDensity = FuelHelper.density();
     if (result > 0) {
       _fuelFlow = (result * trimTerm * 3600) / airFuelRatio / fuelDensity;
     } else {
@@ -54,10 +56,10 @@ class MafCommand extends VisibleObdCommand {
     int speed,
     double longTerm,
     double shortTerm,
-    double airFuelRatio,
+    double ratio,
   ) {
     final trimTerm = 1 + longTerm + shortTerm;
-    calculateFuelFlow(airFuelRatio: airFuelRatio, trimTerm: trimTerm);
+    calculateFuelFlow(ratio: ratio, trimTerm: trimTerm);
     if (speed > 0) {
       return (_fuelFlow / speed) * 100;
     }

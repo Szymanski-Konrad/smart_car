@@ -24,9 +24,12 @@ class _$LiveDataStateTearOff {
       LocationData? lastLocation,
       bool isLocalMode = false,
       double fuelPrice = 0,
+      double score = 0,
+      List<double> acceleration = const [],
       double direction = 0,
       double locationSlope = 0,
       double locationHeight = 0,
+      double tripAltitudeCumulation = 0,
       double localTripProgress = 0.0,
       String localData = Constants.defaultLocalFile,
       bool isRunning = false,
@@ -58,9 +61,12 @@ class _$LiveDataStateTearOff {
       lastLocation: lastLocation,
       isLocalMode: isLocalMode,
       fuelPrice: fuelPrice,
+      score: score,
+      acceleration: acceleration,
       direction: direction,
       locationSlope: locationSlope,
       locationHeight: locationHeight,
+      tripAltitudeCumulation: tripAltitudeCumulation,
       localTripProgress: localTripProgress,
       localData: localData,
       isRunning: isRunning,
@@ -98,13 +104,15 @@ mixin _$LiveDataState {
 // Live data
   TripRecord get tripRecord => throw _privateConstructorUsedError;
   LocationData? get firstLocation => throw _privateConstructorUsedError;
-  LocationData? get lastLocation =>
-      throw _privateConstructorUsedError; // @Default(TripStatus.idle) TripStatus tripStatus,
+  LocationData? get lastLocation => throw _privateConstructorUsedError;
   bool get isLocalMode => throw _privateConstructorUsedError;
-  double get fuelPrice => throw _privateConstructorUsedError; // GPS
+  double get fuelPrice => throw _privateConstructorUsedError;
+  double get score => throw _privateConstructorUsedError;
+  List<double> get acceleration => throw _privateConstructorUsedError; // GPS
   double get direction => throw _privateConstructorUsedError;
   double get locationSlope => throw _privateConstructorUsedError;
-  double get locationHeight =>
+  double get locationHeight => throw _privateConstructorUsedError;
+  double get tripAltitudeCumulation =>
       throw _privateConstructorUsedError; // Just for testing
   double get localTripProgress => throw _privateConstructorUsedError;
   String get localData => throw _privateConstructorUsedError; // Bluetooth
@@ -148,9 +156,12 @@ abstract class $LiveDataStateCopyWith<$Res> {
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
+      double score,
+      List<double> acceleration,
       double direction,
       double locationSlope,
       double locationHeight,
+      double tripAltitudeCumulation,
       double localTripProgress,
       String localData,
       bool isRunning,
@@ -197,9 +208,12 @@ class _$LiveDataStateCopyWithImpl<$Res>
     Object? lastLocation = freezed,
     Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
+    Object? score = freezed,
+    Object? acceleration = freezed,
     Object? direction = freezed,
     Object? locationSlope = freezed,
     Object? locationHeight = freezed,
+    Object? tripAltitudeCumulation = freezed,
     Object? localTripProgress = freezed,
     Object? localData = freezed,
     Object? isRunning = freezed,
@@ -247,6 +261,14 @@ class _$LiveDataStateCopyWithImpl<$Res>
           ? _value.fuelPrice
           : fuelPrice // ignore: cast_nullable_to_non_nullable
               as double,
+      score: score == freezed
+          ? _value.score
+          : score // ignore: cast_nullable_to_non_nullable
+              as double,
+      acceleration: acceleration == freezed
+          ? _value.acceleration
+          : acceleration // ignore: cast_nullable_to_non_nullable
+              as List<double>,
       direction: direction == freezed
           ? _value.direction
           : direction // ignore: cast_nullable_to_non_nullable
@@ -258,6 +280,10 @@ class _$LiveDataStateCopyWithImpl<$Res>
       locationHeight: locationHeight == freezed
           ? _value.locationHeight
           : locationHeight // ignore: cast_nullable_to_non_nullable
+              as double,
+      tripAltitudeCumulation: tripAltitudeCumulation == freezed
+          ? _value.tripAltitudeCumulation
+          : tripAltitudeCumulation // ignore: cast_nullable_to_non_nullable
               as double,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
@@ -390,9 +416,12 @@ abstract class _$LiveDataStateCopyWith<$Res>
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
+      double score,
+      List<double> acceleration,
       double direction,
       double locationSlope,
       double locationHeight,
+      double tripAltitudeCumulation,
       double localTripProgress,
       String localData,
       bool isRunning,
@@ -443,9 +472,12 @@ class __$LiveDataStateCopyWithImpl<$Res>
     Object? lastLocation = freezed,
     Object? isLocalMode = freezed,
     Object? fuelPrice = freezed,
+    Object? score = freezed,
+    Object? acceleration = freezed,
     Object? direction = freezed,
     Object? locationSlope = freezed,
     Object? locationHeight = freezed,
+    Object? tripAltitudeCumulation = freezed,
     Object? localTripProgress = freezed,
     Object? localData = freezed,
     Object? isRunning = freezed,
@@ -493,6 +525,14 @@ class __$LiveDataStateCopyWithImpl<$Res>
           ? _value.fuelPrice
           : fuelPrice // ignore: cast_nullable_to_non_nullable
               as double,
+      score: score == freezed
+          ? _value.score
+          : score // ignore: cast_nullable_to_non_nullable
+              as double,
+      acceleration: acceleration == freezed
+          ? _value.acceleration
+          : acceleration // ignore: cast_nullable_to_non_nullable
+              as List<double>,
       direction: direction == freezed
           ? _value.direction
           : direction // ignore: cast_nullable_to_non_nullable
@@ -504,6 +544,10 @@ class __$LiveDataStateCopyWithImpl<$Res>
       locationHeight: locationHeight == freezed
           ? _value.locationHeight
           : locationHeight // ignore: cast_nullable_to_non_nullable
+              as double,
+      tripAltitudeCumulation: tripAltitudeCumulation == freezed
+          ? _value.tripAltitudeCumulation
+          : tripAltitudeCumulation // ignore: cast_nullable_to_non_nullable
               as double,
       localTripProgress: localTripProgress == freezed
           ? _value.localTripProgress
@@ -618,9 +662,12 @@ class _$_LiveDataState implements _LiveDataState {
       this.lastLocation,
       this.isLocalMode = false,
       this.fuelPrice = 0,
+      this.score = 0,
+      this.acceleration = const [],
       this.direction = 0,
       this.locationSlope = 0,
       this.locationHeight = 0,
+      this.tripAltitudeCumulation = 0,
       this.localTripProgress = 0.0,
       this.localData = Constants.defaultLocalFile,
       this.isRunning = false,
@@ -654,11 +701,17 @@ class _$_LiveDataState implements _LiveDataState {
   @override
   final LocationData? lastLocation;
   @JsonKey()
-  @override // @Default(TripStatus.idle) TripStatus tripStatus,
+  @override
   final bool isLocalMode;
   @JsonKey()
   @override
   final double fuelPrice;
+  @JsonKey()
+  @override
+  final double score;
+  @JsonKey()
+  @override
+  final List<double> acceleration;
   @JsonKey()
   @override // GPS
   final double direction;
@@ -668,6 +721,9 @@ class _$_LiveDataState implements _LiveDataState {
   @JsonKey()
   @override
   final double locationHeight;
+  @JsonKey()
+  @override
+  final double tripAltitudeCumulation;
   @JsonKey()
   @override // Just for testing
   final double localTripProgress;
@@ -745,7 +801,7 @@ class _$_LiveDataState implements _LiveDataState {
 
   @override
   String toString() {
-    return 'LiveDataState(tripRecord: $tripRecord, firstLocation: $firstLocation, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccData: $xAccData, yAccData: $yAccData, zAccData: $zAccData, xGyroData: $xGyroData, yGyroData: $yGyroData, zGyroData: $zGyroData, isTemperatureAvaliable: $isTemperatureAvaliable, temperature: $temperature, isTurning: $isTurning, isHighGforce: $isHighGforce, errors: $errors)';
+    return 'LiveDataState(tripRecord: $tripRecord, firstLocation: $firstLocation, lastLocation: $lastLocation, isLocalMode: $isLocalMode, fuelPrice: $fuelPrice, score: $score, acceleration: $acceleration, direction: $direction, locationSlope: $locationSlope, locationHeight: $locationHeight, tripAltitudeCumulation: $tripAltitudeCumulation, localTripProgress: $localTripProgress, localData: $localData, isRunning: $isRunning, isConnecting: $isConnecting, isDisconnecting: $isDisconnecting, isConnnectingError: $isConnnectingError, isTripEnded: $isTripEnded, isTripClosing: $isTripClosing, supportedPids: $supportedPids, pidsChecker: $pidsChecker, vin: $vin, fuelSystemStatus: $fuelSystemStatus, averageResponseTime: $averageResponseTime, totalResponseTime: $totalResponseTime, xAccData: $xAccData, yAccData: $yAccData, zAccData: $zAccData, xGyroData: $xGyroData, yGyroData: $yGyroData, zGyroData: $zGyroData, isTemperatureAvaliable: $isTemperatureAvaliable, temperature: $temperature, isTurning: $isTurning, isHighGforce: $isHighGforce, errors: $errors)';
   }
 
   @override
@@ -762,11 +818,16 @@ class _$_LiveDataState implements _LiveDataState {
             const DeepCollectionEquality()
                 .equals(other.isLocalMode, isLocalMode) &&
             const DeepCollectionEquality().equals(other.fuelPrice, fuelPrice) &&
+            const DeepCollectionEquality().equals(other.score, score) &&
+            const DeepCollectionEquality()
+                .equals(other.acceleration, acceleration) &&
             const DeepCollectionEquality().equals(other.direction, direction) &&
             const DeepCollectionEquality()
                 .equals(other.locationSlope, locationSlope) &&
             const DeepCollectionEquality()
                 .equals(other.locationHeight, locationHeight) &&
+            const DeepCollectionEquality()
+                .equals(other.tripAltitudeCumulation, tripAltitudeCumulation) &&
             const DeepCollectionEquality()
                 .equals(other.localTripProgress, localTripProgress) &&
             const DeepCollectionEquality().equals(other.localData, localData) &&
@@ -816,9 +877,12 @@ class _$_LiveDataState implements _LiveDataState {
         const DeepCollectionEquality().hash(lastLocation),
         const DeepCollectionEquality().hash(isLocalMode),
         const DeepCollectionEquality().hash(fuelPrice),
+        const DeepCollectionEquality().hash(score),
+        const DeepCollectionEquality().hash(acceleration),
         const DeepCollectionEquality().hash(direction),
         const DeepCollectionEquality().hash(locationSlope),
         const DeepCollectionEquality().hash(locationHeight),
+        const DeepCollectionEquality().hash(tripAltitudeCumulation),
         const DeepCollectionEquality().hash(localTripProgress),
         const DeepCollectionEquality().hash(localData),
         const DeepCollectionEquality().hash(isRunning),
@@ -859,9 +923,12 @@ abstract class _LiveDataState implements LiveDataState {
       LocationData? lastLocation,
       bool isLocalMode,
       double fuelPrice,
+      double score,
+      List<double> acceleration,
       double direction,
       double locationSlope,
       double locationHeight,
+      double tripAltitudeCumulation,
       double localTripProgress,
       String localData,
       bool isRunning,
@@ -894,16 +961,22 @@ abstract class _LiveDataState implements LiveDataState {
   LocationData? get firstLocation;
   @override
   LocationData? get lastLocation;
-  @override // @Default(TripStatus.idle) TripStatus tripStatus,
+  @override
   bool get isLocalMode;
   @override
   double get fuelPrice;
+  @override
+  double get score;
+  @override
+  List<double> get acceleration;
   @override // GPS
   double get direction;
   @override
   double get locationSlope;
   @override
   double get locationHeight;
+  @override
+  double get tripAltitudeCumulation;
   @override // Just for testing
   double get localTripProgress;
   @override

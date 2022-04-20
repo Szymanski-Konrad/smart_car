@@ -39,14 +39,16 @@ class LiveDataState with _$LiveDataState {
     required TripRecord tripRecord,
     LocationData? firstLocation,
     LocationData? lastLocation,
-    // @Default(TripStatus.idle) TripStatus tripStatus,
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
+    @Default(0) double score,
+    @Default([]) List<double> acceleration,
 
     // GPS
     @Default(0) double direction,
     @Default(0) double locationSlope,
     @Default(0) double locationHeight,
+    @Default(0) double tripAltitudeCumulation,
 
     // Just for testing
     @Default(0.0) double localTripProgress,
@@ -171,6 +173,13 @@ extension LiveDataStateExtension on LiveDataState {
         throw ArgumentError('Value is not supported: $value');
     }
   }
+
+  OtherTileData get scoreData => OtherTileData(
+        digits: 0,
+        unit: '',
+        title: 'Ocena jazdy',
+        value: score,
+      );
 
   OtherTileData get directionData => OtherTileData(
         digits: 1,

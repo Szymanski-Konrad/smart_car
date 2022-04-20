@@ -6,6 +6,11 @@ extension DoubleListExtension<T> on List<double> {
     }
     add(value);
   }
+
+  List<double> takeLast(int count) {
+    if (length < count) return this;
+    return sublist(length - count);
+  }
 }
 
 extension ListExtension<T> on List<T> {

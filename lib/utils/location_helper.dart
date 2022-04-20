@@ -39,17 +39,28 @@ abstract class LocationHelper {
     return hav.HaversineDistance().haversine(start, end, hav.Unit.METER);
   }
 
+  /// Calculate altitude diff
+  static double calculateAltitudeDiff(
+    LocationData previous,
+    LocationData current,
+  ) {
+    final prevAltitude = previous.altitude ?? 0;
+    final currentAltitude = current.altitude ?? 0;
+    if (prevAltitude == 0 || currentAltitude == 0) return 0;
+    return (prevAltitude - currentAltitude).abs();
+  }
+
   /// Calculate angle between two points, [distance] is optional if calculate previously
   static double calculateAngle(
     LocationData previous,
-    LocationData current, {
-    double? distance,
-  }) {
-    final _distance = distance ?? calculateDistance(previous, current);
+    LocationData current,
+    double distance,
+  ) {
     final currentAlt = current.altitude ?? 0;
     final previousAlt = previous.altitude ?? 0;
+    if (currentAlt == 0 || previousAlt == 0) return 0;
     final hightDiff = currentAlt - previousAlt;
-    final c = sqrt(pow(_distance, 2) + pow(hightDiff, 2));
+    final c = sqrt(pow(distance, 2) + pow(hightDiff, 2));
     return asin(hightDiff / c) * 100;
   }
 

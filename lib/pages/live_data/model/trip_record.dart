@@ -4,8 +4,8 @@ import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/utils/date_extension.dart';
+import 'package:smart_car/utils/fuel_helper.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
-import 'package:smart_car/utils/useful_functions.dart';
 
 part 'trip_record.freezed.dart';
 
@@ -25,6 +25,7 @@ class TripRecord with _$TripRecord {
     // Gps
     @Default(-1.0) double gpsSpeed,
     @Default(0.0) double gpsDistance,
+    @Default(0.0) double altitudeCumulative,
 
     // Time
     required DateTime startTripDate,
@@ -165,25 +166,32 @@ extension TripRecordExtension on TripRecord {
       ];
 
   List<OtherTileData> get otherInfoSection => [
-        highGForceDetails,
-        leftTurnsDetails,
-        rightTurnsDetails,
-        tankDifferenceDetails,
-        avgFuelPerHDetails,
-        avgFuelDetails,
-        instFuelDetails,
         avgSpeedDetails,
         currSpeedDetails,
         gpsSpeedDetails,
         gpsDistanceDetails,
+        altitudeCumulativeDetails,
         distanceDetails,
+      ];
+
+  List<OtherTileData> get fuelSection => [
+        tankDifferenceDetails,
+        avgFuelPerHDetails,
+        avgFuelDetails,
+        instFuelDetails,
         rangeDetails,
         fuelCostsDetails,
-        rapidAccelerationsDetails,
-        rapidBrakingDetails,
         carboPerKmDetails,
         producedCarboDetails,
         savedCarboDetails,
+      ];
+
+  List<OtherTileData> get countersSection => [
+        highGForceDetails,
+        leftTurnsDetails,
+        rightTurnsDetails,
+        rapidAccelerationsDetails,
+        rapidBrakingDetails,
       ];
 
   OtherTileData get fuelCostsDetails => OtherTileData(
@@ -347,23 +355,30 @@ extension TripRecordExtension on TripRecord {
       );
 
   OtherTileData get producedCarboDetails => OtherTileData(
-        value: Functions.fuelToCarboKg(totalFuelUsed),
+        value: FuelHelper.co2EmissionInKg(totalFuelUsed),
         digits: 2,
         title: Strings.burntCO2,
         unit: 'kg',
       );
 
   OtherTileData get savedCarboDetails => OtherTileData(
-        value: Functions.fuelToCarboKg(savedFuel),
+        value: FuelHelper.co2EmissionInKg(savedFuel),
         digits: 2,
         title: Strings.savedCO2,
         unit: 'kg',
       );
 
   OtherTileData get carboPerKmDetails => OtherTileData(
-        value: Functions.fuelToCarboGrams(avgFuelConsumption) / 100,
+        value: FuelHelper.co2EmissionInGrams(avgFuelConsumption) / 100,
         digits: 0,
         title: Strings.averageCO2,
         unit: 'g/km',
+      );
+
+  OtherTileData get altitudeCumulativeDetails => OtherTileData(
+        value: altitudeCumulative,
+        digits: 1,
+        title: 'Całk. wysokość',
+        unit: 'm',
       );
 }

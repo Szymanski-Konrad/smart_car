@@ -16,6 +16,7 @@ import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/trip_score_model.dart';
 import 'package:smart_car/models/trip_summary/trip_summary.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
@@ -28,6 +29,7 @@ import 'package:smart_car/pages/live_data/model/maf_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/pages/trip_score/utils/trip_score_helper.dart';
 import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/utils/bt_connection.dart';
 import 'package:smart_car/utils/list_extension.dart';
@@ -67,6 +69,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription<SensorEvent>? _gyroSubsription;
   StreamSubscription? _tempSubscription;
   Timer? _everySecondTimer;
+  Timer? _everyMinuteTimer;
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
 
   /// Called when succesfully connected to OBD
@@ -102,7 +105,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           ),
         );
       }
-    } else if (state.gForce < 1.3) {
+    } else if (state.gForce < 1.1) {
       emit(state.copyWith(isHighGforce: false));
     }
   }
@@ -118,7 +121,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           ),
         );
       }
-    } else if (rotation.abs() < 0.25) {
+    } else if (rotation.abs() < 0.1) {
       emit(state.copyWith(isTurning: false));
     }
   }
@@ -153,9 +156,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       final xData = List<double>.from(state.xGyroData);
       final yData = List<double>.from(state.yGyroData);
       final zData = List<double>.from(state.zGyroData);
-      xData.addWithMax(event.data[0], 100);
-      yData.addWithMax(event.data[1], 100);
-      zData.addWithMax(event.data[2], 100);
+      xData.addWithMax(event.data[0], 20);
+      yData.addWithMax(event.data[1], 20);
+      zData.addWithMax(event.data[2], 20);
       emit(state.copyWith(
         xGyroData: xData,
         yGyroData: yData,
@@ -191,12 +194,20 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
+    if (distance < 100) return;
     final angle = LocationHelper.calculateAngle(
       lastLocation,
       currLocation,
-      distance: distance,
+      distance,
     );
+    double altitudeCumulation = LocationHelper.calculateAltitudeDiff(
+      lastLocation,
+      currLocation,
+    );
+
     final totalDistance = state.tripRecord.gpsDistance + (distance / 1000);
+    final altitudeCumulative =
+        state.tripRecord.altitudeCumulative + altitudeCumulation;
     emit(state.copyWith(
       lastLocation: currLocation,
       locationSlope: angle,
@@ -205,6 +216,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       tripRecord: state.tripRecord.copyWith(
         gpsSpeed: (currLocation.speed ?? 0) * 3600 / 1000,
         gpsDistance: totalDistance,
+        altitudeCumulative: altitudeCumulative,
       ),
     ));
   }
@@ -255,6 +267,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     await _sendInitializeCommands();
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
+    _startMinuteTimer();
 
     await LocationHelper.checkLocationService();
 
@@ -289,6 +302,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         );
       },
     );
+  }
+
+  void _startMinuteTimer() {
+    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+      calculateScore();
+    });
   }
 
   /// Testing local file of recorded trips
@@ -372,6 +391,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   /// Process closing trip after detect motor off
   Future<void> motorOff() async {
     if (state.isLocalMode) return;
+    _everySecondTimer?.cancel();
     emit(state.copyWith(
       isTripClosing: true,
       isTripEnded: true,
@@ -395,6 +415,43 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
     if (Navigation.instance.canPop()) Navigation.instance.pop();
   }
+
+  Future<void> calculateScore() async {
+    final tripScoreModel = TripScoreModel(
+      startTripTime: state.tripRecord.startTripDate,
+      endTripTime: DateTime.now(),
+      distance: state.tripRecord.distance,
+      gpsDistance: state.tripRecord.gpsDistance,
+      avgSpeed: state.tripRecord.averageSpeed,
+      fuelUsed: state.tripRecord.usedFuel,
+      tripSeconds: state.tripRecord.tripSeconds,
+      idleTripSeconds: state.tripRecord.idleTripSeconds,
+      rapidAccelerations: state.tripRecord.rapidAccelerations,
+      rapidBreakings: state.tripRecord.rapidBreakings,
+      startFuelLvl: state.tripRecord.startFuelLvl,
+      endFuelLvl: state.tripRecord.currentFuelLvl,
+      fuelPrice: state.fuelPrice,
+      avgFuelConsumption: state.tripRecord.avgFuelConsumption,
+      savedFuel: state.tripRecord.savedFuel,
+      idleFuel: state.tripRecord.idleUsedFuel,
+      driveFuel: state.tripRecord.usedFuel,
+      startLocation: state.firstLocation?.toLatLng,
+      endLocation: state.lastLocation?.toLatLng,
+      hightGforce: state.tripRecord.highGforce,
+      leftTurns: state.tripRecord.leftTurns,
+      rightTurns: state.tripRecord.rightTurns,
+      tankSize: state.tripRecord.tankSize,
+    );
+
+    final _lastModel = lastTripScoreModel;
+    if (_lastModel != null) {
+      final score = TripScoreHelper.calculateScore(_lastModel, tripScoreModel);
+      emit(state.copyWith(score: score));
+    }
+    lastTripScoreModel = tripScoreModel;
+  }
+
+  TripScoreModel? lastTripScoreModel;
 
   Future<void> generateTripSummary() async {
     final tripSummary = TripSummary(
@@ -514,7 +571,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                   tripRecord.currentSpeed,
                   shortFuelTrim,
                   longFuelTrim,
-                  (commands.airFuelRatio ?? 1.0) * 14.7,
+                  commands.airFuelRatio ?? 1.0,
                 );
 
                 emit(state.copyWith(
@@ -532,7 +589,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
             case PID.speed:
               if (command is SpeedCommand) {
                 final acceleration = command.acceleration();
+                final accelerations = List<double>.from(state.acceleration);
+                accelerations.add(acceleration);
                 emit(state.copyWith(
+                  acceleration: accelerations,
                   tripRecord: tripRecord
                       .updateDistance(
                         command.distanceTraveled,
@@ -645,6 +705,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   @override
   Future<void> close() async {
     _everySecondTimer?.cancel();
+    _everyMinuteTimer?.cancel();
     await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();

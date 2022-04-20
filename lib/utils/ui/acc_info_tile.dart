@@ -1,6 +1,7 @@
 import 'package:chart_sparkline/chart_sparkline.dart';
 import 'package:flutter/material.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/utils/list_extension.dart';
 
 class AccDataTile extends StatelessWidget {
   const AccDataTile({
@@ -14,13 +15,11 @@ class AccDataTile extends StatelessWidget {
 
   Widget chart() {
     return Sparkline(
-      lineWidth: 0,
+      lineWidth: 2,
       useCubicSmoothing: true,
       fallbackHeight: Constants.tileHeight,
-      data: values,
+      data: values.takeLast(100),
       lineColor: Colors.blueGrey,
-      fillColor: Colors.green,
-      fillMode: FillMode.below,
       max: 3,
       min: -3,
     );
@@ -56,12 +55,13 @@ class AccDataTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(title),
-                Text(
-                  values.last.toStringAsFixed(2),
-                  maxLines: 2,
-                  style: textTheme,
-                  textAlign: TextAlign.center,
-                ),
+                if (values.isNotEmpty)
+                  Text(
+                    values.last.toStringAsFixed(2),
+                    maxLines: 2,
+                    style: textTheme,
+                    textAlign: TextAlign.center,
+                  ),
               ],
             ),
           ),
