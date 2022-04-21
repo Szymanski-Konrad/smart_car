@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
@@ -35,8 +36,9 @@ class LiveStatsSection extends StatelessWidget {
             title: 'GPS',
           ),
           DirectionTile(
-              direction: state.yGyroData.last * 57.2957795,
-              title: 'Kierunek jazdy'),
+            direction: state.driveDirection,
+            title: 'Kierunek jazdy',
+          ),
           if (cubit.commands.isNotEmpty)
             ...cubit.commands
                 .whereType<VisibleObdCommand>()

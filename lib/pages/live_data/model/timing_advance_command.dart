@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 class TimingAdvanceCommand extends VisibleObdCommand {
-  TimingAdvanceCommand() : super('010E', min: -64, max: 63.5, prio: 1);
+  TimingAdvanceCommand()
+      : super('010E', min: -64, max: 63.5, prio: 1, enableHistory: false);
 
   @override
   void performCalculations(List<int> data) {

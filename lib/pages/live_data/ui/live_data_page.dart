@@ -68,41 +68,6 @@ class LiveDataPage extends StatelessWidget
                             : Strings.connected,
                   ),
                   actions: [
-                    IconButton(
-                      onPressed: () =>
-                          Navigation.instance.push(SharedRoutes.settings),
-                      icon: const Icon(Icons.settings),
-                    ),
-                    IconButton(
-                      onPressed: () async {
-                        final files = await TripFiles.showFilesInDirectory();
-                        showDialog(
-                            context: context,
-                            builder: (ctx) {
-                              return AlertDialog(
-                                title: Text(
-                                    Strings.filesInDirectory(files.length)),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        TripFiles.sendTripsToMail(files),
-                                    child: const Text(Strings.sendFiles),
-                                  ),
-                                ],
-                                content: SingleChildScrollView(
-                                  child: Column(
-                                    children: [
-                                      ...files.map((e) => ListTile(
-                                            title: Text(e),
-                                          )),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            });
-                      },
-                      icon: const Icon(Icons.file_copy_sharp),
-                    ),
                     if (state.supportedPids.isNotEmpty)
                       IconButton(
                         onPressed: () => showSupportedCommandsDialog(
@@ -118,14 +83,8 @@ class LiveDataPage extends StatelessWidget
                       children: [
                         const TabBar(
                           tabs: [
-                            Tab(
-                              icon: Icon(Icons.time_to_leave_outlined),
-                              text: Strings.liveData,
-                            ),
-                            Tab(
-                              icon: Icon(Icons.bar_chart),
-                              text: Strings.tripStats,
-                            ),
+                            Tab(text: Strings.liveData),
+                            Tab(text: Strings.tripStats),
                           ],
                         ),
                         const SizedBox(height: 20.0),

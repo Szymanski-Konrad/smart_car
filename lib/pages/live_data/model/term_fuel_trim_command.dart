@@ -8,6 +8,7 @@ abstract class TermFuelTrim extends VisibleObdCommand {
           prio: 1,
           max: 99.2,
           min: -100,
+          enableHistory: false,
         );
 
   @override

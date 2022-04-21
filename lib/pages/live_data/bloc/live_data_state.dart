@@ -253,6 +253,7 @@ extension LiveDataStateExtension on LiveDataState {
           .toDouble();
 
   double get gForce => 1 + sqrt(_accelerationSum) / 9.8;
+  double get driveDirection => -yGyroData.last * Constants.radToDegree;
 
   Color get gForceColor {
     if (gForce > 1.3) return Colors.red;

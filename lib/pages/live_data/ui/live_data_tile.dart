@@ -34,7 +34,8 @@ class LiveDataTile extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.31,
         child: Stack(
           children: [
-            if (command.enableHistorical) chart(),
+            if (command.enableHistorical && command.historyData.isNotEmpty)
+              chart(),
             commandInfo(context),
           ],
         ),

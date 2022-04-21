@@ -3,7 +3,7 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 class BatteryVoltageCommand extends VisibleObdCommand {
   BatteryVoltageCommand()
-      : super('ATRV', min: 0, max: 20, prio: 5, enableHistory: true);
+      : super('ATRV', min: 10, max: 15, prio: 10, enableHistory: true);
 
   @override
   Color get color {
@@ -13,7 +13,8 @@ class BatteryVoltageCommand extends VisibleObdCommand {
   }
 
   @override
-  String get formattedResult => '${result.toStringAsFixed(2)} $unit';
+  String get formattedResult =>
+      '${result.isNaN ? "-.-" : result.toStringAsFixed(2)} $unit';
 
   @override
   void performCalculations(List<int> data) {

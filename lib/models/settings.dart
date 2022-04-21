@@ -26,11 +26,11 @@ extension FuelTypeExtension on FuelType {
   double get density {
     switch (this) {
       case FuelType.gasoline:
-        return 820;
-      case FuelType.diesel:
         return 750;
+      case FuelType.diesel:
+        return 835;
       case FuelType.lpg:
-        return 510;
+        return 550;
     }
   }
 

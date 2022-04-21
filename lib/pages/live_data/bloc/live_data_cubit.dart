@@ -238,11 +238,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       return;
     }
 
-    commands.add(BatteryVoltageCommand());
     _listenForSensors();
 
-    locationSub =
-        Location.instance.onLocationChanged.listen(_onLocationChanged);
+    final gpsEnabled = await LocationHelper.checkLocationService();
+
+    if (gpsEnabled) {
+      locationSub =
+          Location.instance.onLocationChanged.listen(_onLocationChanged);
+    }
   }
 
   /// Send command for preparing obd
@@ -265,11 +268,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       tankSize: state.tripRecord.tankSize,
     ));
     await _sendInitializeCommands();
+    commands.add(BatteryVoltageCommand());
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
     _startMinuteTimer();
-
-    await LocationHelper.checkLocationService();
 
     lastReciveCommandTime = DateTime.now();
     _decideNextMove();
@@ -317,6 +319,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final decoded = List<Map<String, dynamic>>.from(jsonDecode(json));
     final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
+    commands.add(BatteryVoltageCommand());
     _startSecondTimer();
     int index = 0;
     final percentyl =

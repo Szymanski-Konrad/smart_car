@@ -71,7 +71,7 @@ abstract class ObdCommand {
   }
 
   void insertHistoryData() {
-    historyData.addWithMax(result.toDouble(), 10);
+    historyData.addWithMax(result.toDouble(), 50);
   }
 
   List<double> get lastHistoryData {
