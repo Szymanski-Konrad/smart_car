@@ -22,7 +22,6 @@ dependencies:
 
   # Charts
   fl_chart: ^0.45.0
-  charts_painter: ^2.0.0
   chart_sparkline: ^1.0.7
 
   # Logging
