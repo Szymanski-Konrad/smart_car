@@ -43,6 +43,7 @@ class LiveDataState with _$LiveDataState {
     @Default(0) double fuelPrice,
     @Default(0) double score,
     @Default([]) List<double> acceleration,
+    @Default([]) List<String> vin,
 
     // GPS
     @Default(0) double direction,
@@ -65,7 +66,6 @@ class LiveDataState with _$LiveDataState {
     // Pids
     @Default([]) List<String> supportedPids,
     required PidsChecker pidsChecker,
-    @Default('') String vin,
     @Default(FuelSystemStatus.motorOff) FuelSystemStatus fuelSystemStatus,
     @Default(0) int averageResponseTime,
     @Default(0) int totalResponseTime,

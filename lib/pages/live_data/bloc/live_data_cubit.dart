@@ -22,6 +22,7 @@ import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/battery_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
+import 'package:smart_car/pages/live_data/model/commands/check_commands/vin_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
@@ -176,7 +177,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
 
     emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
-    Location.instance.changeSettings(accuracy: LocationAccuracy.navigation);
   }
 
   void _onLocationChanged(LocationData currLocation) {
@@ -232,10 +232,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         onSuccess: _onSuccessfulConnection,
         onError: _onConnectionError,
       );
-    } else if (kDebugMode) {
-      _runTest();
     } else {
-      return;
+      _runTest();
     }
 
     _listenForSensors();
@@ -243,6 +241,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final gpsEnabled = await LocationHelper.checkLocationService();
 
     if (gpsEnabled) {
+      Location.instance.changeSettings(accuracy: LocationAccuracy.navigation);
       locationSub =
           Location.instance.onLocationChanged.listen(_onLocationChanged);
     }
@@ -269,6 +268,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     ));
     await _sendInitializeCommands();
     commands.add(BatteryVoltageCommand());
+    commands.add(VinCommand());
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
     _startMinuteTimer();
@@ -526,6 +526,24 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
       lastReciveCommandTime = DateTime.now();
+
+      if (dataString.startsWith('49')) {
+        final receivedData = _convertReceivedData(dataString);
+        final now = DateTime.now();
+        final difference =
+            now.difference(lastTestCommandTime).inMilliseconds.abs();
+        lastTestCommandTime = now;
+
+        // Create test commands
+        if (!state.isLocalMode) {
+          final testCommand =
+              TestCommand('09${receivedData.command}', difference, data);
+          testCommands.add(testCommand);
+        }
+
+        final vin = commands.safeFirst<VinCommand>()?.parts ?? [];
+        emit(state.copyWith(vin: vin));
+      }
 
       if (dataString.startsWith('41')) {
         final receivedData = _convertReceivedData(dataString);

@@ -56,20 +56,19 @@ class SettingsPage extends StatelessWidget {
           title: Text(state.settings.deviceDescription),
           subtitle: const Text(Strings.selectedDevice),
         ),
-        if (kDebugMode)
-          ListTile(
-            leading: const Text(Strings.selectFile),
-            title: DropdownButton(
-              value: state.settings.selectedJson,
-              onChanged: cubit.updateJson,
-              items: Constants.localFiles
-                  .map((e) => DropdownMenuItem(
-                        child: Text(e),
-                        value: e,
-                      ))
-                  .toList(),
-            ),
+        ListTile(
+          leading: const Text(Strings.selectFile),
+          title: DropdownButton(
+            value: state.settings.selectedJson,
+            onChanged: cubit.updateJson,
+            items: Constants.localFiles
+                .map((e) => DropdownMenuItem(
+                      child: Text(e),
+                      value: e,
+                    ))
+                .toList(),
           ),
+        ),
         _buildSettingsTile(
           value: state.settings.engineCapacity.toString(),
           leading: Strings.engineCapacity,

@@ -9,6 +9,12 @@ import 'package:smart_car/utils/info_tile_data.dart';
 
 part 'trip_record.freezed.dart';
 
+const kRapidAcceleration = 'rapidAcceleartion';
+const kRapidBraking = 'rapidBraking';
+const kLeftTurns = 'leftTurns';
+const kRightTurns = 'rightTurns';
+const kHighGForce = 'hightGForce';
+
 @freezed
 class TripRecord with _$TripRecord {
   factory TripRecord({
@@ -124,7 +130,9 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateHighGForce() {
-    return copyWith(highGforce: highGforce + 1);
+    final lastTime = Map<String, DateTime>.from(updateTime);
+    lastTime[kHighGForce] = DateTime.now();
+    return copyWith(highGforce: highGforce + 1, updateTime: lastTime);
   }
 
   TripRecord updateTurning(bool isLeft) {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
-import 'package:smart_car/app/navigation/navigation.dart';
-import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
@@ -12,7 +10,6 @@ import 'package:smart_car/pages/live_data/ui/trip_stats_section.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
-import 'package:smart_car/utils/trip_files.dart';
 
 class LiveDataPageArguments {
   LiveDataPageArguments({this.isLocalMode = false});

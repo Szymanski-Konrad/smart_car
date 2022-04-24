@@ -79,7 +79,6 @@ class LiveDataTile extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 Text(command.formattedResult, style: textTheme),
-                // Icon(command.icon),
               ],
             ),
           ),

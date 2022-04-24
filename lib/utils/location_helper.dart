@@ -93,8 +93,9 @@ abstract class LocationHelper {
     }
 
     serviceEnabled = await location.serviceEnabled();
+    permission = await Location.instance.hasPermission();
 
-    return serviceEnabled;
+    return serviceEnabled && permission == PermissionStatus.granted;
   }
 
   static Map<String, dynamic>? tryCoordsToJson(LatLng? latLng) {

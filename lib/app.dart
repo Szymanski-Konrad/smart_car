@@ -112,15 +112,14 @@ class _AppState extends State<App> {
                     },
                   ),
                 ),
-              if (kDebugMode)
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text(Strings.localMode),
-                    onPressed: () async {
-                      _showLiveData(context, true);
-                    },
-                  ),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text(Strings.localMode),
+                  onPressed: () async {
+                    _showLiveData(context, true);
+                  },
                 ),
+              ),
               ListTile(
                 title: ElevatedButton(
                   child: const Text('Statystyki jazd'),
