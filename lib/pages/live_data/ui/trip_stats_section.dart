@@ -23,7 +23,7 @@ class TripStatsSection extends StatelessWidget {
         spacing: 8.0,
         children: [
           if (state.isTemperatureAvaliable) OtherInfoTile(state.indoorTempData),
-          AccDataTile(values: state.acceleration, title: 'Przysp.'),
+          AccDataTile(values: state.acceleration, title: 'Przyspieszenie'),
           OtherInfoTile(state.scoreData),
           OtherInfoTile(state.gForceData),
           OtherInfoTile(state.locationHeightData),
@@ -41,10 +41,10 @@ class TripStatsSection extends StatelessWidget {
               status: state.tripRecord.tripStatus,
             ),
           ),
-          ...state.tripRecord.countersSection.map((i) => OtherInfoTile(i)),
+          ...state.tripRecord.countersSection.map(
+              (i) => OtherInfoTile(i, updates: state.tripRecord.updateTime)),
           ...state.tripRecord.fuelSection.map((i) => OtherInfoTile(i)),
           ...state.tripRecord.otherInfoSection.map((i) => OtherInfoTile(i)),
-          ...state.vin.map((e) => Text('VIN PART: $e')),
         ],
       ),
     );

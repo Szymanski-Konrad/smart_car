@@ -14,6 +14,9 @@ abstract class Constants {
   static const largeScreenWidth = 400.0;
   static const autoAssignStationMaxDistanceKM = 0.1;
   static const radToDegree = 57.2957795;
+  static const showChangeSeconds = 5;
+  static const upperRPMLimit = 3000;
+  static const lowerRPMLimit = 1000;
 
   static const localFiles = [
     'work',

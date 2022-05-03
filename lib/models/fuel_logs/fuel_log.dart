@@ -21,6 +21,7 @@ class FuelLog with _$FuelLog {
     double? remainingFuel,
     LatLng? location,
     String? stationName,
+    String? vin,
   }) = _FuelLog;
 
   factory FuelLog.fromJson(Map<String, dynamic> json) =>

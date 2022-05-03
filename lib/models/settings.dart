@@ -57,6 +57,8 @@ class Settings with _$Settings {
     @Default(Constants.defaultLocalFile) String selectedJson,
     String? deviceAddress,
     String? deviceName,
+    String? vin,
+    double? leftFuel,
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
@@ -67,4 +69,6 @@ extension SettingsExtension on Settings {
   String get deviceDescription => deviceAddress == null
       ? Strings.noSelectedDevice
       : '${deviceName ?? Strings.noName} - $deviceAddress';
+
+  String get vinDescription => Strings.vin(vin);
 }

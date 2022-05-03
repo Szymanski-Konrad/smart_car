@@ -86,6 +86,16 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
   }
 
+  void updateVin(String? input) {
+    emit(state.copyWith(settings: state.settings.copyWith(vin: input)));
+    startTimer();
+  }
+
+  void updateLeftFuel(double? value) {
+    emit(state.copyWith(settings: state.settings.copyWith(leftFuel: value)));
+    startTimer();
+  }
+
   void updateFuelType(FuelType? fuelType) {
     if (fuelType != null) {
       emit(state.copyWith(

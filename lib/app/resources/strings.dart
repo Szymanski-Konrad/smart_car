@@ -40,6 +40,9 @@ abstract class Strings {
   static const String roadTilt = 'Nachylenie';
   static const String gForce = 'Przeciążenie';
   static const String fuelSystemStatus = 'Układ paliwowy';
+  static String vin(String? vin) {
+    return vin == null ? 'Nie rozpoznano numeru VIN' : 'VIN: $vin';
+  }
 
   /// Settings
   static const String noSelectedDevice = 'Nie wybranego urządzenia';
@@ -92,6 +95,8 @@ abstract class Strings {
   static const String totalDuration = 'Czas';
   static const String driveDuration = 'Czas jazdy';
   static const String idleDuration = 'Czas postoju';
+  static const String overRPMDuration = 'Duże obroty';
+  static const String underRPMDuration = 'Niskie obroty';
   static const String averageSpeed = 'Śr. prędkość';
   static const String rapidAcceleration = 'Przysp.';
   static const String rapidBraking = 'Hamowania';

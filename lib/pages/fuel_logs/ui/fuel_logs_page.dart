@@ -13,7 +13,7 @@ class FuelLogsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<FuelLogsCubit, FuelLogsState>(
-      bloc: GlobalBlocs.fuelLogs,
+      bloc: GlobalBlocs.fuelLogs..fetchLogs(),
       builder: (context, state) {
         final cubit = GlobalBlocs.fuelLogs;
         return Scaffold(

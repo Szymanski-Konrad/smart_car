@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
+import 'package:smart_car/pages/live_data/model/trip_record.dart';
 
 abstract class InfoTileData<T> {
   InfoTileData({
@@ -9,6 +10,7 @@ abstract class InfoTileData<T> {
     required this.unit,
     this.iconData,
     this.fontColor,
+    this.tripDataType,
   });
 
   final T value;
@@ -17,6 +19,7 @@ abstract class InfoTileData<T> {
   final String unit;
   IconData? iconData;
   Color? fontColor;
+  TripDataType? tripDataType;
 
   String get formattedValue {
     final val = value;
@@ -82,6 +85,7 @@ class OtherTileData<T> extends InfoTileData<T> {
     required String unit,
     IconData? iconData,
     Color? color,
+    TripDataType? tripDataType,
   }) : super(
           value: value,
           digits: digits,
@@ -89,5 +93,6 @@ class OtherTileData<T> extends InfoTileData<T> {
           unit: unit,
           iconData: iconData,
           fontColor: color,
+          tripDataType: tripDataType,
         );
 }

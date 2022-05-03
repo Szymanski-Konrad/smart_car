@@ -24,6 +24,7 @@ class DirectionTile extends StatelessWidget {
             child: const Icon(Icons.arrow_upward),
           ),
           Text(title),
+          Text(direction.toStringAsFixed(2)),
         ],
       ),
     );

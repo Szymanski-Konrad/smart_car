@@ -146,6 +146,7 @@ class CreateFuelLogCubit extends Cubit<CreateFuelLogState> {
       fuelType: state.fuelType,
       location: state.coordinates,
       stationName: state.selectedGasStation?.stationName,
+      vin: GlobalBlocs.settings.state.settings.vin,
     ));
     final station = state.selectedGasStation;
     if (station != null) {

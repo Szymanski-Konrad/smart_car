@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/date_formats.dart';
+
+abstract class DateTimeHelper {
+  static int? secondsDiff(int? secondsSinceEpoch) {
+    if (secondsSinceEpoch == null) return null;
+    final diff = DateTime.now().secondsSinceEpoch - secondsSinceEpoch;
+    if (diff > Constants.showChangeSeconds) return null;
+    return diff;
+  }
+}
 
 extension DateExtension on DateTime {
   int get secondsSinceEpoch => millisecondsSinceEpoch ~/ 1000;

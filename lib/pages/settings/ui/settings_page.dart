@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,8 +90,19 @@ class SettingsPage extends StatelessWidget {
         _buildSettingsTile(
           value: state.settings.tankSize.toString(),
           leading: Strings.tankCapacity,
-          suffix: 'l',
+          suffix: '%',
           onEdit: cubit.updateTankSize,
+        ),
+        _buildSettingsTile(
+          value: state.settings.vin ?? '',
+          suffix: '',
+          leading: 'VIN',
+          onEdit: cubit.updateVin,
+        ),
+        _buildSettingsTile(
+          value: state.settings.leftFuel.toString(),
+          suffix: 'l',
+          leading: 'Pozostałe paliwo',
         ),
         const SizedBox(height: 16),
         Padding(

@@ -36,6 +36,7 @@ class TripSummary with _$TripSummary {
     required DateTime endTripTime,
     @JsonKey(toJson: LocationHelper.tryCoordsToJson) LatLng? startLocation,
     @JsonKey(toJson: LocationHelper.tryCoordsToJson) LatLng? endLocation,
+    String? vin,
   }) = _TripSummary;
 
   factory TripSummary.fromJson(Map<String, dynamic> json) =>

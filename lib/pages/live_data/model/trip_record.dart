@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -9,11 +10,13 @@ import 'package:smart_car/utils/info_tile_data.dart';
 
 part 'trip_record.freezed.dart';
 
-const kRapidAcceleration = 'rapidAcceleartion';
-const kRapidBraking = 'rapidBraking';
-const kLeftTurns = 'leftTurns';
-const kRightTurns = 'rightTurns';
-const kHighGForce = 'hightGForce';
+enum TripDataType {
+  rapidAcceleration,
+  rapidBraking,
+  leftTurns,
+  rightTurns,
+  highGForce,
+}
 
 @freezed
 class TripRecord with _$TripRecord {
@@ -38,8 +41,9 @@ class TripRecord with _$TripRecord {
     @Default(0) int tripSeconds,
     @Default(0) int idleTripSeconds,
     @Default(0) int currentDriveInterval,
-    @Default(0.0) double currentDriveIntervalFuel,
-    @Default({}) Map<String, DateTime> updateTime,
+    @Default(0) int overRPMDriveTime,
+    @Default(0) int underRPMDriveTime,
+    @Default({}) Map<TripDataType, int> updateTime,
 
     // Distance & speed
     @Default(0.0) double distance,
@@ -96,15 +100,20 @@ extension TripRecordExtension on TripRecord {
     return false;
   }
 
-  TripRecord updateTripStatus(num speed, TripStatus? status) {
+  TripRecord updateTripStatus(num speed, num rpm, TripStatus? status) {
     final _speed = speed.isNaN ? 0 : speed;
+    final _rpm = rpm.isNaN ? 0 : rpm;
+    final isDrive = _speed > Constants.idleSpeedLimit;
+    final overRPM = _rpm > Constants.upperRPMLimit;
+    final underRPM = _rpm < Constants.lowerRPMLimit;
     final isSameStatus = _isSameStatus(status);
     return copyWith(
       tripStatus: status ?? tripStatus,
-      tripSeconds: tripSeconds + (_speed > Constants.idleSpeedLimit ? 1 : 0),
-      idleTripSeconds:
-          idleTripSeconds + (_speed > Constants.idleSpeedLimit ? 0 : 1),
+      tripSeconds: tripSeconds + (isDrive ? 1 : 0),
+      idleTripSeconds: idleTripSeconds + (isDrive ? 0 : 1),
       currentDriveInterval: isSameStatus ? currentDriveInterval + 1 : 1,
+      overRPMDriveTime: overRPMDriveTime + (isDrive && overRPM ? 1 : 0),
+      underRPMDriveTime: underRPMDriveTime + (isDrive && underRPM ? 1 : 0),
     );
   }
 
@@ -130,31 +139,47 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateHighGForce() {
-    final lastTime = Map<String, DateTime>.from(updateTime);
-    lastTime[kHighGForce] = DateTime.now();
+    final lastTime = Map<TripDataType, int>.from(updateTime);
+    lastTime[TripDataType.highGForce] = DateTime.now().secondsSinceEpoch;
     return copyWith(highGforce: highGforce + 1, updateTime: lastTime);
   }
 
   TripRecord updateTurning(bool isLeft) {
-    if (isLeft) return copyWith(leftTurns: leftTurns + 1);
-    return copyWith(rightTurns: rightTurns + 1);
+    final lastTime = Map<TripDataType, int>.from(updateTime);
+    if (isLeft) {
+      lastTime[TripDataType.leftTurns] = DateTime.now().secondsSinceEpoch;
+      return copyWith(
+        leftTurns: leftTurns + 1,
+        updateTime: lastTime,
+      );
+    }
+    lastTime[TripDataType.rightTurns] = DateTime.now().secondsSinceEpoch;
+    return copyWith(
+      rightTurns: rightTurns + 1,
+      updateTime: lastTime,
+    );
   }
 
   TripRecord updateRapidAcceleration({required double acceleration}) {
     final secondsSinceEpoch = DateTime.now().secondsSinceEpoch;
     final seconds = secondsSinceEpoch - lastAccelerationTime;
-
     if (seconds < Constants.minRapidSpeedTimeThreshold) return this;
+    final lastTime = Map<TripDataType, int>.from(updateTime);
     if (acceleration > Constants.rapidAcceleration) {
+      lastTime[TripDataType.rapidAcceleration] =
+          DateTime.now().secondsSinceEpoch;
       return copyWith(
         rapidAccelerations: rapidAccelerations + 1,
         lastAccelerationTime: secondsSinceEpoch,
+        updateTime: lastTime,
       );
     }
     if (acceleration < Constants.rapidBreaking) {
+      lastTime[TripDataType.rapidBraking] = DateTime.now().secondsSinceEpoch;
       return copyWith(
         rapidBreakings: rapidBreakings + 1,
         lastBreakingTime: secondsSinceEpoch,
+        updateTime: lastTime,
       );
     }
 
@@ -171,6 +196,8 @@ extension TripRecordExtension on TripRecord {
         totalTripTimeDetails,
         driveTimeDetails,
         idleTripTimeDetails,
+        overRPMTimeDetails,
+        underRPMTimeDetails,
       ];
 
   List<OtherTileData> get otherInfoSection => [
@@ -313,6 +340,22 @@ extension TripRecordExtension on TripRecord {
         isCurrent: tripStatus == TripStatus.idle,
       );
 
+  TimeTileData get overRPMTimeDetails => TimeTileData(
+        value: Duration(seconds: overRPMDriveTime),
+        digits: 0,
+        title: Strings.overRPMDuration,
+        unit: '',
+        isCurrent: false,
+      );
+
+  TimeTileData get underRPMTimeDetails => TimeTileData(
+        value: Duration(seconds: underRPMDriveTime),
+        digits: 0,
+        title: Strings.underRPMDuration,
+        unit: '',
+        isCurrent: false,
+      );
+
   OtherTileData get avgSpeedDetails => OtherTileData(
         value: averageSpeed,
         title: Strings.averageSpeed,
@@ -332,6 +375,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.rapidAcceleration,
         unit: '',
+        tripDataType: TripDataType.rapidAcceleration,
       );
 
   OtherTileData get rapidBrakingDetails => OtherTileData(
@@ -339,6 +383,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.rapidBraking,
         unit: '',
+        tripDataType: TripDataType.rapidBraking,
       );
 
   OtherTileData get leftTurnsDetails => OtherTileData(
@@ -346,6 +391,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.leftTurns,
         unit: '',
+        tripDataType: TripDataType.leftTurns,
       );
 
   OtherTileData get rightTurnsDetails => OtherTileData(
@@ -353,6 +399,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.rightTurns,
         unit: '',
+        tripDataType: TripDataType.rightTurns,
       );
 
   OtherTileData get highGForceDetails => OtherTileData(
@@ -360,6 +407,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.gForce,
         unit: '',
+        tripDataType: TripDataType.highGForce,
       );
 
   OtherTileData get producedCarboDetails => OtherTileData(

@@ -1,5 +1,6 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.dart';
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
+import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
@@ -10,6 +11,7 @@ extension ObdCommandsExtensions on List<ObdCommand> {
       safeFirst<FuelSystemStatusCommand>()?.status ?? FuelSystemStatus.motorOff;
 
   double get speed => safeFirst<SpeedCommand>()?.result.toDouble() ?? 0;
+  double? get fuelLevel => safeFirst<FuelLevelCommand>()?.result.toDouble();
 
   double? get airFuelRatio =>
       safeFirst<CommandedAirFuelRatioCommand>()?.result.toDouble();

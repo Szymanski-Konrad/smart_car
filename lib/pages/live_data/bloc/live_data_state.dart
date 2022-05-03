@@ -1,7 +1,6 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
@@ -43,13 +42,14 @@ class LiveDataState with _$LiveDataState {
     @Default(0) double fuelPrice,
     @Default(0) double score,
     @Default([]) List<double> acceleration,
-    @Default([]) List<String> vin,
+    String? vin,
 
     // GPS
     @Default(0) double direction,
     @Default(0) double locationSlope,
     @Default(0) double locationHeight,
     @Default(0) double tripAltitudeCumulation,
+    @Default([]) List<LatLng> gpsPoints,
 
     // Just for testing
     @Default(0.0) double localTripProgress,
@@ -62,6 +62,7 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isConnnectingError,
     @Default(false) bool isTripEnded,
     @Default(false) bool isTripClosing,
+    @Default(false) bool alreadyAskedForFueling,
 
     // Pids
     @Default([]) List<String> supportedPids,
@@ -71,12 +72,13 @@ class LiveDataState with _$LiveDataState {
     @Default(0) int totalResponseTime,
 
     // Sensors
-    @Default([0]) List<double> xAccData,
-    @Default([0]) List<double> yAccData,
-    @Default([0]) List<double> zAccData,
-    @Default([0]) List<double> xGyroData,
-    @Default([0]) List<double> yGyroData,
-    @Default([0]) List<double> zGyroData,
+    @Default(0) double xAccData,
+    @Default(0) double yAccData,
+    @Default(0) double zAccData,
+    @Default(0) double xGyroData,
+    @Default(0) double yGyroData,
+    @Default(0) double zGyroData,
+    @Default(0) double gForce,
     @Default(false) bool isTemperatureAvaliable,
     @Default(0.0) double temperature,
     @Default(false) bool isTurning,
@@ -210,27 +212,6 @@ extension LiveDataStateExtension on LiveDataState {
         color: gForceColor,
       );
 
-  OtherTileData get gForceDataX => OtherTileData(
-        digits: 2,
-        unit: 'g',
-        title: Strings.gForce + ' X',
-        value: xAccData.last,
-      );
-
-  OtherTileData get gForceDataY => OtherTileData(
-        digits: 2,
-        unit: 'g',
-        title: Strings.gForce + ' Y',
-        value: yAccData.last,
-      );
-
-  OtherTileData get gForceDataZ => OtherTileData(
-        digits: 2,
-        unit: 'g',
-        title: Strings.gForce + ' Z',
-        value: zAccData.last,
-      );
-
   OtherTileData get indoorTempData => OtherTileData(
         digits: 1,
         unit: '°C',
@@ -247,13 +228,7 @@ extension LiveDataStateExtension on LiveDataState {
       );
 
   String get getTemperature => temperature.toStringAsFixed(1);
-
-  double get _accelerationSum =>
-      (pow(xAccData.last, 2) + pow(yAccData.last, 2) + pow(zAccData.last, 2))
-          .toDouble();
-
-  double get gForce => 1 + sqrt(_accelerationSum) / 9.8;
-  double get driveDirection => -yGyroData.last * Constants.radToDegree;
+  double get driveDirection => -yGyroData * Constants.radToDegree;
 
   Color get gForceColor {
     if (gForce > 1.3) return Colors.red;

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:smart_car/models/trip_score_model.dart';
 
@@ -41,8 +39,6 @@ abstract class TripScoreHelper {
       score -= 10;
     }
 
-    final random = Random();
-
-    return score + random.nextInt(40) - 20;
+    return score;
   }
 }

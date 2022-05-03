@@ -13,4 +13,6 @@ class SettingsState with _$SettingsState {
 
 extension SettingsStateExtension on SettingsState {
   static SettingsState get initial => SettingsState(settings: Settings());
+
+  String? get vin => settings.vin;
 }

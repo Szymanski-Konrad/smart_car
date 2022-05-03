@@ -5,17 +5,20 @@ import 'dart:typed_data';
 
 import 'package:environment_sensors/environment_sensors.dart';
 import 'package:fl_toast/fl_toast.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sensors/flutter_sensors.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'package:location/location.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
+import 'package:smart_car/app/resources/alerts.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/feautures/alert_center/alert_center.dart';
 import 'package:smart_car/models/trip_score_model.dart';
 import 'package:smart_car/models/trip_summary/trip_summary.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
@@ -27,6 +30,7 @@ import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
+import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
@@ -37,6 +41,7 @@ import 'package:smart_car/utils/list_extension.dart';
 import 'package:smart_car/utils/location_helper.dart';
 import 'package:smart_car/utils/logger.dart';
 import 'package:smart_car/utils/obd_commands_extensions.dart';
+import 'package:smart_car/utils/sensors_helper.dart';
 import 'package:smart_car/utils/trip_files.dart';
 import 'package:smart_car/utils/ui/countdown_text.dart';
 import 'package:uuid/uuid.dart';
@@ -88,14 +93,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     emit(state.copyWith(isConnnectingError: true));
   }
 
-  /// High-pass filter
-  double filterValue(double previous, double current) {
-    const alpha = 0.8;
-
-    final gravity = alpha * previous + (1 - alpha) * current;
-    return current - gravity;
-  }
-
   void checkGforce() {
     if (!state.isHighGforce) {
       if (state.gForce > 1.3) {
@@ -112,7 +109,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void checkTurning() {
-    final rotation = state.yGyroData.last;
+    final rotation = state.yGyroData;
     if (!state.isTurning) {
       if (rotation.abs() > 0.25) {
         emit(
@@ -130,7 +127,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Future<void> _listenForSensors() async {
     final gyroStream = await SensorManager().sensorUpdates(
       sensorId: Sensors.GYROSCOPE,
-      interval: Sensors.SENSOR_DELAY_NORMAL,
+      interval: Sensors.SENSOR_DELAY_UI,
     );
 
     final accStream = await SensorManager().sensorUpdates(
@@ -139,31 +136,25 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
 
     _accSubscription = accStream.listen((event) {
-      final xData = List<double>.from(state.xAccData);
-      final yData = List<double>.from(state.yAccData);
-      final zData = List<double>.from(state.zAccData);
-      xData.addWithMax(filterValue(xData.last, event.data[0]), 50);
-      yData.addWithMax(filterValue(yData.last, event.data[1]), 50);
-      zData.addWithMax(filterValue(zData.last, event.data[2]), 50);
+      final xData = SensorsHelper.filterValue(state.xAccData, event.data[0]);
+      final yData = SensorsHelper.filterValue(state.yAccData, event.data[1]);
+      final zData = SensorsHelper.filterValue(state.zAccData, event.data[2]);
+      final acceleration = SensorsHelper.accelerationSum(xData, yData, zData);
+      final gForce = SensorsHelper.gForceCalc(acceleration);
       emit(state.copyWith(
         xAccData: xData,
         yAccData: yData,
         zAccData: zData,
+        gForce: gForce,
       ));
       checkGforce();
     });
 
     _gyroSubsription = gyroStream.listen((event) {
-      final xData = List<double>.from(state.xGyroData);
-      final yData = List<double>.from(state.yGyroData);
-      final zData = List<double>.from(state.zGyroData);
-      xData.addWithMax(event.data[0], 20);
-      yData.addWithMax(event.data[1], 20);
-      zData.addWithMax(event.data[2], 20);
       emit(state.copyWith(
-        xGyroData: xData,
-        yGyroData: yData,
-        zGyroData: zData,
+        xGyroData: event.data[0],
+        yGyroData: event.data[1],
+        zGyroData: event.data[2],
       ));
       checkTurning();
     });
@@ -185,6 +176,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       emit(state.copyWith(
         firstLocation: currLocation,
         lastLocation: currLocation,
+        gpsPoints: [currLocation.toLatLng],
       ));
       return;
     }
@@ -195,6 +187,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final distance =
         LocationHelper.calculateDistance(lastLocation, currLocation);
     if (distance < 100) return;
+    final gpsPoints = List<LatLng>.from(state.gpsPoints);
+    gpsPoints.add(currLocation.toLatLng);
     final angle = LocationHelper.calculateAngle(
       lastLocation,
       currLocation,
@@ -213,6 +207,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       locationSlope: angle,
       locationHeight: currLocation.altitude ?? 0,
       direction: currLocation.heading ?? 0,
+      gpsPoints: gpsPoints,
       tripRecord: state.tripRecord.copyWith(
         gpsSpeed: (currLocation.speed ?? 0) * 3600 / 1000,
         gpsDistance: totalDistance,
@@ -293,13 +288,15 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           motorOff();
         }
         final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
+        final rpm = commands.safeFirst<RpmCommand>()?.result ?? 0;
         final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>();
         final tripStatus = fuelStatus?.tripStatus(speed);
         emit(
           state.copyWith(
             averageResponseTime: averageResponseTime,
             totalResponseTime: totalResponseTime,
-            tripRecord: state.tripRecord.updateTripStatus(speed, tripStatus),
+            tripRecord:
+                state.tripRecord.updateTripStatus(speed, rpm, tripStatus),
           ),
         );
       },
@@ -307,7 +304,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _startMinuteTimer() {
-    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _everyMinuteTimer = Timer.periodic(const Duration(seconds: 20), (timer) {
       calculateScore();
     });
   }
@@ -320,7 +317,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final testCommands = decoded.map(TestCommand.fromJson).toList();
     emit(state.localMode());
     commands.add(BatteryVoltageCommand());
+    commands.add(VinCommand());
     _startSecondTimer();
+    _startMinuteTimer();
     int index = 0;
     final percentyl =
         testCommands.length > 10000 ? testCommands.length ~/ 10000 : 1; // 0.01%
@@ -404,6 +403,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       saveCommands();
       await generateTripSummary();
     }
+    GlobalBlocs.settings.updateLeftFuel(commands.fuelLevel);
     await goBackWithDelay();
   }
 
@@ -482,6 +482,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       leftTurns: state.tripRecord.leftTurns,
       rightTurns: state.tripRecord.rightTurns,
       tankSize: state.tripRecord.tankSize,
+      vin: GlobalBlocs.settings.state.settings.vin,
     );
     await FirestoreHandler.saveTripSummary(tripSummary);
   }
@@ -514,6 +515,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         return;
       }
 
+      /// Fetching battery voltage
       if (dataString.contains('.') && dataString.contains('V')) {
         _processBatteryVoltageCommand(dataString, data);
       }
@@ -527,8 +529,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       }
       lastReciveCommandTime = DateTime.now();
 
-      if (dataString.startsWith('49')) {
-        final receivedData = _convertReceivedData(dataString);
+      /// Fetch vin data
+      if (dataString.startsWith('014')) {
+        final receivedData =
+            ReceivedData(data: data, command: '0902', splitted: [dataString]);
         final now = DateTime.now();
         final difference =
             now.difference(lastTestCommandTime).inMilliseconds.abs();
@@ -540,9 +544,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               TestCommand('09${receivedData.command}', difference, data);
           testCommands.add(testCommand);
         }
+        commands
+            .safeFirst<VinCommand>()
+            ?.commandBack(receivedData.data, state.isLocalMode);
 
-        final vin = commands.safeFirst<VinCommand>()?.parts ?? [];
+        final vin = commands.safeFirst<VinCommand>()?.vin;
         emit(state.copyWith(vin: vin));
+        GlobalBlocs.settings.updateVin(vin);
+        return;
       }
 
       if (dataString.startsWith('41')) {
@@ -578,9 +587,17 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               break;
             case PID.fuelLevel:
               if (command is FuelLevelCommand) {
+                final current = command.result.toDouble();
+                final cached = GlobalBlocs.settings.state.settings.leftFuel;
+                if (!state.isLocalMode &&
+                    cached != null &&
+                    current > cached &&
+                    !state.alreadyAskedForFueling) {
+                  AlertCenter.show(Alerts.refuelRecognized(current - cached));
+                  emit(state.copyWith(alreadyAskedForFueling: true));
+                }
                 emit(state.copyWith(
-                  tripRecord:
-                      tripRecord.updateFuelLvl(command.result.toDouble()),
+                  tripRecord: tripRecord.updateFuelLvl(current),
                 ));
               }
               break;

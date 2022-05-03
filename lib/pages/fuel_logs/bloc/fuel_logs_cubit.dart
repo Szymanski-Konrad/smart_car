@@ -8,10 +8,10 @@ import 'package:smart_car/services/firestore_handler.dart';
 
 class FuelLogsCubit extends Cubit<FuelLogsState> {
   FuelLogsCubit() : super(FuelLogsState()) {
-    _fetchLogs();
+    fetchLogs();
   }
 
-  Future<void> _fetchLogs() async {
+  Future<void> fetchLogs() async {
     final results = await FirestoreHandler.fetchFuelLogs();
     emit(state.copyWith(logs: results));
   }

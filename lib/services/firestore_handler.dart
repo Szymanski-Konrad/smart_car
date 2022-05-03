@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/trip_summary/trip_summary.dart';
@@ -67,9 +68,18 @@ abstract class FirestoreHandler {
 
   /// Fetch all fuel logs for account
   static Future<List<FuelLog>> fetchFuelLogs() async {
-    final query =
-        await FirebaseFirestore.instance.collection(kFuelLogCollection).get();
-    return query.docs.map((e) => FuelLog.fromJson(e.data())).toList();
+    final vin = GlobalBlocs.settings.state.settings.vin;
+    print('Fuel logs vin: $vin');
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection(kFuelLogCollection);
+
+    if (vin != null && vin.isNotEmpty) {
+      print('Fetching fuel logs');
+      query = query.where('vin', isEqualTo: vin);
+    }
+
+    final results = await query.get();
+    return results.docs.map((e) => FuelLog.fromJson(e.data())).toList();
   }
 
   /// Save [tripSummary] on server
@@ -82,9 +92,17 @@ abstract class FirestoreHandler {
 
   /// Fetch trip summaries for account
   static Future<List<TripSummary>> fetchTripSummaries() async {
-    final query = await FirebaseFirestore.instance
-        .collection(kTripSummaryCollection)
-        .get();
-    return query.docs.map((e) => TripSummary.fromJson(e.data())).toList();
+    final vin = GlobalBlocs.settings.state.settings.vin;
+    print(vin);
+    Query<Map<String, dynamic>> query =
+        FirebaseFirestore.instance.collection(kTripSummaryCollection);
+
+    if (vin != null && vin.isNotEmpty) {
+      print('Fetching trip summaries');
+      query = query.where('vin', isEqualTo: vin);
+    }
+
+    final results = await query.get();
+    return results.docs.map((e) => TripSummary.fromJson(e.data())).toList();
   }
 }

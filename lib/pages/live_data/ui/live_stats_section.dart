@@ -23,6 +23,7 @@ class LiveStatsSection extends StatelessWidget {
         runSpacing: 8.0,
         spacing: 8.0,
         children: [
+          Text(Strings.vin(state.vin)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [

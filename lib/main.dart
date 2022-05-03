@@ -7,11 +7,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigator.dart';
+import 'package:smart_car/feautures/alert_center/alert_center.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
+
+  final appKey = GlobalKey();
+  AlertCenter.initialize(globalKey: appKey);
 
   await FlutterLogs.initLogs(
     logLevelsEnabled: LogLevel.values,
@@ -29,7 +33,21 @@ Future<void> main() async {
     isDebuggable: true,
   );
 
-  runApp(const FlutterBlueApp());
+  runApp(_App(appKey: appKey));
+}
+
+class _App extends StatelessWidget {
+  const _App({Key? key, required this.appKey}) : super(key: key);
+
+  final GlobalKey appKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData.dark(),
+      home: FlutterBlueApp(key: appKey),
+    );
+  }
 }
 
 class FlutterBlueApp extends StatelessWidget {
@@ -39,10 +57,7 @@ class FlutterBlueApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: GlobalBlocs.blocs,
-      child: MaterialApp(
-        home: const ToastProvider(child: PageNavigator()),
-        theme: ThemeData.dark(),
-      ),
+      child: const ToastProvider(child: PageNavigator()),
     );
   }
 }
