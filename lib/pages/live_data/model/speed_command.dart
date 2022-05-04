@@ -39,12 +39,12 @@ class SpeedCommand extends VisibleObdCommand {
     return (result / 3600000) * differenceMiliseconds;
   }
 
-  /// Return acceleration in m/s
+  /// Return acceleration in km/h per s
   double acceleration() {
     if (historyData.isEmpty || historyData.length < 2) return 0;
     final speedDiff = historyData[historyData.length - 1] -
         historyData[historyData.length - 2];
-    return (speedDiff * 1000 / 3600) / (differenceMiliseconds / 1000);
+    return speedDiff / (differenceMiliseconds / 1000);
   }
 
   @override

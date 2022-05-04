@@ -589,8 +589,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               if (command is FuelLevelCommand) {
                 final current = command.result.toDouble();
                 final cached = GlobalBlocs.settings.state.settings.leftFuel;
-                if (!state.isLocalMode &&
-                    cached != null &&
+                if (cached != null &&
                     current > cached &&
                     !state.alreadyAskedForFueling) {
                   AlertCenter.show(Alerts.refuelRecognized(current - cached));

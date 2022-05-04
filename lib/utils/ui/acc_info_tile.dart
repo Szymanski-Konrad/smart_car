@@ -62,6 +62,7 @@ class AccDataTile extends StatelessWidget {
                     style: textTheme,
                     textAlign: TextAlign.center,
                   ),
+                const Text('km/h'),
               ],
             ),
           ),

@@ -101,7 +101,7 @@ class SettingsPage extends StatelessWidget {
         ),
         _buildSettingsTile(
           value: state.settings.leftFuel.toString(),
-          suffix: 'l',
+          suffix: '%',
           leading: 'Pozostałe paliwo',
         ),
         const SizedBox(height: 16),
