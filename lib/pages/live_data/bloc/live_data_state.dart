@@ -41,6 +41,7 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
     @Default(0) double score,
+    @Default(0) double previousScore,
     @Default([]) List<double> acceleration,
     String? vin,
 

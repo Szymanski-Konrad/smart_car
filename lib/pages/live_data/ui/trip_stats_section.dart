@@ -24,7 +24,7 @@ class TripStatsSection extends StatelessWidget {
         children: [
           if (state.isTemperatureAvaliable) OtherInfoTile(state.indoorTempData),
           AccDataTile(values: state.acceleration, title: 'Przyspieszenie'),
-          OtherInfoTile(state.scoreData),
+          OtherInfoTile(state.scoreData, previousValue: state.previousScore,),
           OtherInfoTile(state.gForceData),
           OtherInfoTile(state.locationHeightData),
           OtherInfoTile(state.directionData),

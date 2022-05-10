@@ -448,8 +448,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
     final _lastModel = lastTripScoreModel;
     if (_lastModel != null) {
+      final previousScore = state.score;
       final score = TripScoreHelper.calculateScore(_lastModel, tripScoreModel);
-      emit(state.copyWith(score: score));
+      emit(state.copyWith(score: score, previousScore: previousScore,));
     }
     lastTripScoreModel = tripScoreModel;
   }
@@ -482,6 +483,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       leftTurns: state.tripRecord.leftTurns,
       rightTurns: state.tripRecord.rightTurns,
       tankSize: state.tripRecord.tankSize,
+      altitudeCumulative: state.tripRecord.altitudeCumulative,
+      overRPMDriveTime: state.tripRecord.overRPMDriveTime,
+      underRPMDriveTime: state.tripRecord.underRPMDriveTime,
+      locations: state.gpsPoints,
+      score: state.score,
       vin: GlobalBlocs.settings.state.settings.vin,
     );
     await FirestoreHandler.saveTripSummary(tripSummary);
