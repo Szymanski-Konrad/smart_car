@@ -28,7 +28,7 @@ class TripRecord with _$TripRecord {
     @Default(0.0) double usedFuel,
     @Default(0.0) double idleUsedFuel,
     @Default(0.0) double savedFuel,
-    @Default(55.0) double tankSize,
+    @Default(0.0) double tankSize,
     @Default(0) double fuelPrice,
 
     // Gps

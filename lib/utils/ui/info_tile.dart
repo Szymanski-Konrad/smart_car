@@ -11,10 +11,12 @@ class OtherInfoTile extends StatelessWidget {
   const OtherInfoTile(
     this.data, {
     Key? key,
+    this.previousValue,
     this.updates = const {},
   }) : super(key: key);
 
   final OtherTileData data;
+  final double? previousValue;
   final Map<TripDataType, int> updates;
 
   int? get seconds => DateTimeHelper.secondsDiff(updates[data.tripDataType]);
@@ -51,11 +53,17 @@ class OtherInfoTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Text(
+              Row(
+                children: [
+Text(
                 '${data.formattedValue} ${data.unit}',
                 style:
                     TextStyles.valueTextStyle.copyWith(color: data.fontColor),
               ),
+              
+                ],
+              ),
+              
               if (icon != null) Icon(icon),
               Text(
                 data.title,
