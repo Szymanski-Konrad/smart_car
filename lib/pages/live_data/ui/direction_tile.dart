@@ -6,10 +6,12 @@ class DirectionTile extends StatelessWidget {
     Key? key,
     required this.direction,
     required this.title,
+    this.scale = 1.0,
   }) : super(key: key);
 
   final double direction;
   final String title;
+  final double scale;
 
   @override
   Widget build(BuildContext context) {

@@ -449,7 +449,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final _lastModel = lastTripScoreModel;
     if (_lastModel != null) {
       final score = TripScoreHelper.calculateScore(_lastModel, tripScoreModel);
-      emit(state.copyWith(score: score));
+      emit(state.copyWith(score: score, previousScore: state.score));
     }
     lastTripScoreModel = tripScoreModel;
   }

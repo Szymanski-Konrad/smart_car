@@ -157,7 +157,7 @@ class TripSummaryCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Center(
-              child: Text('Podsumowanie (${trips.length} przejazdy'),
+              child: Text('Podsumowanie (${trips.length} przejazdy)'),
             ),
             const SizedBox(height: 16.0),
             Row(

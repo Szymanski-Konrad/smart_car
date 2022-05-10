@@ -37,6 +37,7 @@ class LiveStatsSection extends StatelessWidget {
           ),
           DirectionTile(
             direction: state.driveDirection,
+            scale: 2,
             title: 'Kierunek jazdy',
           ),
           if (cubit.commands.isNotEmpty)
