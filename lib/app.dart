@@ -10,6 +10,7 @@ import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/statistics.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -68,6 +69,19 @@ class _AppState extends State<App> {
         return Scaffold(
           body: ListView(
             children: [
+              const SectionTitle(title: 'Statystyki'),
+              Text(
+                  'Spalanie: ${state.stats.refuelingConsumption.toStringAsFixed(1)} l/100km'),
+              Text('Zasięg: ${state.stats.range.toStringAsFixed(0)} km'),
+              Text(
+                  'Przejechane kilometry: ${state.stats.distance.toStringAsFixed(1)} km'),
+              Text(
+                  'Użyte paliwo: ${state.stats.fuelUsed.toStringAsFixed(2)} l'),
+              Text(
+                  'Współczynnik spalania: ${state.stats.consumptionScale.toStringAsFixed(3)}'),
+              Text(
+                  'Spalanie z OBD: ${state.stats.avgConsumption.toStringAsFixed(2)} l/100km'),
+              const Divider(color: Colors.yellow),
               const SectionTitle(title: Strings.bluetooth),
               SwitchListTile(
                 title: const Text(Strings.enableBluetooth),
@@ -148,6 +162,13 @@ class _AppState extends State<App> {
               const SizedBox(height: 16),
               const Divider(color: Colors.yellow),
               const SectionTitle(title: Strings.settings),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text('Uczenie maszynowe'),
+                  onPressed: () =>
+                      Navigation.instance.push(SharedRoutes.machineLearning),
+                ),
+              ),
               ListTile(
                 title: ElevatedButton(
                   child: const Text(Strings.settings),

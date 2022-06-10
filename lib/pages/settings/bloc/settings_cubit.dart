@@ -6,6 +6,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/settings.dart';
+import 'package:smart_car/models/statistics.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
@@ -20,13 +21,23 @@ class SettingsCubit extends Cubit<SettingsState> {
     if (!Constants.localFiles.contains(settings.selectedJson)) {
       settings = settings.copyWith(selectedJson: Constants.localFiles.first);
     }
-    emit(state.copyWith(settings: settings));
+    final statsJson = await Storage.getStatisticsJson();
+    final stats = Statistics.fromJson(jsonDecode(statsJson ?? ''));
+    emit(state.copyWith(
+      settings: settings,
+      stats: stats,
+    ));
   }
 
   Future<void> saveSettings() async {
     final json = jsonEncode(state.settings);
     await Storage.updateSettings(json);
     changeSaved(true);
+  }
+
+  Future<void> saveStats() async {
+    final json = jsonEncode(state.stats);
+    await Storage.updateStatistics(json);
   }
 
   void changeSaved(bool value) {
@@ -91,9 +102,35 @@ class SettingsCubit extends Cubit<SettingsState> {
     startTimer();
   }
 
-  void updateLeftFuel(double? value) {
+  void updateLeftFuel(double value) {
     emit(state.copyWith(settings: state.settings.copyWith(leftFuel: value)));
     startTimer();
+  }
+
+  void updateStats({
+    required double fuelLeft,
+    required double distance,
+    required double fuelUsed,
+  }) async {
+    final range = fuelLeft * state.stats.refuelingConsumption / 100;
+    final totalDistance = state.stats.distance + distance;
+    final totalFuelUsed = state.stats.fuelUsed + fuelUsed;
+    emit(state.copyWith(
+      stats: state.stats.copyWith(
+        range: range,
+        distance: totalDistance,
+        fuelUsed: totalFuelUsed,
+      ),
+    ));
+    await saveStats();
+  }
+
+  void updateRefuelingConsumption(double consumption) async {
+    emit(state.copyWith(
+      stats: state.stats.copyWith(refuelingConsumption: consumption),
+    ));
+
+    await saveStats();
   }
 
   void updateFuelType(FuelType? fuelType) {

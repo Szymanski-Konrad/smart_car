@@ -19,7 +19,19 @@ class OtherInfoTile extends StatelessWidget {
   final double? previousValue;
   final Map<TripDataType, int> updates;
 
-  int? get seconds => DateTimeHelper.secondsDiff(updates[data.tripDataType]);
+  int? get seconds {
+    final _seconds = <int>[];
+    final types = data.tripDataType;
+    if (types == null) return null;
+    for (final type in types) {
+      final value = DateTimeHelper.secondsDiff(updates[type]);
+      if (value != null) {
+        _seconds.add(value);
+      }
+    }
+    _seconds.sort();
+    return _seconds.isEmpty ? null : _seconds.first;
+  }
 
   Color? get fontColor {
     final _seconds = seconds;
@@ -27,6 +39,26 @@ class OtherInfoTile extends StatelessWidget {
       return Colors.transparent;
     }
     return Colors.green.withOpacity((255 - _seconds * 50) / 255);
+  }
+
+  TextStyle diffTextStyle(double diff) {
+    if (diff == 0) return const TextStyle(color: Colors.grey);
+    if (diff < 0) {
+      return const TextStyle(color: Colors.red);
+    } else {
+      return const TextStyle(color: Colors.green);
+    }
+  }
+
+  Widget diffText() {
+    final prevValue = previousValue;
+    if (prevValue == null) return const SizedBox();
+    final diff = (data.value as double) - prevValue;
+    final text = '${diff < 0 ? '-' : '+'} ${diff.abs().toStringAsFixed(0)}';
+    return Text(
+      text,
+      style: diffTextStyle(diff),
+    );
   }
 
   @override
@@ -40,12 +72,9 @@ class OtherInfoTile extends StatelessWidget {
         Container(
           width: MediaQuery.of(context).size.width * widthFactor,
           height: Constants.infoTileHeight,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.blueGrey,
-              width: 3,
-            ),
-            borderRadius: const BorderRadius.all(
+          decoration: const BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.all(
               Radius.circular(8.0),
             ),
           ),
@@ -54,16 +83,16 @@ class OtherInfoTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-Text(
-                '${data.formattedValue} ${data.unit}',
-                style:
-                    TextStyles.valueTextStyle.copyWith(color: data.fontColor),
-              ),
-              
+                  Text(
+                    '${data.formattedValue} ${data.unit}',
+                    style: TextStyles.valueTextStyle
+                        .copyWith(color: data.fontColor),
+                  ),
+                  diffText(),
                 ],
               ),
-              
               if (icon != null) Icon(icon),
               Text(
                 data.title,
@@ -111,12 +140,9 @@ class FuelInfoTile extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width * widthFactor,
       height: Constants.infoTileHeight,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.blueGrey,
-          width: 3,
-        ),
-        borderRadius: const BorderRadius.all(
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.all(
           Radius.circular(8.0),
         ),
       ),
@@ -169,12 +195,9 @@ class TimeInfoTile extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width * widthFactor,
       height: Constants.infoTileHeight,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.blueGrey,
-          width: 3,
-        ),
-        borderRadius: const BorderRadius.all(
+      decoration: const BoxDecoration(
+        color: Colors.indigo,
+        borderRadius: BorderRadius.all(
           Radius.circular(8.0),
         ),
       ),

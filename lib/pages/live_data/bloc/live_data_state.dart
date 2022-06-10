@@ -5,10 +5,12 @@ import 'package:location/location.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/trip_score_model.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
+import 'package:smart_car/utils/location_helper.dart';
 
 part 'live_data_state.freezed.dart';
 
@@ -41,7 +43,7 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
     @Default(0) double score,
-    @Default(0) double previousScore,
+    double? previousScore,
     @Default([]) List<double> acceleration,
     String? vin,
 
@@ -112,6 +114,39 @@ class LiveDataState with _$LiveDataState {
 }
 
 extension LiveDataStateExtension on LiveDataState {
+  TripScoreModel toTripScoreModel() {
+    return TripScoreModel(
+      startTripTime: tripRecord.startTripDate,
+      endTripTime: DateTime.now(),
+      distance: tripRecord.distance,
+      gpsDistance: tripRecord.gpsDistance,
+      avgSpeed: tripRecord.averageSpeed,
+      fuelUsed: tripRecord.usedFuel,
+      tripSeconds: tripRecord.tripSeconds,
+      idleTripSeconds: tripRecord.idleTripSeconds,
+      rapidAccelerations: tripRecord.rapidAccelerations,
+      rapidBreakings: tripRecord.rapidBreakings,
+      startFuelLvl: tripRecord.startFuelLvl,
+      endFuelLvl: tripRecord.currentFuelLvl,
+      fuelPrice: fuelPrice,
+      avgFuelConsumption: tripRecord.avgFuelConsumption,
+      savedFuel: tripRecord.savedFuel,
+      idleFuel: tripRecord.idleUsedFuel,
+      driveFuel: tripRecord.usedFuel,
+      startLocation: firstLocation?.toLatLng,
+      endLocation: lastLocation?.toLatLng,
+      hightGforce: tripRecord.highGforce,
+      leftTurns: tripRecord.leftTurns,
+      rightTurns: tripRecord.rightTurns,
+      tankSize: tripRecord.tankSize,
+      overRPMDriveTime: tripRecord.overRPMDriveTime,
+      underRPMDriveTime: tripRecord.underRPMDriveTime,
+      accelerations: acceleration,
+      cumulativeAltitude: tripAltitudeCumulation,
+      starts: tripRecord.starts,
+    );
+  }
+
   LiveDataState clear() {
     return LiveDataState(
       tripRecord:

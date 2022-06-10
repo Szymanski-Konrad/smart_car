@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
@@ -13,6 +14,7 @@ class FuelLogsCubit extends Cubit<FuelLogsState> {
 
   Future<void> fetchLogs() async {
     final results = await FirestoreHandler.fetchFuelLogs();
+    GlobalBlocs.settings.updateRefuelingConsumption(results.avgConsumption);
     emit(state.copyWith(logs: results));
   }
 

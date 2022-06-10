@@ -19,6 +19,7 @@ import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/feautures/alert_center/alert_center.dart';
+import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 import 'package:smart_car/models/trip_score_model.dart';
 import 'package:smart_car/models/trip_summary/trip_summary.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
@@ -266,7 +267,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     commands.add(VinCommand());
     emit(state.copyWith(isRunning: true));
     _startSecondTimer();
-    _startMinuteTimer();
+    _startScoreTimer();
 
     lastReciveCommandTime = DateTime.now();
     _decideNextMove();
@@ -303,8 +304,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
   }
 
-  void _startMinuteTimer() {
-    _everyMinuteTimer = Timer.periodic(const Duration(seconds: 20), (timer) {
+  void _startScoreTimer() {
+    _everyMinuteTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       calculateScore();
     });
   }
@@ -319,7 +320,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     commands.add(BatteryVoltageCommand());
     commands.add(VinCommand());
     _startSecondTimer();
-    _startMinuteTimer();
+    _startScoreTimer();
     int index = 0;
     final percentyl =
         testCommands.length > 10000 ? testCommands.length ~/ 10000 : 1; // 0.01%
@@ -403,7 +404,15 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       saveCommands();
       await generateTripSummary();
     }
-    GlobalBlocs.settings.updateLeftFuel(commands.fuelLevel);
+    final fuelLevel = commands.fuelLevel;
+    if (fuelLevel != null) {
+      GlobalBlocs.settings.updateLeftFuel(fuelLevel);
+      GlobalBlocs.settings.updateStats(
+        fuelLeft: fuelLevel,
+        distance: state.tripRecord.distance,
+        fuelUsed: state.tripRecord.totalFuelUsed,
+      );
+    }
     await goBackWithDelay();
   }
 
@@ -420,41 +429,28 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   Future<void> calculateScore() async {
-    final tripScoreModel = TripScoreModel(
-      startTripTime: state.tripRecord.startTripDate,
-      endTripTime: DateTime.now(),
-      distance: state.tripRecord.distance,
-      gpsDistance: state.tripRecord.gpsDistance,
-      avgSpeed: state.tripRecord.averageSpeed,
-      fuelUsed: state.tripRecord.usedFuel,
-      tripSeconds: state.tripRecord.tripSeconds,
-      idleTripSeconds: state.tripRecord.idleTripSeconds,
-      rapidAccelerations: state.tripRecord.rapidAccelerations,
-      rapidBreakings: state.tripRecord.rapidBreakings,
-      startFuelLvl: state.tripRecord.startFuelLvl,
-      endFuelLvl: state.tripRecord.currentFuelLvl,
-      fuelPrice: state.fuelPrice,
-      avgFuelConsumption: state.tripRecord.avgFuelConsumption,
-      savedFuel: state.tripRecord.savedFuel,
-      idleFuel: state.tripRecord.idleUsedFuel,
-      driveFuel: state.tripRecord.usedFuel,
-      startLocation: state.firstLocation?.toLatLng,
-      endLocation: state.lastLocation?.toLatLng,
-      hightGforce: state.tripRecord.highGforce,
-      leftTurns: state.tripRecord.leftTurns,
-      rightTurns: state.tripRecord.rightTurns,
-      tankSize: state.tripRecord.tankSize,
-    );
-
-    final _lastModel = lastTripScoreModel;
-    if (_lastModel != null) {
-      final previousScore = state.score;
-      final score = TripScoreHelper.calculateScore(_lastModel, tripScoreModel);
-      emit(state.copyWith(
-        score: score,
-        previousScore: previousScore,
-      ));
+    final tripScoreModel = state.toTripScoreModel();
+    if (!state.isLocalMode) {
+      final tripDataset =
+          TripDatasetModelExtension.fromTripScoreModel(tripScoreModel);
+      final _lastTripScoreModel = lastTripScoreModel;
+      if (_lastTripScoreModel != null) {
+        final subTripScoreModel = tripScoreModel.diff(_lastTripScoreModel);
+        final subTripDataset =
+            TripDatasetModelExtension.fromTripScoreModel(subTripScoreModel);
+        await FirestoreHandler.saveTripDataset(subTripDataset);
+      }
+      await FirestoreHandler.saveTripDataset(tripDataset);
     }
+    final score = TripScoreHelper.calculateScore(
+      prevModel: lastTripScoreModel,
+      model: tripScoreModel,
+      prevScore: state.score,
+    );
+    emit(state.copyWith(
+      score: score,
+      previousScore: state.score,
+    ));
     lastTripScoreModel = tripScoreModel;
   }
 
@@ -491,6 +487,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       underRPMDriveTime: state.tripRecord.underRPMDriveTime,
       locations: state.gpsPoints,
       score: state.score,
+      accDecc: state.tripRecord.accDecc,
+      starts: state.tripRecord.starts,
       vin: GlobalBlocs.settings.state.settings.vin,
     );
     await FirestoreHandler.saveTripSummary(tripSummary);
@@ -599,7 +597,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
                 final current = command.result.toDouble();
                 final cached = GlobalBlocs.settings.state.settings.leftFuel;
                 if (cached != null &&
-                    current > cached &&
+                    current > cached + Constants.minFuelDiff &&
                     !state.alreadyAskedForFueling) {
                   AlertCenter.show(Alerts.refuelRecognized(current - cached));
                   emit(state.copyWith(alreadyAskedForFueling: true));
@@ -636,7 +634,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
               if (command is SpeedCommand) {
                 final acceleration = command.acceleration();
                 final accelerations = List<double>.from(state.acceleration);
-                accelerations.add(acceleration);
+                accelerations.addWithMax(acceleration, 100);
                 emit(state.copyWith(
                   acceleration: accelerations,
                   tripRecord: tripRecord

@@ -19,32 +19,34 @@ class TripStatsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Wrap(
-        runSpacing: 8.0,
-        spacing: 8.0,
+        runSpacing: 16.0,
+        spacing: 10.0,
         children: [
           if (state.isTemperatureAvaliable) OtherInfoTile(state.indoorTempData),
           AccDataTile(values: state.acceleration, title: 'Przyspieszenie'),
-          OtherInfoTile(state.scoreData, previousValue: state.previousScore,),
-          OtherInfoTile(state.gForceData),
-          OtherInfoTile(state.locationHeightData),
-          OtherInfoTile(state.directionData),
-          OtherInfoTile(state.locationSlopeData),
+          OtherInfoTile(
+            state.scoreData,
+            previousValue: state.previousScore,
+          ),
           ...state.tripRecord.timeSection.map(
             (data) => TimeInfoTile(
               data: data,
               currentInterval: state.tripRecord.currentDriveInterval,
             ),
           ),
+          ...state.tripRecord.countersSection.map(
+              (i) => OtherInfoTile(i, updates: state.tripRecord.updateTime)),
           ...state.tripRecord.fuelUsedSection.map(
             (data) => FuelInfoTile(
               data: data,
               status: state.tripRecord.tripStatus,
             ),
           ),
-          ...state.tripRecord.countersSection.map(
-              (i) => OtherInfoTile(i, updates: state.tripRecord.updateTime)),
-          ...state.tripRecord.fuelSection.map((i) => OtherInfoTile(i)),
           ...state.tripRecord.otherInfoSection.map((i) => OtherInfoTile(i)),
+          OtherInfoTile(state.gForceData),
+          OtherInfoTile(state.locationHeightData),
+          OtherInfoTile(state.directionData),
+          OtherInfoTile(state.locationSlopeData),
         ],
       ),
     );

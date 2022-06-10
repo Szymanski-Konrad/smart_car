@@ -19,7 +19,7 @@ abstract class InfoTileData<T> {
   final String unit;
   IconData? iconData;
   Color? fontColor;
-  TripDataType? tripDataType;
+  List<TripDataType>? tripDataType;
 
   String get formattedValue {
     final val = value;
@@ -85,7 +85,7 @@ class OtherTileData<T> extends InfoTileData<T> {
     required String unit,
     IconData? iconData,
     Color? color,
-    TripDataType? tripDataType,
+    List<TripDataType>? tripDataType,
   }) : super(
           value: value,
           digits: digits,

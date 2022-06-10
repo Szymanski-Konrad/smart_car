@@ -5,9 +5,10 @@ abstract class Constants {
   static const infoTileHeight = 80.0;
   static const infoTileWidthFactor = 0.48;
   static const largeInfoTileWidthFactor = 0.31;
-  static const rapidBreaking = -11; // braking in km/h
-  static const rapidAcceleration = 11; // acceleration in km/h
-  static const minRapidSpeedTimeThreshold = 30; // s
+  static const rapidBreaking = -9; // braking in km/h
+  static const rapidAcceleration = 7; // acceleration in km/h
+  static const minRapidSpeedTimeThreshold = 30; // seconds
+  static const minAccDeccTimeThreshold = 10; // seconds
   static const minModuleVoltage = 13.3;
   static const idleSpeedLimit = 0;
   static const defaultLocalFile = 'work';
@@ -17,6 +18,7 @@ abstract class Constants {
   static const showChangeSeconds = 5;
   static const upperRPMLimit = 3000;
   static const lowerRPMLimit = 1000;
+  static const minFuelDiff = 5;
 
   static const localFiles = [
     'work',

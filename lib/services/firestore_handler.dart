@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
+import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/trip_summary/trip_summary.dart';
@@ -8,6 +9,7 @@ abstract class FirestoreHandler {
   static const kStationsCollection = 'stations';
   static const kFuelLogCollection = 'fuelLogs';
   static const kTripSummaryCollection = 'tripSummary';
+  static const kTripDatasetCollection = 'tripDataset';
   static const kChunkSize = 10;
 
   /// Save info about [station]
@@ -90,6 +92,14 @@ abstract class FirestoreHandler {
         .set(tripSummary.toJson());
   }
 
+  /// Save [tripDataset] on server
+  static Future<void> saveTripDataset(TripDatasetModel tripDatasetModel) async {
+    await FirebaseFirestore.instance
+        .collection(kTripDatasetCollection)
+        .doc(tripDatasetModel.id)
+        .set(tripDatasetModel.toJson());
+  }
+
   /// Fetch trip summaries for account
   static Future<List<TripSummary>> fetchTripSummaries() async {
     final vin = GlobalBlocs.settings.state.settings.vin;
@@ -104,5 +114,17 @@ abstract class FirestoreHandler {
 
     final results = await query.get();
     return results.docs.map((e) => TripSummary.fromJson(e.data())).toList();
+  }
+
+  /// Fetch trip datasets
+  static Future<List<TripDatasetModel>> fetchTripDatasets() async {
+    final results = await FirebaseFirestore.instance
+        .collection(kTripDatasetCollection)
+        .get();
+    return results.docs.map((e) {
+      final data = e.data();
+      data['id'] = e.id;
+      return TripDatasetModel.fromJson(data);
+    }).toList();
   }
 }

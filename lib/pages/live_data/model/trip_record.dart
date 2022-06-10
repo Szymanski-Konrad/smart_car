@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/strings.dart';
@@ -59,6 +58,9 @@ class TripRecord with _$TripRecord {
     @Default(0) int leftTurns,
     @Default(0) int rightTurns,
     @Default(0) int highGforce,
+    @Default(0) int starts,
+    // Rapid accelerations and decelariations in short time
+    @Default(0) int accDecc,
   }) = _TripRecord;
 }
 
@@ -101,6 +103,8 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateTripStatus(num speed, num rpm, TripStatus? status) {
+    final isStart =
+        tripStatus == TripStatus.idle && status == TripStatus.driving;
     final _speed = speed.isNaN ? 0 : speed;
     final _rpm = rpm.isNaN ? 0 : rpm;
     final isDrive = _speed > Constants.idleSpeedLimit;
@@ -109,6 +113,7 @@ extension TripRecordExtension on TripRecord {
     final isSameStatus = _isSameStatus(status);
     return copyWith(
       tripStatus: status ?? tripStatus,
+      starts: isStart ? starts + 1 : starts,
       tripSeconds: tripSeconds + (isDrive ? 1 : 0),
       idleTripSeconds: idleTripSeconds + (isDrive ? 0 : 1),
       currentDriveInterval: isSameStatus ? currentDriveInterval + 1 : 1,
@@ -175,11 +180,18 @@ extension TripRecordExtension on TripRecord {
       );
     }
     if (acceleration < Constants.rapidBreaking) {
+      final lastAccTime = lastTime[TripDataType.rapidAcceleration];
+      final _accDecc = lastAccTime != null &&
+              DateTime.now().secondsSinceEpoch - lastAccTime >
+                  Constants.minAccDeccTimeThreshold
+          ? accDecc + 1
+          : accDecc;
       lastTime[TripDataType.rapidBraking] = DateTime.now().secondsSinceEpoch;
       return copyWith(
         rapidBreakings: rapidBreakings + 1,
         lastBreakingTime: secondsSinceEpoch,
         updateTime: lastTime,
+        accDecc: _accDecc,
       );
     }
 
@@ -201,20 +213,17 @@ extension TripRecordExtension on TripRecord {
       ];
 
   List<OtherTileData> get otherInfoSection => [
+        avgFuelPerHDetails,
+        avgFuelDetails,
+        instFuelDetails,
+        rangeDetails,
         avgSpeedDetails,
         currSpeedDetails,
         gpsSpeedDetails,
         gpsDistanceDetails,
         altitudeCumulativeDetails,
         distanceDetails,
-      ];
-
-  List<OtherTileData> get fuelSection => [
         tankDifferenceDetails,
-        avgFuelPerHDetails,
-        avgFuelDetails,
-        instFuelDetails,
-        rangeDetails,
         fuelCostsDetails,
         carboPerKmDetails,
         producedCarboDetails,
@@ -223,10 +232,8 @@ extension TripRecordExtension on TripRecord {
 
   List<OtherTileData> get countersSection => [
         highGForceDetails,
-        leftTurnsDetails,
-        rightTurnsDetails,
-        rapidAccelerationsDetails,
-        rapidBrakingDetails,
+        turnsDetails,
+        rapidSpeedDetails,
       ];
 
   OtherTileData get fuelCostsDetails => OtherTileData(
@@ -370,36 +377,23 @@ extension TripRecordExtension on TripRecord {
         digits: 1,
       );
 
-  OtherTileData get rapidAccelerationsDetails => OtherTileData(
-        value: rapidAccelerations,
+  OtherTileData get rapidSpeedDetails => OtherTileData(
+        value: '$rapidAccelerations/$rapidBreakings',
         digits: 0,
-        title: Strings.rapidAcceleration,
+        title: Strings.rapidSpeed,
         unit: '',
-        tripDataType: TripDataType.rapidAcceleration,
+        tripDataType: [
+          TripDataType.rapidAcceleration,
+          TripDataType.rapidBraking
+        ],
       );
 
-  OtherTileData get rapidBrakingDetails => OtherTileData(
-        value: rapidBreakings,
+  OtherTileData get turnsDetails => OtherTileData(
+        value: '$leftTurns/$rightTurns',
         digits: 0,
-        title: Strings.rapidBraking,
+        title: Strings.turns,
         unit: '',
-        tripDataType: TripDataType.rapidBraking,
-      );
-
-  OtherTileData get leftTurnsDetails => OtherTileData(
-        value: leftTurns,
-        digits: 0,
-        title: Strings.leftTurns,
-        unit: '',
-        tripDataType: TripDataType.leftTurns,
-      );
-
-  OtherTileData get rightTurnsDetails => OtherTileData(
-        value: rightTurns,
-        digits: 0,
-        title: Strings.rightTurns,
-        unit: '',
-        tripDataType: TripDataType.rightTurns,
+        tripDataType: [TripDataType.leftTurns, TripDataType.rightTurns],
       );
 
   OtherTileData get highGForceDetails => OtherTileData(
@@ -407,7 +401,7 @@ extension TripRecordExtension on TripRecord {
         digits: 0,
         title: Strings.gForce,
         unit: '',
-        tripDataType: TripDataType.highGForce,
+        tripDataType: [TripDataType.highGForce],
       );
 
   OtherTileData get producedCarboDetails => OtherTileData(

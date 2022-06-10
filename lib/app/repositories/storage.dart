@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smart_car/models/settings.dart';
 
 const kSettings = 'settings';
+const kStats = 'statistics';
 const kLastFuelLvl = 'lastFuelLvl';
 
 @immutable
@@ -37,5 +38,15 @@ abstract class Storage {
   static Future<double?> getLastFuelLvl() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getDouble(kLastFuelLvl);
+  }
+
+  static Future<String?> getStatisticsJson() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(kStats);
+  }
+
+  static Future updateStatistics(String stats) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(kStats, stats);
   }
 }
