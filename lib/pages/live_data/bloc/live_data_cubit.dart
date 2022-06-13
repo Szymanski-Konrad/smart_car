@@ -67,7 +67,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   List<ObdCommand> commands = [];
   Queue<String> specialCommands = Queue();
   Queue<String> pidsQueue = Queue<String>();
-  DateTime? lastDataReciveTime;
   DateTime lastReciveCommandTime = DateTime.now();
   DateTime lastTestCommandTime = DateTime.now();
 
@@ -305,7 +304,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _startScoreTimer() {
-    _everyMinuteTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
       calculateScore();
     });
   }
@@ -395,15 +394,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Future<void> motorOff() async {
     if (state.isLocalMode) return;
     _everySecondTimer?.cancel();
-    emit(state.copyWith(
-      isTripClosing: true,
-      isTripEnded: true,
-    ));
-    BTConnection().close();
-    if (state.tripRecord.totalTripSeconds > 30) {
-      saveCommands();
-      await generateTripSummary();
-    }
     final fuelLevel = commands.fuelLevel;
     if (fuelLevel != null) {
       GlobalBlocs.settings.updateLeftFuel(fuelLevel);
@@ -413,6 +403,17 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         fuelUsed: state.tripRecord.totalFuelUsed,
       );
     }
+    emit(state.copyWith(
+      isTripClosing: true,
+      isTripEnded: true,
+    ));
+    BTConnection().close();
+    if (state.tripRecord.totalTripSeconds > 30) {
+      await FirestoreHandler.saveTripDataset(state.datasets);
+      saveCommands();
+      await generateTripSummary();
+    }
+
     await goBackWithDelay();
   }
 
@@ -438,9 +439,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         final subTripScoreModel = tripScoreModel.diff(_lastTripScoreModel);
         final subTripDataset =
             TripDatasetModelExtension.fromTripScoreModel(subTripScoreModel);
-        await FirestoreHandler.saveTripDataset(subTripDataset);
+        emit(state.addDataset(subTripDataset));
       }
-      await FirestoreHandler.saveTripDataset(tripDataset);
+      emit(state.addDataset(tripDataset));
     }
     final score = TripScoreHelper.calculateScore(
       prevModel: lastTripScoreModel,
@@ -518,6 +519,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (isClosed) return;
     try {
       String dataString = String.fromCharCodes(data);
+      emit(state.copyWith(lastReceivedData: dataString));
       if (dataString.trim().isEmpty) {
         return;
       }
@@ -559,9 +561,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         emit(state.copyWith(vin: vin));
         GlobalBlocs.settings.updateVin(vin);
         return;
-      }
-
-      if (dataString.startsWith('41')) {
+      } else if (dataString.startsWith('41')) {
         final receivedData = _convertReceivedData(dataString);
         final pid = PIDExtension.code(receivedData.command);
         final specialPid = SpecialPIDExtension.code(receivedData.command);

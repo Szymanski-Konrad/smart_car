@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
-import 'package:smart_car/pages/machine_learning/bloc/learning_cubit.dart';
-import 'package:smart_car/pages/machine_learning/bloc/learning_state.dart';
-import 'package:smart_car/utils/scoped_bloc_builder.dart';
+import 'package:smart_car/pages/machine_learning/bloc/dataset_cubit.dart';
+import 'package:smart_car/pages/machine_learning/bloc/dataset_state.dart';
 
-class LearningPage extends StatelessWidget {
-  const LearningPage({Key? key}) : super(key: key);
+class DatasetPage extends StatelessWidget {
+  const DatasetPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ScopedBlocBuilder<LearningCubit, LearningState>(
-      create: (_) => LearningCubit()..loadDataset(),
-      builder: (context, state, cubit) {
+    return BlocBuilder<DatasetCubit, DatasetState>(
+      bloc: GlobalBlocs.learning..loadDataset(),
+      builder: (context, state) {
         if (state.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
@@ -24,9 +25,15 @@ class LearningPage extends StatelessWidget {
             ),
           );
         }
-        final ecoText = state.ecoScore >= 0.0 ? state.ecoScore.toString() : '';
-        final aggresiveText =
-            state.aggresiveScore >= 0.0 ? state.aggresiveScore.toString() : '';
+        final ecoText = state.ecoScore >= 0 ? state.ecoScore.toString() : '';
+        final smoothText =
+            state.smoothScore >= 0 ? state.smoothScore.toString() : '';
+        final ecoController = TextEditingController(text: ecoText);
+        ecoController.selection = TextSelection.fromPosition(
+            TextPosition(offset: ecoController.text.length));
+        final smoothController = TextEditingController(text: smoothText);
+        smoothController.selection = TextSelection.fromPosition(
+            TextPosition(offset: smoothController.text.length));
         return Scaffold(
           appBar: AppBar(
             title: Text('${state.modifyCount} elementów'),
@@ -37,7 +44,7 @@ class LearningPage extends StatelessWidget {
               children: [
                 Text(
                   '${state.modelToModify?.formattedPrint}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
@@ -47,9 +54,9 @@ class LearningPage extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: TextField(
-                        onChanged: cubit.changeEcoScore,
-                        controller: TextEditingController(text: ecoText),
-                        decoration: InputDecoration(
+                        onChanged: GlobalBlocs.learning.changeEcoScore,
+                        controller: ecoController,
+                        decoration: const InputDecoration(
                           labelText: 'Eco score',
                         ),
                       ),
@@ -57,10 +64,10 @@ class LearningPage extends StatelessWidget {
                     const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
-                        onChanged: cubit.changeAggresiveScore,
-                        controller: TextEditingController(text: aggresiveText),
-                        decoration: InputDecoration(
-                          labelText: 'Aggresive score',
+                        onChanged: GlobalBlocs.learning.changeSmoothScore,
+                        controller: smoothController,
+                        decoration: const InputDecoration(
+                          labelText: 'Smooth score',
                         ),
                       ),
                     ),
@@ -69,7 +76,7 @@ class LearningPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: cubit.saveData,
+                  onPressed: GlobalBlocs.learning.saveData,
                   child: const Text('Zapisz'),
                 ),
               ],

@@ -164,9 +164,16 @@ class _AppState extends State<App> {
               const SectionTitle(title: Strings.settings),
               ListTile(
                 title: ElevatedButton(
-                  child: const Text('Uczenie maszynowe'),
+                  child: const Text('Surowe dane'),
                   onPressed: () =>
                       Navigation.instance.push(SharedRoutes.machineLearning),
+                ),
+              ),
+              ListTile(
+                title: ElevatedButton(
+                  child: const Text('Uczenie maszynowe'),
+                  onPressed: () =>
+                      Navigation.instance.push(SharedRoutes.learning),
                 ),
               ),
               ListTile(

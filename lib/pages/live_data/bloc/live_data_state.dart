@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 import 'package:smart_car/models/trip_score_model.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
 import 'package:smart_car/utils/info_tile_data.dart';
 import 'package:smart_car/utils/location_helper.dart';
+import 'package:uuid/uuid.dart';
 
 part 'live_data_state.freezed.dart';
 
@@ -46,6 +49,7 @@ class LiveDataState with _$LiveDataState {
     double? previousScore,
     @Default([]) List<double> acceleration,
     String? vin,
+    required DatasetsDocument datasets,
 
     // GPS
     @Default(0) double direction,
@@ -57,6 +61,7 @@ class LiveDataState with _$LiveDataState {
     // Just for testing
     @Default(0.0) double localTripProgress,
     @Default(Constants.defaultLocalFile) String localData,
+    @Default('') String lastReceivedData,
 
     // Bluetooth
     @Default(false) bool isRunning,
@@ -86,6 +91,9 @@ class LiveDataState with _$LiveDataState {
     @Default(0.0) double temperature,
     @Default(false) bool isTurning,
     @Default(false) bool isHighGforce,
+    @Default(0) double previousBarometer,
+    @Default(0) double barometerSlope,
+    @Default(0) double cumulativeBarometerHeightDiff,
 
     // Errors
     @Default([]) List<String> errors,
@@ -98,6 +106,11 @@ class LiveDataState with _$LiveDataState {
     required double tankSize,
   }) {
     return LiveDataState(
+      datasets: DatasetsDocument(
+        id: const Uuid().v1(),
+        createDate: DateTime.now(),
+        vin: GlobalBlocs.settings.state.settings.vin,
+      ),
       tripRecord: TripRecord(
         fuelPrice: fuelPrice,
         tankSize: tankSize,
@@ -151,6 +164,11 @@ extension LiveDataStateExtension on LiveDataState {
     return LiveDataState(
       tripRecord:
           TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
+      datasets: DatasetsDocument(
+        id: const Uuid().v1(),
+        createDate: DateTime.now(),
+        vin: GlobalBlocs.settings.state.settings.vin,
+      ),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
@@ -163,6 +181,11 @@ extension LiveDataStateExtension on LiveDataState {
     return LiveDataState(
       tripRecord:
           TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
+      datasets: DatasetsDocument(
+        id: const Uuid().v1(),
+        createDate: DateTime.now(),
+        vin: GlobalBlocs.settings.state.settings.vin,
+      ),
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
@@ -170,6 +193,13 @@ extension LiveDataStateExtension on LiveDataState {
       localData: localData,
       fuelPrice: fuelPrice,
     );
+  }
+
+  LiveDataState addDataset(TripDatasetModel model) {
+    final list = List<TripDatasetModel>.from(datasets.datasets);
+    list.add(model);
+    final dataset = datasets.copyWith(datasets: list);
+    return copyWith(datasets: dataset);
   }
 
   LiveDataState updateSupportedPidsPart(String value) {

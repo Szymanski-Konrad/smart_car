@@ -11,4 +11,5 @@ abstract class SharedRoutes {
   static const stationDetails = '/stationDetails';
   static const tripSummary = '/tripSummary';
   static const machineLearning = '/machineLearning';
+  static const learning = '/learning';
 }

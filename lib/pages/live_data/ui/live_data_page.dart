@@ -38,11 +38,11 @@ class LiveDataPage extends StatelessWidget
         tankSize: tankSize,
       ),
       listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(state.errors.last),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(state.errors.last),
+        //   ),
+        // );
       },
       listenWhen: (previous, current) {
         return previous.errors.length < current.errors.length;
@@ -65,6 +65,10 @@ class LiveDataPage extends StatelessWidget
                             : Strings.connected,
                   ),
                   actions: [
+                    IconButton(
+                      onPressed: cubit.motorOff,
+                      icon: const Icon(Icons.save_alt),
+                    ),
                     if (state.supportedPids.isNotEmpty)
                       IconButton(
                         onPressed: () => showSupportedCommandsDialog(

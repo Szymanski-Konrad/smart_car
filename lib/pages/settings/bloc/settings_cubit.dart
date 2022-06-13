@@ -2,7 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:fl_toast/fl_toast.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/models/settings.dart';
@@ -112,9 +115,16 @@ class SettingsCubit extends Cubit<SettingsState> {
     required double distance,
     required double fuelUsed,
   }) async {
-    final range = fuelLeft * state.stats.refuelingConsumption / 100;
+    final tankSize = GlobalBlocs.settings.state.settings.tankSize;
+    final leftFuel = tankSize * (fuelLeft / 100);
+    final range = 100 * leftFuel / state.stats.refuelingConsumption;
     final totalDistance = state.stats.distance + distance;
     final totalFuelUsed = state.stats.fuelUsed + fuelUsed;
+    showAndroidToast(
+      child: Text('Pozostałe paliwo: $fuelLeft %,  Nowy zasięg: $range km'),
+      context: ToastProvider.context,
+      duration: const Duration(seconds: 10),
+    );
     emit(state.copyWith(
       stats: state.stats.copyWith(
         range: range,

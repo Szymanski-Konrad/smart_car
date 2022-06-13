@@ -93,11 +93,18 @@ abstract class FirestoreHandler {
   }
 
   /// Save [tripDataset] on server
-  static Future<void> saveTripDataset(TripDatasetModel tripDatasetModel) async {
+  static Future<void> saveTripDataset(DatasetsDocument dataset) async {
     await FirebaseFirestore.instance
         .collection(kTripDatasetCollection)
-        .doc(tripDatasetModel.id)
-        .set(tripDatasetModel.toJson());
+        .doc(dataset.id)
+        .set(dataset.toJson());
+  }
+
+  static Future<void> removeTripDataset(String id) async {
+    await FirebaseFirestore.instance
+        .collection(kTripDatasetCollection)
+        .doc(id)
+        .delete();
   }
 
   /// Fetch trip summaries for account
@@ -117,14 +124,13 @@ abstract class FirestoreHandler {
   }
 
   /// Fetch trip datasets
-  static Future<List<TripDatasetModel>> fetchTripDatasets() async {
+  static Future<List<DatasetsDocument>> fetchDatasets() async {
     final results = await FirebaseFirestore.instance
         .collection(kTripDatasetCollection)
         .get();
-    return results.docs.map((e) {
-      final data = e.data();
-      data['id'] = e.id;
-      return TripDatasetModel.fromJson(data);
-    }).toList();
+
+    return results.docs
+        .map((e) => DatasetsDocument.fromJson(e.data()))
+        .toList();
   }
 }
