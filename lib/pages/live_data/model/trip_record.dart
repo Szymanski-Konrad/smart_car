@@ -1,6 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/statistics.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/utils/date_extension.dart';
@@ -215,6 +217,7 @@ extension TripRecordExtension on TripRecord {
   List<OtherTileData> get otherInfoSection => [
         avgFuelPerHDetails,
         avgFuelDetails,
+        avgFuelAdjustDetails,
         instFuelDetails,
         rangeDetails,
         avgSpeedDetails,
@@ -293,6 +296,14 @@ extension TripRecordExtension on TripRecord {
         title: Strings.averageFuelConsumption,
         unit: distance > 0 ? 'l/100km' : 'l/h',
         digits: 1,
+      );
+
+  OtherTileData get avgFuelAdjustDetails => OtherTileData(
+        value: avgFuelConsumption *
+            GlobalBlocs.settings.state.stats.consumptionScale,
+        title: 'Korekta spalania',
+        unit: distance > 0 ? 'l/100km' : 'l/h',
+        digits: 2,
       );
 
   OtherTileData get avgFuelPerHDetails => OtherTileData(

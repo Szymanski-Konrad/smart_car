@@ -46,6 +46,8 @@ class LiveDataState with _$LiveDataState {
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
     @Default(0) double score,
+    @Default(0) double ecoScore,
+    double? previousEcoScore,
     double? previousScore,
     @Default([]) List<double> acceleration,
     String? vin,
@@ -247,6 +249,13 @@ extension LiveDataStateExtension on LiveDataState {
         unit: '',
         title: 'Ocena jazdy',
         value: score,
+      );
+
+  OtherTileData get ecoScoreData => OtherTileData(
+        value: ecoScore,
+        digits: 1,
+        title: 'Eco score',
+        unit: '',
       );
 
   OtherTileData get directionData => OtherTileData(

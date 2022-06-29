@@ -10,7 +10,10 @@ import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/strings.dart';
+import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/models/statistics.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
+import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/ui/live_data_page.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
@@ -67,141 +70,178 @@ class _AppState extends State<App> {
       bloc: GlobalBlocs.settings,
       builder: (context, state) {
         return Scaffold(
-          body: ListView(
-            children: [
-              const SectionTitle(title: 'Statystyki'),
-              Text(
-                  'Spalanie: ${state.stats.refuelingConsumption.toStringAsFixed(1)} l/100km'),
-              Text('Zasięg: ${state.stats.range.toStringAsFixed(0)} km'),
-              Text(
-                  'Przejechane kilometry: ${state.stats.distance.toStringAsFixed(1)} km'),
-              Text(
-                  'Użyte paliwo: ${state.stats.fuelUsed.toStringAsFixed(2)} l'),
-              Text(
-                  'Współczynnik spalania: ${state.stats.consumptionScale.toStringAsFixed(3)}'),
-              Text(
-                  'Spalanie z OBD: ${state.stats.avgConsumption.toStringAsFixed(2)} l/100km'),
-              const Divider(color: Colors.yellow),
-              const SectionTitle(title: Strings.bluetooth),
-              SwitchListTile(
-                title: const Text(Strings.enableBluetooth),
-                value: _bluetoothState.isEnabled,
-                onChanged: (bool value) {
-                  future() async {
-                    if (value) {
-                      await FlutterBluetoothSerial.instance.requestEnable();
-                    } else {
-                      await FlutterBluetoothSerial.instance.requestDisable();
-                    }
-                  }
-
-                  future().then((_) {
-                    setState(() {});
-                  });
-                },
-              ),
-              const Divider(color: Colors.yellow),
-              const SectionTitle(title: Strings.obdSection),
-              if (_bluetoothState.isEnabled)
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text(Strings.connectToObd),
-                    onPressed: () async {
-                      final address = context
-                          .read<SettingsCubit>()
-                          .state
-                          .settings
-                          .deviceAddress;
-
-                      if (address != null) {
-                        _showLiveData(context, false);
-                        return;
+          body: Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: ListView(
+              children: [
+                const SectionTitle(title: 'Statystyki'),
+                Text(
+                    'Spalanie: ${state.stats.refuelingConsumption.toStringAsFixed(1)} l/100km'),
+                Text('Zasięg: ${state.stats.range.toStringAsFixed(0)} km'),
+                Text(
+                    'Przejechane kilometry: ${state.stats.distance.toStringAsFixed(1)} km'),
+                Text(
+                    'Użyte paliwo: ${state.stats.fuelUsed.toStringAsFixed(2)} l'),
+                Text(
+                    'Współczynnik spalania: ${state.stats.consumptionScale.toStringAsFixed(3)}'),
+                Text(
+                    'Spalanie z OBD: ${state.stats.avgConsumption.toStringAsFixed(2)} l/100km'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: LinearProgressIndicator(
+                        value: GlobalBlocs.settings.state.settings.tankPercent,
+                      ),
+                    ),
+                    const SizedBox(width: 8.0),
+                    Text(
+                        '${(GlobalBlocs.settings.state.settings.tankPercent * 100).toStringAsFixed(0)} %'),
+                  ],
+                ),
+                Text(GlobalBlocs.settings.state.settings.tankDetails),
+                const Divider(color: Colors.yellow),
+                const SectionTitle(title: Strings.bluetooth),
+                SwitchListTile(
+                  title: const Text(Strings.enableBluetooth),
+                  value: _bluetoothState.isEnabled,
+                  onChanged: (bool value) {
+                    future() async {
+                      if (value) {
+                        await FlutterBluetoothSerial.instance.requestEnable();
+                      } else {
+                        await FlutterBluetoothSerial.instance.requestDisable();
                       }
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(Strings.firstlyChooseDevice),
+                    }
+
+                    future().then((_) {
+                      setState(() {});
+                    });
+                  },
+                ),
+                const Divider(color: Colors.yellow),
+                const SectionTitle(title: Strings.obdSection),
+                BlocBuilder<LiveDataCubit, LiveDataState>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        if (_bluetoothState.isEnabled)
+                          ListTile(
+                            title: ElevatedButton(
+                              child: Text(
+                                  GlobalBlocs.liveData.isAlreadyConnected
+                                      ? 'Wróć do danych'
+                                      : Strings.connectToObd),
+                              onPressed: () async {
+                                final address = context
+                                    .read<SettingsCubit>()
+                                    .state
+                                    .settings
+                                    .deviceAddress;
+
+                                if (address != null) {
+                                  _showLiveData(context, false);
+                                  return;
+                                }
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(Strings.firstlyChooseDevice),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        if (GlobalBlocs.liveData.isAlreadyConnected)
+                          ListTile(
+                            title: ElevatedButton(
+                              child: const Text('Zakończ połączenie'),
+                              onPressed: () async {
+                                GlobalBlocs.liveData.closeConnection();
+                              },
+                            ),
+                          ),
+                        if (!GlobalBlocs.liveData.isAlreadyConnected)
+                          ListTile(
+                            title: ElevatedButton(
+                              child: const Text(Strings.localMode),
+                              onPressed: () async {
+                                _showLiveData(context, true);
+                              },
+                            ),
+                          ),
+                        ListTile(
+                          title: ElevatedButton(
+                            child: const Text('Statystyki jazd'),
+                            onPressed: () => Navigation.instance
+                                .push(SharedRoutes.tripSummary),
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                ),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text(Strings.localMode),
-                  onPressed: () async {
-                    _showLiveData(context, true);
+                      ],
+                    );
                   },
                 ),
-              ),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text('Statystyki jazd'),
-                  onPressed: () =>
-                      Navigation.instance.push(SharedRoutes.tripSummary),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Divider(color: Colors.yellow),
-              const SectionTitle(title: Strings.fuelSection),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text(Strings.fuelLogs),
-                  onPressed: () {
-                    Navigation.instance.push(SharedRoutes.fuelLogs);
-                  },
-                ),
-              ),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text(Strings.fuelStations),
-                  onPressed: () {
-                    Navigation.instance.push(SharedRoutes.fuelStations);
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Divider(color: Colors.yellow),
-              const SectionTitle(title: Strings.settings),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text('Surowe dane'),
-                  onPressed: () =>
-                      Navigation.instance.push(SharedRoutes.machineLearning),
-                ),
-              ),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text('Uczenie maszynowe'),
-                  onPressed: () =>
-                      Navigation.instance.push(SharedRoutes.learning),
-                ),
-              ),
-              ListTile(
-                title: ElevatedButton(
-                  child: const Text(Strings.settings),
-                  onPressed: () =>
-                      Navigation.instance.push(SharedRoutes.settings),
-                ),
-              ),
-              if (files.isNotEmpty)
+                const SizedBox(height: 16),
+                const Divider(color: Colors.yellow),
+                const SectionTitle(title: Strings.fuelSection),
                 ListTile(
                   title: ElevatedButton(
-                    child: Text(Strings.sendSavedTrips(files.length)),
-                    onPressed: () async {
-                      await sendTripsToMail(files);
+                    child: const Text(Strings.fuelLogs),
+                    onPressed: () {
+                      Navigation.instance.push(SharedRoutes.fuelLogs);
                     },
                   ),
                 ),
-              if (canFiles.isNotEmpty)
                 ListTile(
                   title: ElevatedButton(
-                    child: Text(Strings.sendSavedTrips(files.length)),
-                    onPressed: () async {
-                      await sendTripsToMail(canFiles);
+                    child: const Text(Strings.fuelStations),
+                    onPressed: () {
+                      Navigation.instance.push(SharedRoutes.fuelStations);
                     },
                   ),
                 ),
-            ],
+                const SizedBox(height: 16),
+                const Divider(color: Colors.yellow),
+                const SectionTitle(title: Strings.settings),
+                ListTile(
+                  title: ElevatedButton(
+                    child: const Text('Surowe dane'),
+                    onPressed: () =>
+                        Navigation.instance.push(SharedRoutes.machineLearning),
+                  ),
+                ),
+                ListTile(
+                  title: ElevatedButton(
+                    child: const Text('Uczenie maszynowe'),
+                    onPressed: () =>
+                        Navigation.instance.push(SharedRoutes.learning),
+                  ),
+                ),
+                ListTile(
+                  title: ElevatedButton(
+                    child: const Text(Strings.settings),
+                    onPressed: () =>
+                        Navigation.instance.push(SharedRoutes.settings),
+                  ),
+                ),
+                if (files.isNotEmpty)
+                  ListTile(
+                    title: ElevatedButton(
+                      child: Text(Strings.sendSavedTrips(files.length)),
+                      onPressed: () async {
+                        await sendTripsToMail(files);
+                      },
+                    ),
+                  ),
+                if (canFiles.isNotEmpty)
+                  ListTile(
+                    title: ElevatedButton(
+                      child: Text(Strings.sendSavedTrips(files.length)),
+                      onPressed: () async {
+                        await sendTripsToMail(canFiles);
+                      },
+                    ),
+                  ),
+              ],
+            ),
           ),
         );
       },

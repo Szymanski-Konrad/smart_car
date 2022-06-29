@@ -12,6 +12,8 @@ import 'package:flutter_sensors/flutter_sensors.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'package:location/location.dart';
+import 'package:ml_algo/ml_algo.dart';
+import 'package:ml_dataframe/ml_dataframe.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/resources/alerts.dart';
@@ -58,10 +60,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           fuelPrice: fuelPrice,
           tankSize: tankSize,
         )) {
-    init();
+    initialize();
   }
 
-  final String? address;
+  String? address;
   int _commandIndex = 0;
   List<TestCommand> testCommands = [];
   List<ObdCommand> commands = [];
@@ -77,6 +79,57 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Timer? _everySecondTimer;
   Timer? _everyMinuteTimer;
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
+
+  void initialize() async {
+    final json = await rootBundle.loadString('assets/models/tree.json');
+    treeModel = DecisionTreeClassifier.fromJson(json);
+  }
+
+  DecisionTreeClassifier? treeModel;
+
+  /// Create new connection
+  void createConnection({
+    required String? newAddress,
+    String? localFile,
+    required double fuelPrice,
+    required double tankSize,
+    required bool isLocalMode,
+  }) async {
+    if (isLocalMode && _everySecondTimer?.isActive == true) return;
+    if (address != null) return;
+    await BTConnection().close();
+    reset();
+    address = newAddress;
+    LiveDataState.init(
+      localFile: localFile,
+      fuelPrice: fuelPrice,
+      tankSize: tankSize,
+    );
+    init();
+  }
+
+  // Reset variables
+  void reset() {
+    _commandIndex = 0;
+    testCommands.clear();
+    commands.clear();
+    specialCommands.clear();
+    pidsQueue.clear();
+    locationSub?.cancel();
+    _accSubscription?.cancel();
+    _gyroSubsription?.cancel();
+    _tempSubscription?.cancel();
+    _everyMinuteTimer?.cancel();
+    _everySecondTimer?.cancel();
+  }
+
+  void closeConnection() async {
+    reset();
+    await motorOff();
+    address = null;
+  }
+
+  bool get isAlreadyConnected => address != null;
 
   /// Called when succesfully connected to OBD
   void _onSuccessfulConnection() {
@@ -228,7 +281,9 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         onError: _onConnectionError,
       );
     } else {
-      _runTest();
+      if (_everySecondTimer?.isActive != true) {
+        _runTest();
+      }
     }
 
     _listenForSensors();
@@ -282,8 +337,12 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       const Duration(seconds: 1),
       (timer) {
         final now = DateTime.now();
-        if (now.difference(lastReciveCommandTime).inSeconds >=
-                Durations.maxNoDataReciveSeconds &&
+        final isMotorOff =
+            commands.safeFirst<FuelSystemStatusCommand>()?.status ==
+                FuelSystemStatus.motorOff;
+        if ((now.difference(lastReciveCommandTime).inSeconds >=
+                    Durations.maxNoDataReciveSeconds ||
+                isMotorOff) &&
             !state.isTripClosing) {
           motorOff();
         }
@@ -304,7 +363,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _startScoreTimer() {
-    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 2), (timer) {
       calculateScore();
     });
   }
@@ -434,15 +493,15 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     if (!state.isLocalMode) {
       final tripDataset =
           TripDatasetModelExtension.fromTripScoreModel(tripScoreModel);
-      final _lastTripScoreModel = lastTripScoreModel;
-      if (_lastTripScoreModel != null) {
-        final subTripScoreModel = tripScoreModel.diff(_lastTripScoreModel);
-        final subTripDataset =
-            TripDatasetModelExtension.fromTripScoreModel(subTripScoreModel);
-        emit(state.addDataset(subTripDataset));
-      }
       emit(state.addDataset(tripDataset));
     }
+    final data = TripDatasetModelExtension.fromTripScoreModel(tripScoreModel);
+    final eco = treeModel?.predict(DataFrame(
+      [data.toEcoRow],
+      headerExists: false,
+    ));
+    final ecoScore = eco?.rows.first.first as double;
+    print(ecoScore.toString());
     final score = TripScoreHelper.calculateScore(
       prevModel: lastTripScoreModel,
       model: tripScoreModel,
@@ -450,6 +509,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     );
     emit(state.copyWith(
       score: score,
+      ecoScore: ecoScore,
+      previousEcoScore: state.ecoScore,
       previousScore: state.score,
     ));
     lastTripScoreModel = tripScoreModel;

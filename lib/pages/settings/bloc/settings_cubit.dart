@@ -2,15 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:csv/csv.dart';
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/app/resources/constants.dart';
+import 'package:smart_car/models/fuel_logs/fuel_log.dart';
+import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/settings.dart';
 import 'package:smart_car/models/statistics.dart';
 import 'package:smart_car/pages/settings/bloc/settings_state.dart';
+import 'package:smart_car/services/firestore_handler.dart';
+import 'package:uuid/uuid.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
   SettingsCubit() : super(SettingsStateExtension.initial);
@@ -90,6 +96,31 @@ class SettingsCubit extends Cubit<SettingsState> {
           state.copyWith(settings: state.settings.copyWith(horsepower: value)));
       startTimer();
     }
+  }
+
+  Future<void> convertCSV() async {
+    final data = await rootBundle.loadString('assets/csv/vehicle-1-sync.csv');
+    final csv =
+        const CsvToListConverter(eol: '\n').convert(data).reversed.toList();
+    final fuelLogs = <FuelLog>[];
+    for (final row in csv) {
+      final fuelLog = FuelLog(
+        id: const Uuid().v1(),
+        distance: fuelLogs.isEmpty
+            ? 0
+            : double.parse(row[1]) - fuelLogs.last.odometer,
+        fuelAmount: double.parse(row[2]),
+        fuelPrice: double.parse(row[13]),
+        fuelType: FuelStationType.pb95,
+        logDate: DateTime.parse(row[0]),
+        odometer: double.parse(row[1]),
+        isFull: int.parse(row[3]) == 1 ? true : false,
+        vin: GlobalBlocs.settings.state.vin,
+      );
+      fuelLogs.add(fuelLog);
+      await FirestoreHandler.saveFuelLog(fuelLog);
+    }
+    print(data);
   }
 
   void updateTankSize(String input) {

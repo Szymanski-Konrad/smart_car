@@ -58,7 +58,7 @@ class Settings with _$Settings {
     String? deviceAddress,
     String? deviceName,
     String? vin,
-    double? leftFuel,
+    double? leftFuel, // Left fuel in percents
   }) = _Settings;
 
   factory Settings.fromJson(Map<String, dynamic> json) =>
@@ -71,4 +71,15 @@ extension SettingsExtension on Settings {
       : '${deviceName ?? Strings.noName} - $deviceAddress';
 
   String get vinDescription => Strings.vin(vin);
+
+  double get tankPercent {
+    final _leftFuel = leftFuel;
+    if (_leftFuel == null || tankSize == 0) return 0;
+    return _leftFuel / 100;
+  }
+
+  String get tankDetails {
+    final _leftFuel = (leftFuel ?? 0) * tankSize / 100;
+    return 'Bak paliwa: ${_leftFuel.toStringAsFixed(1)} / $tankSize l';
+  }
 }

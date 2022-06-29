@@ -28,6 +28,10 @@ class TripStatsSection extends StatelessWidget {
             state.scoreData,
             previousValue: state.previousScore,
           ),
+          OtherInfoTile(
+            state.ecoScoreData,
+            previousValue: state.previousEcoScore,
+          ),
           ...state.tripRecord.timeSection.map(
             (data) => TimeInfoTile(
               data: data,

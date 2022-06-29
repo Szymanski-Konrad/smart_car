@@ -36,18 +36,22 @@ class DatasetPage extends StatelessWidget {
             TextPosition(offset: smoothController.text.length));
         return Scaffold(
           appBar: AppBar(
-            title: Text('${state.modifyCount} elementów'),
+            title: Text('${state.notReadyToLearnCount} elementów'),
           ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(
-                  '${state.modelToModify?.formattedPrint}',
-                  style: const TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
+                ..._model.rawDataFormatted
+                    .map(((e) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 4.0),
+                          child: Text(
+                            e,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        )))
+                    .toList(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
@@ -59,6 +63,8 @@ class DatasetPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           labelText: 'Eco score',
                         ),
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -69,6 +75,8 @@ class DatasetPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           labelText: 'Smooth score',
                         ),
+                        keyboardType:
+                            TextInputType.numberWithOptions(decimal: true),
                       ),
                     ),
                     const SizedBox(width: 8),

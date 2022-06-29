@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-// ignore: implementation_imports
-import 'package:provider/src/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/resources/pids.dart';
 import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
@@ -9,7 +9,6 @@ import 'package:smart_car/pages/live_data/ui/live_stats_section.dart';
 import 'package:smart_car/pages/live_data/ui/trip_stats_section.dart';
 import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
-import 'package:smart_car/utils/scoped_bloc_builder.dart';
 
 class LiveDataPageArguments {
   LiveDataPageArguments({this.isLocalMode = false});
@@ -30,24 +29,16 @@ class LiveDataPage extends StatelessWidget
     final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
     final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
     final tankSize = context.read<SettingsCubit>().state.settings.tankSize;
-    return ScopedListenerBlocBuilder<LiveDataCubit, LiveDataState>(
-      create: (_) => LiveDataCubit(
-        address: address,
-        localFile: localFile,
-        fuelPrice: fuelPrice,
-        tankSize: tankSize,
-      ),
-      listener: (context, state) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text(state.errors.last),
-        //   ),
-        // );
-      },
-      listenWhen: (previous, current) {
-        return previous.errors.length < current.errors.length;
-      },
-      builder: (context, state, cubit) {
+    return BlocBuilder<LiveDataCubit, LiveDataState>(
+      bloc: GlobalBlocs.liveData
+        ..createConnection(
+          newAddress: address,
+          fuelPrice: fuelPrice,
+          tankSize: tankSize,
+          localFile: localFile,
+          isLocalMode: isLocalMode,
+        ),
+      builder: (context, state) {
         return state.isConnnectingError
             ? Scaffold(
                 appBar: AppBar(),
@@ -66,13 +57,13 @@ class LiveDataPage extends StatelessWidget
                   ),
                   actions: [
                     IconButton(
-                      onPressed: cubit.motorOff,
+                      onPressed: GlobalBlocs.liveData.closeConnection,
                       icon: const Icon(Icons.save_alt),
                     ),
                     if (state.supportedPids.isNotEmpty)
                       IconButton(
-                        onPressed: () => showSupportedCommandsDialog(
-                            context, state.supportedPids, cubit, state),
+                        onPressed: () => showSupportedCommandsDialog(context,
+                            state.supportedPids, GlobalBlocs.liveData, state),
                         icon: const Icon(Icons.list),
                       )
                   ],
@@ -92,8 +83,14 @@ class LiveDataPage extends StatelessWidget
                         Expanded(
                           child: TabBarView(
                             children: [
-                              LiveStatsSection(state: state, cubit: cubit),
-                              TripStatsSection(state: state, cubit: cubit),
+                              LiveStatsSection(
+                                state: state,
+                                cubit: GlobalBlocs.liveData,
+                              ),
+                              TripStatsSection(
+                                state: state,
+                                cubit: GlobalBlocs.liveData,
+                              ),
                             ],
                           ),
                         )

@@ -41,12 +41,12 @@ class OtherInfoTile extends StatelessWidget {
     return Colors.green.withOpacity((255 - _seconds * 50) / 255);
   }
 
-  TextStyle diffTextStyle(double diff) {
-    if (diff == 0) return const TextStyle(color: Colors.grey);
+  Color diffTextStyle(double diff) {
+    if (diff == 0) return Colors.grey;
     if (diff < 0) {
-      return const TextStyle(color: Colors.red);
+      return Colors.red;
     } else {
-      return const TextStyle(color: Colors.green);
+      return Colors.green;
     }
   }
 
@@ -57,7 +57,7 @@ class OtherInfoTile extends StatelessWidget {
     final text = '${diff < 0 ? '-' : '+'} ${diff.abs().toStringAsFixed(0)}';
     return Text(
       text,
-      style: diffTextStyle(diff),
+      style: TextStyles.valueTextStyle.copyWith(color: diffTextStyle(diff)),
     );
   }
 

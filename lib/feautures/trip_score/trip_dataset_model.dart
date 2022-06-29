@@ -32,8 +32,8 @@ class TripDatasetModel with _$TripDatasetModel {
     @Default(0) double startsPerKm, // eko drive
     @Default(0) double idleFuelShare, // eko drive
     @Default(0) double savedFuelShare, // eko drive
-    @Default(0) double leftTurnsPerKm,
-    @Default(0) double rightTurnsPerKm,
+    @Default(0) double leftTurnsPerKm, // płynność
+    @Default(0) double rightTurnsPerKm, // płynność
     @Default(0) double overRPMTimeShare, // płynność
     @Default(0) double underRPMTimeShare, // płynność
     @Default(0) double accelerationsPerKm, // płynność
@@ -51,12 +51,12 @@ extension TripDatasetModelExtension on TripDatasetModel {
   bool get isReadyToLearn => ecoScore >= 0 && smoothScore >= 0;
 
   List<dynamic> get toEcoRow => [
-        idleTimeShare,
-        driveTimeShare,
-        startsPerKm,
-        idleFuelShare,
-        savedFuelShare,
-        ecoScore,
+        toValidValue(idleTimeShare),
+        toValidValue(driveTimeShare),
+        toValidValue(startsPerKm),
+        toValidValue(idleFuelShare),
+        toValidValue(savedFuelShare),
+        toValidValue(ecoScore),
       ];
 
   static List<String> get ecoRowHeaders => [
@@ -69,12 +69,12 @@ extension TripDatasetModelExtension on TripDatasetModel {
       ];
 
   List<dynamic> get toSmoothRow => [
-        overRPMTimeShare,
-        underRPMTimeShare,
-        accelerationsPerKm,
-        highGforcePerKm,
-        accDeccPerKm,
-        smoothScore,
+        toValidValue(overRPMTimeShare),
+        toValidValue(underRPMTimeShare),
+        toValidValue(accelerationsPerKm),
+        toValidValue(highGforcePerKm),
+        toValidValue(accDeccPerKm),
+        toValidValue(smoothScore),
       ];
 
   static List<String> get smoothRowHeaders => [
@@ -85,6 +85,10 @@ extension TripDatasetModelExtension on TripDatasetModel {
         'acc_decc_per_km',
         'smooth_score',
       ];
+
+  double toValidValue(double value) {
+    return (value.isInfinite || value.isNaN) ? 0.0 : value;
+  }
 
   static TripDatasetModel fromTripScoreModel(TripScoreModel scoreModel) {
     final driveSeconds = scoreModel.tripSeconds - scoreModel.idleTripSeconds;
@@ -113,5 +117,43 @@ extension TripDatasetModelExtension on TripDatasetModel {
   String get formattedPrint {
     const encoder = JsonEncoder.withIndent('    ');
     return encoder.convert(toJson());
+  }
+
+  bool isSame(TripDatasetModel dataset) {
+    return dataset.idleTimeShare == idleTimeShare &&
+        driveTimeShare == dataset.driveTimeShare &&
+        startsPerKm == dataset.startsPerKm &&
+        idleFuelShare == dataset.idleFuelShare &&
+        savedFuelShare == dataset.savedFuelShare &&
+        leftTurnsPerKm == dataset.leftTurnsPerKm &&
+        rightTurnsPerKm == dataset.rightTurnsPerKm &&
+        overRPMTimeShare == dataset.overRPMTimeShare &&
+        underRPMTimeShare == dataset.underRPMTimeShare &&
+        accelerationsPerKm == dataset.accelerationsPerKm &&
+        highGforcePerKm == dataset.highGforcePerKm &&
+        accDeccPerKm == dataset.accDeccPerKm;
+  }
+
+  List<String> get rawDataFormatted {
+    return [
+      '                                    -- -- -- --        Eco part        -- -- -- -- --',
+      'Spalanie: ${fuelConsumption.toStringAsFixed(2)} l/100km',
+      'Dystans: ${distance.toStringAsFixed(1)} km',
+      'Idle time share: ${(idleTimeShare * 100).toStringAsFixed(2)} %',
+      'Drive time share: ${(driveTimeShare * 100).toStringAsFixed(2)} %',
+      'Ilość startów na km: ${startsPerKm.toStringAsFixed(3)}',
+      'Idle fuel share: ${(idleFuelShare * 100).toStringAsFixed(2)} %',
+      'Saved fuel share: ${(savedFuelShare * 100).toStringAsFixed(2)} %',
+      '                                     -- -- -- -- --        Smooth part       -- -- -- --',
+      'Skręty w lewo na km: ${leftTurnsPerKm.toStringAsFixed(3)}',
+      'Skręty w prawo na km:  ${rightTurnsPerKm.toStringAsFixed(3)}',
+      'Over RPM time share: ${(overRPMTimeShare * 100).toStringAsFixed(2)} %',
+      'Under RPM time share: ${(underRPMTimeShare * 100).toStringAsFixed(2)} %',
+      'Przyspieszenia na km: ${accelerationsPerKm.toStringAsFixed(3)}',
+      'Przeciążenia na km: ${highGforcePerKm.toStringAsFixed(3)}',
+      'Przysp -> Hamowanie na km: ${accDeccPerKm.toStringAsFixed(3)}',
+      'Eco score: ${ecoScore.toStringAsFixed(1)}',
+      'Smooth score: ${smoothScore.toStringAsFixed(1)}',
+    ];
   }
 }

@@ -104,6 +104,10 @@ class SettingsPage extends StatelessWidget {
           suffix: '%',
           leading: 'Pozostałe paliwo',
         ),
+        // ElevatedButton(
+        //   onPressed: cubit.convertCSV,
+        //   child: Text('Sprawdź tankowania'),
+        // ),
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.all(16.0),

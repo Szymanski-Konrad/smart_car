@@ -1,11 +1,18 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
+import 'package:fl_toast/fl_toast.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:ml_algo/ml_algo.dart';
 // ignore: implementation_imports
 import 'package:ml_algo/src/model_selection/assessable.dart';
 import 'package:ml_dataframe/ml_dataframe.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 import 'package:smart_car/pages/machine_learning/bloc/dataset_state.dart';
 import 'package:smart_car/services/firestore_handler.dart';
+import 'package:ml_preprocessing/ml_preprocessing.dart';
 
 class DatasetCubit extends Cubit<DatasetState> {
   DatasetCubit() : super(DatasetState());
@@ -32,6 +39,23 @@ class DatasetCubit extends Cubit<DatasetState> {
       final list = List<TripDatasetModel>.from(state.documentToModify.datasets)
           .toSet()
           .toList();
+      final items = list.where((element) => element.isSame(_model)).toList();
+      print('Podobne elementy: ${items.length}');
+      if (items.length > 1) {
+        await showAndroidToast(
+          child: Text('Podobne elementy: ${items.length}'),
+          context: ToastProvider.context,
+          duration: Duration(seconds: 2),
+          alignment: Alignment.center,
+        );
+      }
+      for (final item in items) {
+        final index = list.indexWhere((element) => element.id == item.id);
+        list[index] = item.copyWith(
+          ecoScore: state.ecoScore.toDouble(),
+          smoothScore: state.smoothScore.toDouble(),
+        );
+      }
       final index = list.indexWhere((element) => element.id == _model.id);
       list[index] = model;
       final datasetList = List<DatasetsDocument>.from(state.dataset);
@@ -119,60 +143,66 @@ class DatasetCubit extends Cubit<DatasetState> {
         'accuracy on k fold validation: ${ecoAccuracy.toStringAsFixed(2)}');
     emit(state.copyWith(learningStep: 4, messages: messages));
     final ecoTestSplits = splitData(ecoTestData, [0.8]);
-    final ecoClassifier = ecoClassifierFunc(ecoTestSplits[0]);
+    final _ecoClassifier = ecoClassifierFunc(ecoTestSplits[0]);
+
     final ecoFinalScore =
-        ecoClassifier.assess(ecoTestSplits[1], MetricType.accuracy);
+        _ecoClassifier.assess(ecoTestData, MetricType.accuracy);
+    messages.add('Cost per iteration: ${_ecoClassifier}');
     messages.add(ecoFinalScore.toStringAsFixed(2));
     emit(state.copyWith(learningStep: 5, messages: messages));
 
     /// Smooth learning
-    final smoothRows = state.dataset
-        .map(
-          (e) => e.datasets
-              .where((e) => e.isReadyToLearn)
-              .map((e) => e.toSmoothRow)
-              .toList(),
-        )
-        .expand((e) => e)
-        .toList();
-    final smoothFrame = DataFrame(
-      smoothRows,
-      headerExists: false,
-      header: TripDatasetModelExtension.ecoRowHeaders,
-    );
-    emit(state.copyWith(learningStep: 6));
-    final smoothSplits = splitData(smoothFrame.shuffle(), [0.7]);
-    final smoothValidationData = smoothSplits[0];
-    final smoothTestData = smoothSplits[1];
+    // final smoothRows = state.dataset
+    //     .map(
+    //       (e) => e.datasets
+    //           .where((e) => e.isReadyToLearn)
+    //           .map((e) => e.toSmoothRow)
+    //           .toList(),
+    //     )
+    //     .expand((e) => e)
+    //     .toList();
+    // final smoothFrame = DataFrame(
+    //   smoothRows,
+    //   headerExists: false,
+    //   header: TripDatasetModelExtension.ecoRowHeaders,
+    // );
+    // emit(state.copyWith(learningStep: 6));
+    // final smoothSplits = splitData(smoothFrame.shuffle(), [0.7]);
+    // final smoothValidationData = smoothSplits[0];
+    // final smoothTestData = smoothSplits[1];
 
-    final smoothValidator = CrossValidator.kFold(
-      smoothValidationData,
-      numberOfFolds: 5,
-    );
-    emit(state.copyWith(learningStep: 7));
+    // final smoothValidator = CrossValidator.kFold(
+    //   smoothValidationData,
+    //   numberOfFolds: 5,
+    // );
+    // emit(state.copyWith(learningStep: 7));
 
-    final smoothScores = await smoothValidator.evaluate(
-        smoothClassifierFunc, MetricType.accuracy);
-    final smoothAccuracy = smoothScores.mean();
-    messages.add(
-        'accuracy on k fold validation: ${smoothAccuracy.toStringAsFixed(2)}');
-    emit(state.copyWith(learningStep: 8, messages: messages));
-    final smoothTestSplits = splitData(smoothTestData, [0.8]);
-    final smoothClassifier = smoothClassifierFunc(smoothTestSplits[0]);
-    final smoothFinalScore =
-        smoothClassifier.assess(smoothTestSplits[1], MetricType.accuracy);
-    messages.add(smoothFinalScore.toStringAsFixed(2));
-    emit(
-        state.copyWith(learningStep: 9, messages: messages, isLearning: false));
+    // final smoothScores = await smoothValidator.evaluate(
+    //     smoothClassifierFunc, MetricType.accuracy);
+    // final smoothAccuracy = smoothScores.mean();
+    // messages.add(
+    //     'accuracy on k fold validation: ${smoothAccuracy.toStringAsFixed(2)}');
+    // emit(state.copyWith(learningStep: 8, messages: messages));
+    // final smoothTestSplits = splitData(smoothTestData, [0.8]);
+    // final smoothClassifier = smoothClassifierFunc(smoothTestSplits[0]);
+    // final smoothFinalScore =
+    //     smoothClassifier.assess(smoothTestSplits[1], MetricType.accuracy);
+    // messages.add(smoothFinalScore.toStringAsFixed(2));
+    emit(state.copyWith(
+      learningStep: 9,
+      messages: messages,
+      isLearning: false,
+    ));
   }
 
   Assessable ecoClassifierFunc(DataFrame frame) {
     return LogisticRegressor(
       frame,
       TripDatasetModelExtension.ecoRowHeaders.last,
-      iterationsLimit: 90,
-      learningRateType: LearningRateType.timeBased,
-      probabilityThreshold: 0.7,
+      // iterationsLimit: 200,
+      initialLearningRate: 0.00001,
+      collectLearningData: true,
+      // probabilityThreshold: 0.5,
     );
   }
 
@@ -180,9 +210,65 @@ class DatasetCubit extends Cubit<DatasetState> {
     return LogisticRegressor(
       frame,
       TripDatasetModelExtension.ecoRowHeaders.last,
-      iterationsLimit: 90,
+      iterationsLimit: 300,
       learningRateType: LearningRateType.timeBased,
-      probabilityThreshold: 0.7,
+      probabilityThreshold: 0.5,
     );
+  }
+
+  Future<void> learnDecissionTree() async {
+    /// Eco learning
+    final ecoRows = state.dataset
+        .map(
+          (e) => e.datasets
+              .where((e) => e.isReadyToLearn)
+              .map((e) => e.toEcoRow)
+              .toList(),
+        )
+        .expand((e) => e)
+        .toList();
+
+    final ecoFrame = DataFrame(
+      ecoRows,
+      headerExists: false,
+      header: TripDatasetModelExtension.ecoRowHeaders,
+    );
+
+    final ecoSplits = splitData(ecoFrame.shuffle(), [0.7]);
+
+    final model = DecisionTreeClassifier(
+      ecoSplits[0],
+      'eco_score',
+      minError: 0.3,
+      minSamplesCount: 5,
+      maxDepth: 10,
+    );
+
+    final value = model.assess(ecoSplits[1], MetricType.accuracy);
+
+    print('Result tree: $value');
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final now = DateTime.now();
+    final path = '${appDocDir.path}/model${now.toString()}.json';
+
+    final file = await model.saveAsJson(path);
+    await sendTripsToMail([file.path]);
+  }
+
+  Future<void> sendTripsToMail(List<String> files) async {
+    final mailOptions = MailOptions(
+      body: 'Drzewo',
+      subject: 'Schemat drzewa',
+      recipients: ['hunteelar.programowanie@gmail.com'],
+      isHTML: true,
+      attachments: files,
+    );
+
+    await FlutterMailer.send(mailOptions);
+    for (final path in files) {
+      final file = File(path);
+      file.delete();
+    }
   }
 }

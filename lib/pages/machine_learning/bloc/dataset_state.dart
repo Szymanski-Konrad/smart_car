@@ -32,13 +32,21 @@ extension DatasetStateExtenision on DatasetState {
   int get modifyCount => modelsToModify.length;
   bool get isDatasetEnd => documentIndex >= dataset.length;
 
+  int get notReadyToLearnCount {
+    int count = 0;
+    for (final document in dataset) {
+      count +=
+          document.datasets.where((element) => !element.isReadyToLearn).length;
+    }
+    return count;
+  }
+
   int get readyToLearnCount {
     int count = 0;
     for (final document in dataset) {
       count +=
           document.datasets.where((element) => element.isReadyToLearn).length;
     }
-
     return count;
   }
 }
