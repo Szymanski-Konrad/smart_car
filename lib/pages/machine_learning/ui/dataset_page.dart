@@ -63,8 +63,8 @@ class DatasetPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           labelText: 'Eco score',
                         ),
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -75,8 +75,8 @@ class DatasetPage extends StatelessWidget {
                         decoration: const InputDecoration(
                           labelText: 'Smooth score',
                         ),
-                        keyboardType:
-                            TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                       ),
                     ),
                     const SizedBox(width: 8),

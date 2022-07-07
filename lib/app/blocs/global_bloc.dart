@@ -6,7 +6,7 @@ import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 
 class GlobalBlocs {
   static final fuelLogs = FuelLogsCubit();
-  static final settings = SettingsCubit();
+  static final settings = SettingsCubit()..loadSettings();
   static final learning = DatasetCubit();
   static final liveData = LiveDataCubit(
     address: null,
@@ -16,7 +16,7 @@ class GlobalBlocs {
 
   static final List<BlocProvider> blocs = [
     BlocProvider<SettingsCubit>(
-      create: (_) => settings..loadSettings(),
+      create: (_) => settings,
       lazy: false,
     ),
     BlocProvider<FuelLogsCubit>(

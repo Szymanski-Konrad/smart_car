@@ -120,7 +120,6 @@ class SettingsCubit extends Cubit<SettingsState> {
       fuelLogs.add(fuelLog);
       await FirestoreHandler.saveFuelLog(fuelLog);
     }
-    print(data);
   }
 
   void updateTankSize(String input) {

@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 import 'package:smart_car/pages/machine_learning/bloc/dataset_state.dart';
 import 'package:smart_car/services/firestore_handler.dart';
-import 'package:ml_preprocessing/ml_preprocessing.dart';
 
 class DatasetCubit extends Cubit<DatasetState> {
   DatasetCubit() : super(DatasetState());
@@ -40,12 +39,11 @@ class DatasetCubit extends Cubit<DatasetState> {
           .toSet()
           .toList();
       final items = list.where((element) => element.isSame(_model)).toList();
-      print('Podobne elementy: ${items.length}');
       if (items.length > 1) {
         await showAndroidToast(
           child: Text('Podobne elementy: ${items.length}'),
           context: ToastProvider.context,
-          duration: Duration(seconds: 2),
+          duration: const Duration(seconds: 2),
           alignment: Alignment.center,
         );
       }
@@ -62,7 +60,6 @@ class DatasetCubit extends Cubit<DatasetState> {
       final document = state.documentToModify.copyWith(datasets: list);
       datasetList[state.documentIndex] = document;
       emit(state.copyWith(dataset: datasetList));
-      print('saving trip dataset');
       await FirestoreHandler.saveTripDataset(document);
     }
 
@@ -105,131 +102,87 @@ class DatasetCubit extends Cubit<DatasetState> {
     resetScores();
   }
 
-  Future<void> learn() async {
-    final messages = <String>[];
-    emit(state.copyWith(isLearning: true, messages: [], learningStep: 0));
+  LinearRegressor classifierFunc(DataFrame frame, String target) {
+    return LinearRegressor(
+      frame,
+      target,
+      iterationsLimit: 900,
+      learningRateType: LearningRateType.exponential,
+      collectLearningData: true,
+    );
+  }
 
-    /// Eco learning
-    final ecoRows = state.dataset
-        .map(
-          (e) => e.datasets
-              .where((e) => e.isReadyToLearn)
-              .map((e) => e.toEcoRow)
-              .toList(),
-        )
-        .expand((e) => e)
-        .toList();
+  Future<void> _learn(
+    DataFrame dataFrame,
+    String target, {
+    MetricType metricType = MetricType.rmse,
+  }) async {
+    final messages = List<String>.from(state.messages);
+    final splits = splitData(dataFrame.shuffle(), [0.7]);
+    final validationData = splits[0];
+    final testData = splits[1];
+
+    final validator = CrossValidator.kFold(
+      validationData,
+      numberOfFolds: 5,
+    );
+
+    final score = await validator.evaluate(
+      (frame) => classifierFunc(
+        frame,
+        target,
+      ),
+      metricType,
+    );
+    final accuracy = score.mean();
+    messages.add(
+        'accuracy on k fold validation $target : ${accuracy.toStringAsFixed(4)}');
+    emit(state.copyWith(messages: messages));
+    final testSplits = splitData(testData, [0.8]);
+    final _classifier = classifierFunc(testSplits[0], target);
+    final finalScore = _classifier.assess(testSplits[1], metricType);
+    messages.add('Cost per iteration: ${_classifier}');
+    messages.add('Final score: ${finalScore.toStringAsFixed(4)}');
+    messages.add('');
+    emit(state.copyWith(messages: messages));
+  }
+
+  Future<void> learn() async {
+    print('Start learning');
+    emit(state.copyWith(isLearning: true, messages: [], learningStep: 0));
     final ecoFrame = DataFrame(
-      ecoRows,
+      state.ecoRows,
       headerExists: false,
       header: TripDatasetModelExtension.ecoRowHeaders,
     );
-    emit(state.copyWith(learningStep: 1));
-    final ecoSplits = splitData(ecoFrame.shuffle(), [0.7]);
-    final ecoValidationData = ecoSplits[0];
-    final ecoTestData = ecoSplits[1];
-    emit(state.copyWith(learningStep: 2));
-
-    final ecoValidator = CrossValidator.kFold(
-      ecoValidationData,
-      numberOfFolds: 5,
+    final smoothFrame = DataFrame(
+      state.smoothRows,
+      headerExists: false,
+      header: TripDatasetModelExtension.smoothRowHeaders,
     );
-    emit(state.copyWith(learningStep: 3));
+    final smoothTarget = TripDatasetModelExtension.smoothRowHeaders.last;
+    final ecoTarget = TripDatasetModelExtension.ecoRowHeaders.last;
+    final _frame = getPimaIndiansDiabetesDataFrame();
+    const _targetColumnName = 'Outcome';
+    await _learn(ecoFrame, ecoTarget);
+    await _learn(smoothFrame, smoothTarget);
+    await _learn(_frame, _targetColumnName);
 
-    final ecoScores =
-        await ecoValidator.evaluate(ecoClassifierFunc, MetricType.accuracy);
-    final ecoAccuracy = ecoScores.mean();
-    messages.add(
-        'accuracy on k fold validation: ${ecoAccuracy.toStringAsFixed(2)}');
-    emit(state.copyWith(learningStep: 4, messages: messages));
-    final ecoTestSplits = splitData(ecoTestData, [0.8]);
-    final _ecoClassifier = ecoClassifierFunc(ecoTestSplits[0]);
-
-    final ecoFinalScore =
-        _ecoClassifier.assess(ecoTestData, MetricType.accuracy);
-    messages.add('Cost per iteration: ${_ecoClassifier}');
-    messages.add(ecoFinalScore.toStringAsFixed(2));
-    emit(state.copyWith(learningStep: 5, messages: messages));
-
-    /// Smooth learning
-    // final smoothRows = state.dataset
-    //     .map(
-    //       (e) => e.datasets
-    //           .where((e) => e.isReadyToLearn)
-    //           .map((e) => e.toSmoothRow)
-    //           .toList(),
-    //     )
-    //     .expand((e) => e)
-    //     .toList();
-    // final smoothFrame = DataFrame(
-    //   smoothRows,
-    //   headerExists: false,
-    //   header: TripDatasetModelExtension.ecoRowHeaders,
-    // );
-    // emit(state.copyWith(learningStep: 6));
-    // final smoothSplits = splitData(smoothFrame.shuffle(), [0.7]);
-    // final smoothValidationData = smoothSplits[0];
-    // final smoothTestData = smoothSplits[1];
-
-    // final smoothValidator = CrossValidator.kFold(
-    //   smoothValidationData,
-    //   numberOfFolds: 5,
-    // );
-    // emit(state.copyWith(learningStep: 7));
-
-    // final smoothScores = await smoothValidator.evaluate(
-    //     smoothClassifierFunc, MetricType.accuracy);
-    // final smoothAccuracy = smoothScores.mean();
-    // messages.add(
-    //     'accuracy on k fold validation: ${smoothAccuracy.toStringAsFixed(2)}');
-    // emit(state.copyWith(learningStep: 8, messages: messages));
-    // final smoothTestSplits = splitData(smoothTestData, [0.8]);
-    // final smoothClassifier = smoothClassifierFunc(smoothTestSplits[0]);
-    // final smoothFinalScore =
-    //     smoothClassifier.assess(smoothTestSplits[1], MetricType.accuracy);
-    // messages.add(smoothFinalScore.toStringAsFixed(2));
     emit(state.copyWith(
       learningStep: 9,
-      messages: messages,
       isLearning: false,
     ));
   }
 
-  Assessable ecoClassifierFunc(DataFrame frame) {
-    return LogisticRegressor(
-      frame,
-      TripDatasetModelExtension.ecoRowHeaders.last,
-      // iterationsLimit: 200,
-      initialLearningRate: 0.00001,
-      collectLearningData: true,
-      // probabilityThreshold: 0.5,
-    );
+  Future<void> learnTrees() async {
+    await learnEcoTree();
+    await learnSmoothTree();
   }
 
-  Assessable smoothClassifierFunc(DataFrame frame) {
-    return LogisticRegressor(
-      frame,
-      TripDatasetModelExtension.ecoRowHeaders.last,
-      iterationsLimit: 300,
-      learningRateType: LearningRateType.timeBased,
-      probabilityThreshold: 0.5,
-    );
-  }
-
-  Future<void> learnDecissionTree() async {
+  Future<void> learnEcoTree() async {
     /// Eco learning
-    final ecoRows = state.dataset
-        .map(
-          (e) => e.datasets
-              .where((e) => e.isReadyToLearn)
-              .map((e) => e.toEcoRow)
-              .toList(),
-        )
-        .expand((e) => e)
-        .toList();
-
     final ecoFrame = DataFrame(
-      ecoRows,
+      state.ecoRows,
       headerExists: false,
       header: TripDatasetModelExtension.ecoRowHeaders,
     );
@@ -245,13 +198,37 @@ class DatasetCubit extends Cubit<DatasetState> {
     );
 
     final value = model.assess(ecoSplits[1], MetricType.accuracy);
-
-    print('Result tree: $value');
-
+    print('Eco tree value: $value');
     Directory appDocDir = await getApplicationDocumentsDirectory();
     final now = DateTime.now();
-    final path = '${appDocDir.path}/model${now.toString()}.json';
+    final path = '${appDocDir.path}/ecoTree${now.toString()}.json';
+    final file = await model.saveAsJson(path);
+    await sendTripsToMail([file.path]);
+  }
 
+  Future<void> learnSmoothTree() async {
+    /// Eco learning
+    final smoothFrame = DataFrame(
+      state.smoothRows,
+      headerExists: false,
+      header: TripDatasetModelExtension.smoothRowHeaders,
+    );
+
+    final smoothSplits = splitData(smoothFrame.shuffle(), [0.7]);
+
+    final model = DecisionTreeClassifier(
+      smoothSplits[0],
+      'smooth_score',
+      minError: 0.3,
+      minSamplesCount: 5,
+      maxDepth: 10,
+    );
+
+    final value = model.assess(smoothSplits[1], MetricType.accuracy);
+    print('Smooth tree value: $value');
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    final now = DateTime.now();
+    final path = '${appDocDir.path}/smoothTree${now.toString()}.json';
     final file = await model.saveAsJson(path);
     await sendTripsToMail([file.path]);
   }

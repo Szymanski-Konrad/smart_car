@@ -29,77 +29,85 @@ class LiveDataPage extends StatelessWidget
     final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
     final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
     final tankSize = context.read<SettingsCubit>().state.settings.tankSize;
-    return BlocBuilder<LiveDataCubit, LiveDataState>(
-      bloc: GlobalBlocs.liveData
-        ..createConnection(
-          newAddress: address,
-          fuelPrice: fuelPrice,
-          tankSize: tankSize,
-          localFile: localFile,
-          isLocalMode: isLocalMode,
-        ),
-      builder: (context, state) {
-        return state.isConnnectingError
-            ? Scaffold(
-                appBar: AppBar(),
-                body: const Center(
-                  child: Text(Strings.cannotConnect),
-                ),
-              )
-            : Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    state.isLocalMode
-                        ? Strings.progress(state.localTripProgress)
-                        : state.isConnecting
-                            ? Strings.connecting
-                            : Strings.connected,
+    return WillPopScope(
+      onWillPop: () async {
+        if (isLocalMode) {
+          GlobalBlocs.liveData.close();
+        }
+        return true;
+      },
+      child: BlocBuilder<LiveDataCubit, LiveDataState>(
+        bloc: GlobalBlocs.liveData
+          ..createConnection(
+            newAddress: address,
+            fuelPrice: fuelPrice,
+            tankSize: tankSize,
+            localFile: localFile,
+            isLocalMode: isLocalMode,
+          ),
+        builder: (context, state) {
+          return state.isConnnectingError
+              ? Scaffold(
+                  appBar: AppBar(),
+                  body: const Center(
+                    child: Text(Strings.cannotConnect),
                   ),
-                  actions: [
-                    IconButton(
-                      onPressed: GlobalBlocs.liveData.closeConnection,
-                      icon: const Icon(Icons.save_alt),
+                )
+              : Scaffold(
+                  appBar: AppBar(
+                    title: Text(
+                      state.isLocalMode
+                          ? Strings.progress(state.localTripProgress)
+                          : state.isConnecting
+                              ? Strings.connecting
+                              : Strings.connected,
                     ),
-                    if (state.supportedPids.isNotEmpty)
+                    actions: [
                       IconButton(
-                        onPressed: () => showSupportedCommandsDialog(context,
-                            state.supportedPids, GlobalBlocs.liveData, state),
-                        icon: const Icon(Icons.list),
-                      )
-                  ],
-                ),
-                body: SafeArea(
-                  child: DefaultTabController(
-                    length: 2,
-                    child: Column(
-                      children: [
-                        const TabBar(
-                          tabs: [
-                            Tab(text: Strings.liveData),
-                            Tab(text: Strings.tripStats),
-                          ],
-                        ),
-                        const SizedBox(height: 20.0),
-                        Expanded(
-                          child: TabBarView(
-                            children: [
-                              LiveStatsSection(
-                                state: state,
-                                cubit: GlobalBlocs.liveData,
-                              ),
-                              TripStatsSection(
-                                state: state,
-                                cubit: GlobalBlocs.liveData,
-                              ),
+                        onPressed: GlobalBlocs.liveData.closeConnection,
+                        icon: const Icon(Icons.save_alt),
+                      ),
+                      if (state.supportedPids.isNotEmpty)
+                        IconButton(
+                          onPressed: () => showSupportedCommandsDialog(context,
+                              state.supportedPids, GlobalBlocs.liveData, state),
+                          icon: const Icon(Icons.list),
+                        )
+                    ],
+                  ),
+                  body: SafeArea(
+                    child: DefaultTabController(
+                      length: 2,
+                      child: Column(
+                        children: [
+                          const TabBar(
+                            tabs: [
+                              Tab(text: Strings.liveData),
+                              Tab(text: Strings.tripStats),
                             ],
                           ),
-                        )
-                      ],
+                          const SizedBox(height: 20.0),
+                          Expanded(
+                            child: TabBarView(
+                              children: [
+                                LiveStatsSection(
+                                  state: state,
+                                  cubit: GlobalBlocs.liveData,
+                                ),
+                                TripStatsSection(
+                                  state: state,
+                                  cubit: GlobalBlocs.liveData,
+                                ),
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-      },
+                );
+        },
+      ),
     );
   }
 

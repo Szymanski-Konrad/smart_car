@@ -95,16 +95,19 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     required double tankSize,
     required bool isLocalMode,
   }) async {
-    if (isLocalMode && _everySecondTimer?.isActive == true) return;
+    if (isLocalMode) {
+      _everyMinuteTimer?.cancel();
+      _everySecondTimer?.cancel();
+    }
     if (address != null) return;
     await BTConnection().close();
     reset();
     address = newAddress;
-    LiveDataState.init(
+    emit(LiveDataState.init(
       localFile: localFile,
       fuelPrice: fuelPrice,
       tankSize: tankSize,
-    );
+    ));
     init();
   }
 
@@ -343,6 +346,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         if ((now.difference(lastReciveCommandTime).inSeconds >=
                     Durations.maxNoDataReciveSeconds ||
                 isMotorOff) &&
+            state.isRunning &&
             !state.isTripClosing) {
           motorOff();
         }
@@ -363,7 +367,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   }
 
   void _startScoreTimer() {
-    _everyMinuteTimer = Timer.periodic(const Duration(minutes: 2), (timer) {
+    _everyMinuteTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       calculateScore();
     });
   }
@@ -469,8 +473,8 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     BTConnection().close();
     if (state.tripRecord.totalTripSeconds > 30) {
       await FirestoreHandler.saveTripDataset(state.datasets);
-      saveCommands();
-      await generateTripSummary();
+      // saveCommands();
+      // await generateTripSummary();
     }
 
     await goBackWithDelay();
@@ -501,7 +505,6 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       headerExists: false,
     ));
     final ecoScore = eco?.rows.first.first as double;
-    print(ecoScore.toString());
     final score = TripScoreHelper.calculateScore(
       prevModel: lastTripScoreModel,
       model: tripScoreModel,
@@ -811,7 +814,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Future<void> close() async {
     _everySecondTimer?.cancel();
     _everyMinuteTimer?.cancel();
-    await saveCommands();
+    // await saveCommands();
     await BTConnection().close();
     await locationSub?.cancel();
     await _accSubscription?.cancel();

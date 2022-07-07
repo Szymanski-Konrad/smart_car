@@ -181,8 +181,11 @@ extension LiveDataStateExtension on LiveDataState {
 
   LiveDataState localMode() {
     return LiveDataState(
-      tripRecord:
-          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
+      tripRecord: TripRecord(
+        fuelPrice: fuelPrice,
+        startTripDate: DateTime.now(),
+        tankSize: tripRecord.tankSize,
+      ),
       datasets: DatasetsDocument(
         id: const Uuid().v1(),
         createDate: DateTime.now(),

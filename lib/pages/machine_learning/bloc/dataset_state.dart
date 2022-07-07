@@ -49,4 +49,24 @@ extension DatasetStateExtenision on DatasetState {
     }
     return count;
   }
+
+  List<List<dynamic>> get ecoRows => dataset
+      .map(
+        (e) => e.datasets
+            .where((e) => e.isReadyToLearn)
+            .map((e) => e.toEcoRow)
+            .toList(),
+      )
+      .expand((e) => e)
+      .toList();
+
+  List<List<dynamic>> get smoothRows => dataset
+      .map(
+        (e) => e.datasets
+            .where((e) => e.isReadyToLearn)
+            .map((e) => e.toSmoothRow)
+            .toList(),
+      )
+      .expand((e) => e)
+      .toList();
 }

@@ -39,6 +39,6 @@ abstract class Constants {
 }
 
 abstract class Durations {
-  static const maxNoDataReciveSeconds = 3;
+  static const maxNoDataReciveSeconds = 1;
   static const closingTripDuration = Duration(seconds: 5);
 }

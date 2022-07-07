@@ -85,6 +85,9 @@ dependencies:
   timeago: ^3.2.2
   csv: ^5.0.1
 
+  # Sentry
+  sentry_flutter: ^6.6.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

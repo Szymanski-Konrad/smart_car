@@ -71,12 +71,10 @@ abstract class FirestoreHandler {
   /// Fetch all fuel logs for account
   static Future<List<FuelLog>> fetchFuelLogs() async {
     final vin = GlobalBlocs.settings.state.settings.vin;
-    print('Fuel logs vin: $vin');
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection(kFuelLogCollection);
 
     if (vin != null && vin.isNotEmpty) {
-      print('Fetching fuel logs');
       query = query.where('vin', isEqualTo: vin);
     }
 
@@ -110,12 +108,10 @@ abstract class FirestoreHandler {
   /// Fetch trip summaries for account
   static Future<List<TripSummary>> fetchTripSummaries() async {
     final vin = GlobalBlocs.settings.state.settings.vin;
-    print(vin);
     Query<Map<String, dynamic>> query =
         FirebaseFirestore.instance.collection(kTripSummaryCollection);
 
     if (vin != null && vin.isNotEmpty) {
-      print('Fetching trip summaries');
       query = query.where('vin', isEqualTo: vin);
     }
 
