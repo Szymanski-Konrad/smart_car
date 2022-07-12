@@ -7,14 +7,14 @@ packages:
       name: _fe_analyzer_shared
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "38.0.0"
+    version: "41.0.0"
   analyzer:
     dependency: transitive
     description:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.4.1"
+    version: "4.2.0"
   another_flushbar:
     dependency: "direct main"
     description:
@@ -63,7 +63,7 @@ packages:
       name: build_config
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   build_daemon:
     dependency: transitive
     description:
@@ -84,7 +84,7 @@ packages:
       name: build_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.11"
+    version: "2.2.0"
   build_runner_core:
     dependency: transitive
     description:
@@ -147,21 +147,21 @@ packages:
       name: cloud_firestore
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.1.18"
+    version: "3.2.1"
   cloud_firestore_platform_interface:
     dependency: transitive
     description:
       name: cloud_firestore_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.5.8"
+    version: "5.5.10"
   cloud_firestore_web:
     dependency: transitive
     description:
       name: cloud_firestore_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.6.17"
+    version: "2.6.19"
   code_builder:
     dependency: transitive
     description:
@@ -252,21 +252,21 @@ packages:
       name: firebase_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.18.0"
+    version: "1.19.1"
   firebase_core_platform_interface:
     dependency: transitive
     description:
       name: firebase_core_platform_interface
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.1"
+    version: "4.4.3"
   firebase_core_web:
     dependency: transitive
     description:
       name: firebase_core_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.5"
+    version: "1.6.6"
   fixnum:
     dependency: transitive
     description:
@@ -280,7 +280,7 @@ packages:
       name: fl_chart
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.45.1"
+    version: "0.55.0"
   fl_toast:
     dependency: "direct main"
     description:
@@ -327,7 +327,7 @@ packages:
       name: flutter_lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.4"
+    version: "2.0.1"
   flutter_logs:
     dependency: "direct main"
     description:
@@ -348,7 +348,7 @@ packages:
       name: flutter_map
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.14.0"
+    version: "2.0.0"
   flutter_sensors:
     dependency: "direct main"
     description:
@@ -379,14 +379,14 @@ packages:
       name: freezed
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "2.0.5"
   freezed_annotation:
     dependency: transitive
     description:
       name: freezed_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "2.0.3"
   frontend_server_client:
     dependency: transitive
     description:
@@ -477,14 +477,14 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.5.0"
+    version: "4.6.0"
   json_serializable:
     dependency: "direct dev"
     description:
       name: json_serializable
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.2.0"
+    version: "6.3.1"
   latlong2:
     dependency: "direct main"
     description:
@@ -505,7 +505,7 @@ packages:
       name: lints
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.1"
+    version: "2.0.0"
   lists:
     dependency: transitive
     description:
@@ -596,7 +596,7 @@ packages:
       name: ml_linalg
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "13.9.0"
+    version: "13.10.0"
   ml_preprocessing:
     dependency: "direct main"
     description:
@@ -737,6 +737,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
+  polylabel:
+    dependency: transitive
+    description:
+      name: polylabel
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   pool:
     dependency: transitive
     description:
@@ -799,14 +806,14 @@ packages:
       name: sentry
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.6.2"
+    version: "6.6.3"
   sentry_flutter:
     dependency: "direct main"
     description:
       name: sentry_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "6.6.2"
+    version: "6.6.3"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -959,13 +966,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
-  transparent_image:
-    dependency: transitive
-    description:
-      name: transparent_image
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   tuple:
     dependency: transitive
     description:
@@ -1042,7 +1042,7 @@ packages:
       name: xml
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.4.1"
+    version: "6.1.0"
   xrange:
     dependency: transitive
     description:
