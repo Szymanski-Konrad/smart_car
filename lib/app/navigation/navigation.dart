@@ -5,8 +5,7 @@ class Navigation {
 
   final GlobalKey<NavigatorState> key;
 
-  static late final Navigation _instance =
-      Navigation._(GlobalKey<NavigatorState>());
+  static final Navigation _instance = Navigation._(GlobalKey<NavigatorState>());
 
   static Navigation get instance {
     return _instance;

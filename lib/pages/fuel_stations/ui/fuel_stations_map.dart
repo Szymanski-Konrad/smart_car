@@ -57,9 +57,6 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
         TileLayerOptions(
           urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
           subdomains: ['a', 'b', 'c'],
-          attributionBuilder: (_) {
-            return const Text("© OpenStreetMap contributors");
-          },
         ),
         MarkerLayerOptions(
           markers: widget.gasStations.map(_buildMarker).toList(),

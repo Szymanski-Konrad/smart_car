@@ -42,7 +42,7 @@ class BTConnection {
   }) async {
     if (command.isNotEmpty) {
       try {
-        final uft = Uint8List.fromList(utf8.encode(command + '\r\n'));
+        final uft = Uint8List.fromList(utf8.encode('$command\r\n'));
         _connection?.output.add(uft);
         await _connection?.output.allSent;
       } catch (e) {

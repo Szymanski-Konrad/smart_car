@@ -20,25 +20,25 @@ class OtherInfoTile extends StatelessWidget {
   final Map<TripDataType, int> updates;
 
   int? get seconds {
-    final _seconds = <int>[];
+    final durations = <int>[];
     final types = data.tripDataType;
     if (types == null) return null;
     for (final type in types) {
       final value = DateTimeHelper.secondsDiff(updates[type]);
       if (value != null) {
-        _seconds.add(value);
+        durations.add(value);
       }
     }
-    _seconds.sort();
-    return _seconds.isEmpty ? null : _seconds.first;
+    durations.sort();
+    return durations.isEmpty ? null : durations.first;
   }
 
   Color? get fontColor {
-    final _seconds = seconds;
-    if (_seconds == null) {
+    final duration = seconds;
+    if (duration == null) {
       return Colors.transparent;
     }
-    return Colors.green.withOpacity((255 - _seconds * 50) / 255);
+    return Colors.green.withOpacity((255 - duration * 50) / 255);
   }
 
   Color diffTextStyle(double diff) {

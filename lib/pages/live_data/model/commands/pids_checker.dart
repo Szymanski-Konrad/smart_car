@@ -39,12 +39,12 @@ extension PidsCheckerExtension on PidsChecker {
   PidsChecker get sixthPidsReaded => copyWith(pidsReadedA1_C0: true);
 
   String? get nextReadPidsPart {
-    if (shouldRead1_20) return '01' + Pids.pidsList1;
-    if (shouldRead21_40) return '01' + Pids.pidsList2;
-    if (shouldRead41_60) return '01' + Pids.pidsList3;
-    if (shouldRead61_80) return '01' + Pids.pidsList4;
-    if (shouldRead81_A0) return '01' + Pids.pidsList5;
-    if (shouldReadA1_C0) return '01' + Pids.pidsList6;
+    if (shouldRead1_20) return '01${Pids.pidsList1}';
+    if (shouldRead21_40) return '01${Pids.pidsList2}';
+    if (shouldRead41_60) return '01${Pids.pidsList3}';
+    if (shouldRead61_80) return '01${Pids.pidsList4}';
+    if (shouldRead81_A0) return '01${Pids.pidsList5}';
+    if (shouldReadA1_C0) return '01${Pids.pidsList6}';
     return null;
   }
 

@@ -790,7 +790,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     }
     currentPids.addAll(pids);
     emit(state
-        .updateReadedPidsPart('01' + receivedData.command)
+        .updateReadedPidsPart('01${receivedData.command}')
         .copyWith(supportedPids: currentPids.toSet().toList()));
   }
 

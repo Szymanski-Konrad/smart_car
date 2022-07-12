@@ -62,8 +62,8 @@ class SettingsPage extends StatelessWidget {
             onChanged: cubit.updateJson,
             items: Constants.localFiles
                 .map((e) => DropdownMenuItem(
-                      child: Text(e),
                       value: e,
+                      child: Text(e),
                     ))
                 .toList(),
           ),
@@ -122,8 +122,8 @@ class SettingsPage extends StatelessWidget {
                   itemHeight: 60,
                   items: FuelType.values
                       .map((e) => DropdownMenuItem<FuelType>(
-                            child: Text(e.name),
                             value: e,
+                            child: Text(e.name),
                           ))
                       .toList(),
                   onChanged: cubit.updateFuelType,

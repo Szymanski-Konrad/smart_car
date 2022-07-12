@@ -80,17 +80,17 @@ class _PlatformDialogAction {
 
   Widget get iOSButton {
     return CupertinoDialogAction(
-      child: Text(text),
       onPressed: onPressed,
       isDestructiveAction: isDestructiveAction,
       isDefaultAction: isDefaultAction,
+      child: Text(text),
     );
   }
 
   Widget get androidButton {
     return TextButton(
-      child: Text(text),
       onPressed: onPressed,
+      child: Text(text),
     );
   }
 }

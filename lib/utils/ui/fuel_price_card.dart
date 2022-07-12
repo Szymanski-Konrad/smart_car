@@ -27,6 +27,7 @@ class FuelPriceCard extends StatelessWidget {
         FuelTypeHelper.selectFuelTypeIcon(type),
         const SizedBox(width: 8.0),
         GestureDetector(
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Text(
@@ -34,7 +35,6 @@ class FuelPriceCard extends StatelessWidget {
               style: priceStyle,
             ),
           ),
-          onTap: onTap,
         ),
         if (_changeDate != null && onTap == null)
           Text(timeago.format(_changeDate)),

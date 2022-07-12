@@ -21,8 +21,8 @@ class FuelStationsPage extends StatelessWidget {
           ),
           body: _buildBody(context, cubit, state),
           floatingActionButton: FloatingActionButton(
-            child: const Icon(Icons.search),
             onPressed: cubit.onSearch,
+            child: const Icon(Icons.search),
           ),
         );
       },
