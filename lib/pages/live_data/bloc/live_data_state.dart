@@ -45,10 +45,10 @@ class LiveDataState with _$LiveDataState {
     LocationData? lastLocation,
     @Default(false) bool isLocalMode,
     @Default(0) double fuelPrice,
-    @Default(0) double score,
     @Default(0) double ecoScore,
+    @Default(0) double smoothScore,
     double? previousEcoScore,
-    double? previousScore,
+    double? previousSmoothScore,
     @Default([]) List<double> acceleration,
     String? vin,
     required DatasetsDocument datasets,
@@ -90,7 +90,9 @@ class LiveDataState with _$LiveDataState {
     @Default(0) double zGyroData,
     @Default(0) double gForce,
     @Default(false) bool isTemperatureAvaliable,
+    @Default(false) bool isBarometerAvaliable,
     @Default(0.0) double temperature,
+    @Default(0.0) double barometer,
     @Default(false) bool isTurning,
     @Default(false) bool isHighGforce,
     @Default(0) double previousBarometer,
@@ -174,6 +176,7 @@ extension LiveDataStateExtension on LiveDataState {
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
+      isBarometerAvaliable: isBarometerAvaliable,
       localData: localData,
       fuelPrice: fuelPrice,
     );
@@ -194,6 +197,7 @@ extension LiveDataStateExtension on LiveDataState {
       pidsChecker: PidsChecker(),
       supportedPids: supportedPids,
       isTemperatureAvaliable: isTemperatureAvaliable,
+      isBarometerAvaliable: isBarometerAvaliable,
       isLocalMode: true,
       localData: localData,
       fuelPrice: fuelPrice,
@@ -247,18 +251,18 @@ extension LiveDataStateExtension on LiveDataState {
     }
   }
 
-  OtherTileData get scoreData => OtherTileData(
-        digits: 0,
-        unit: '',
-        title: 'Ocena jazdy',
-        value: score,
-      );
-
   OtherTileData get ecoScoreData => OtherTileData(
         value: ecoScore,
         digits: 1,
         title: 'Eco score',
-        unit: '',
+        unit: 'pts',
+      );
+
+  OtherTileData get smoothScoreData => OtherTileData(
+        value: smoothScore,
+        digits: 1,
+        title: 'Smooth score',
+        unit: 'pts',
       );
 
   OtherTileData get directionData => OtherTileData(
@@ -295,6 +299,13 @@ extension LiveDataStateExtension on LiveDataState {
         unit: '°C',
         title: Strings.indoorTemp,
         value: temperature,
+      );
+
+  OtherTileData get barometerData => OtherTileData(
+        digits: 3,
+        unit: 'mmHg',
+        title: 'Ciśnienie',
+        value: barometer,
       );
 
   OtherTileData get fuelStatusData => OtherTileData(

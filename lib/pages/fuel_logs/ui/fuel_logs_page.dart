@@ -6,6 +6,7 @@ import 'package:smart_car/pages/fuel_logs/bloc/fuel_logs_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/utils/ui/fuel_log_card.dart';
 import 'package:smart_car/utils/ui/fuel_stats_card.dart';
+import 'package:smart_car/utils/ui/loading_view.dart';
 
 class FuelLogsPage extends StatelessWidget {
   const FuelLogsPage({Key? key}) : super(key: key);
@@ -21,9 +22,11 @@ class FuelLogsPage extends StatelessWidget {
             title: const Text('Dziennik tankowań'),
             centerTitle: true,
           ),
-          body: state.logs.isEmpty
-              ? _buildNoContent(context, cubit)
-              : _buildContent(context, state, cubit),
+          body: state.isLoading
+              ? const LoadingView()
+              : state.logs.isEmpty
+                  ? _buildNoContent(context, cubit)
+                  : _buildContent(context, state, cubit),
           floatingActionButton: FloatingActionButton(
             onPressed: cubit.createNewLog,
             child: const Icon(Icons.add),

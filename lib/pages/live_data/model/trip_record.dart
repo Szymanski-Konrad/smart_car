@@ -215,7 +215,6 @@ extension TripRecordExtension on TripRecord {
       ];
 
   List<OtherTileData> get otherInfoSection => [
-        avgFuelPerHDetails,
         avgFuelDetails,
         avgFuelAdjustDetails,
         instFuelDetails,
@@ -226,8 +225,11 @@ extension TripRecordExtension on TripRecord {
         gpsDistanceDetails,
         altitudeCumulativeDetails,
         distanceDetails,
-        tankDifferenceDetails,
         fuelCostsDetails,
+      ];
+
+  List<OtherTileData> get otherSection => [
+        tankDifferenceDetails,
         carboPerKmDetails,
         producedCarboDetails,
         savedCarboDetails,
@@ -273,7 +275,7 @@ extension TripRecordExtension on TripRecord {
   OtherTileData get tankDifferenceDetails => OtherTileData(
         value: (startFuelLvl - currentFuelLvl) * tankSize / 100,
         digits: 3,
-        title: 'Bak',
+        title: 'Różnica baku',
         unit: 'l',
       );
 
@@ -304,13 +306,6 @@ extension TripRecordExtension on TripRecord {
         title: 'Korekta spalania',
         unit: distance > 0 ? 'l/100km' : 'l/h',
         digits: 2,
-      );
-
-  OtherTileData get avgFuelPerHDetails => OtherTileData(
-        value: avgFuelPerH,
-        title: Strings.averageFuelConsumption,
-        unit: 'l/h',
-        digits: 1,
       );
 
   OtherTileData get rangeDetails => OtherTileData(

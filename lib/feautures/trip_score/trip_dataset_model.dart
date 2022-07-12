@@ -56,7 +56,6 @@ extension TripDatasetModelExtension on TripDatasetModel {
         toValidValue(startsPerKm),
         toValidValue(idleFuelShare),
         toValidValue(savedFuelShare),
-        toValidValue(ecoScore),
       ];
 
   static List<String> get ecoRowHeaders => [
@@ -74,7 +73,6 @@ extension TripDatasetModelExtension on TripDatasetModel {
         toValidValue(accelerationsPerKm),
         toValidValue(highGforcePerKm),
         toValidValue(accDeccPerKm),
-        toValidValue(smoothScore),
       ];
 
   static List<String> get smoothRowHeaders => [

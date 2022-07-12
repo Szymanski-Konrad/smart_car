@@ -37,7 +37,6 @@ import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
-import 'package:smart_car/pages/trip_score/utils/trip_score_helper.dart';
 import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/utils/bt_connection.dart';
 import 'package:smart_car/utils/list_extension.dart';
@@ -76,16 +75,21 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   StreamSubscription<SensorEvent>? _accSubscription;
   StreamSubscription<SensorEvent>? _gyroSubsription;
   StreamSubscription? _tempSubscription;
+  StreamSubscription? _barometerSubscription;
   Timer? _everySecondTimer;
   Timer? _everyMinuteTimer;
   final doubleRE = RegExp(r"-?(?:\d*\.)?\d+(?:[eE][+-]?\d+)?");
 
   void initialize() async {
-    final json = await rootBundle.loadString('assets/models/tree.json');
-    treeModel = DecisionTreeClassifier.fromJson(json);
+    final ecoJson = await rootBundle.loadString('assets/models/ecoModel.json');
+    final smoothJson =
+        await rootBundle.loadString('assets/models/smoothModel.json');
+    ecoModel = KnnRegressor.fromJson(ecoJson);
+    smoothModel = KnnRegressor.fromJson(smoothJson);
   }
 
-  DecisionTreeClassifier? treeModel;
+  KnnRegressor? ecoModel;
+  KnnRegressor? smoothModel;
 
   /// Create new connection
   void createConnection({
@@ -95,6 +99,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     required double tankSize,
     required bool isLocalMode,
   }) async {
+    if (state.isRunning) return;
     if (isLocalMode) {
       _everyMinuteTimer?.cancel();
       _everySecondTimer?.cancel();
@@ -122,6 +127,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     _accSubscription?.cancel();
     _gyroSubsription?.cancel();
     _tempSubscription?.cancel();
+    _barometerSubscription?.cancel();
     _everyMinuteTimer?.cancel();
     _everySecondTimer?.cancel();
   }
@@ -223,7 +229,18 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       });
     }
 
-    emit(state.copyWith(isTemperatureAvaliable: isTemperatureAvailable));
+    final isBarometerAvailable =
+        await EnvironmentSensors().getSensorAvailable(SensorType.Pressure);
+    if (isBarometerAvailable) {
+      _barometerSubscription = EnvironmentSensors().pressure.listen((event) {
+        emit(state.copyWith(barometer: event));
+      });
+    }
+
+    emit(state.copyWith(
+      isTemperatureAvaliable: isTemperatureAvailable,
+      isBarometerAvaliable: isBarometerAvailable,
+    ));
   }
 
   void _onLocationChanged(LocationData currLocation) {
@@ -500,21 +517,21 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       emit(state.addDataset(tripDataset));
     }
     final data = TripDatasetModelExtension.fromTripScoreModel(tripScoreModel);
-    final eco = treeModel?.predict(DataFrame(
+    final eco = ecoModel?.predict(DataFrame(
       [data.toEcoRow],
       headerExists: false,
     ));
+    final smooth = smoothModel?.predict(DataFrame(
+      [data.toSmoothRow],
+      headerExists: false,
+    ));
     final ecoScore = eco?.rows.first.first as double;
-    final score = TripScoreHelper.calculateScore(
-      prevModel: lastTripScoreModel,
-      model: tripScoreModel,
-      prevScore: state.score,
-    );
+    final smoothScore = smooth?.rows.first.first as double;
     emit(state.copyWith(
-      score: score,
       ecoScore: ecoScore,
+      smoothScore: smoothScore,
       previousEcoScore: state.ecoScore,
-      previousScore: state.score,
+      previousSmoothScore: state.smoothScore,
     ));
     lastTripScoreModel = tripScoreModel;
   }
@@ -551,9 +568,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       overRPMDriveTime: state.tripRecord.overRPMDriveTime,
       underRPMDriveTime: state.tripRecord.underRPMDriveTime,
       locations: state.gpsPoints,
-      score: state.score,
       accDecc: state.tripRecord.accDecc,
       starts: state.tripRecord.starts,
+      ecoScore: state.ecoScore,
+      smoothScore: state.smoothScore,
       vin: GlobalBlocs.settings.state.settings.vin,
     );
     await FirestoreHandler.saveTripSummary(tripSummary);
@@ -820,6 +838,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     await _accSubscription?.cancel();
     await _gyroSubsription?.cancel();
     await _tempSubscription?.cancel();
+    await _barometerSubscription?.cancel();
     super.close();
   }
 }

@@ -13,9 +13,13 @@ class FuelLogsCubit extends Cubit<FuelLogsState> {
   }
 
   Future<void> fetchLogs() async {
+    emit(state.copyWith(isLoading: true));
     final results = await FirestoreHandler.fetchFuelLogs();
     GlobalBlocs.settings.updateRefuelingConsumption(results.avgConsumption);
-    emit(state.copyWith(logs: results));
+    emit(state.copyWith(
+      logs: results,
+      isLoading: false,
+    ));
   }
 
   void createNewLog() {

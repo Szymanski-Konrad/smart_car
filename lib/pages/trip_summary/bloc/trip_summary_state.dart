@@ -8,6 +8,7 @@ class TripSummaryState with _$TripSummaryState {
   const factory TripSummaryState({
     @Default([]) List<TripSummary> trips,
     @Default(0) double tankSize,
+    @Default(false) bool isLoading,
   }) = _TripSummary;
 }
 

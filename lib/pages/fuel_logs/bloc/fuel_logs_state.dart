@@ -7,5 +7,6 @@ part 'fuel_logs_state.freezed.dart';
 class FuelLogsState with _$FuelLogsState {
   factory FuelLogsState({
     @Default([]) List<FuelLog> logs,
+    @Default(false) bool isLoading,
   }) = _FuelLogsState;
 }

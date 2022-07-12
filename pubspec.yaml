@@ -3,7 +3,7 @@ description: A new Flutter project.
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 1.0.0+2
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
@@ -39,7 +39,7 @@ dependencies:
   flutter_mailer: ^2.0.1
 
   # Sensors
-  environment_sensors: ^0.2.0
+  environment_sensors: ^0.2.0 
   flutter_sensors: ^1.0.1
 
   # Storage

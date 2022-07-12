@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
@@ -128,9 +129,10 @@ class _AppState extends State<App> {
                           ListTile(
                             title: ElevatedButton(
                               child: Text(
-                                  GlobalBlocs.liveData.isAlreadyConnected
-                                      ? 'Wróć do danych'
-                                      : Strings.connectToObd),
+                                GlobalBlocs.liveData.isAlreadyConnected
+                                    ? 'Wróć do danych'
+                                    : Strings.connectToObd,
+                              ),
                               onPressed: () async {
                                 final address = context
                                     .read<SettingsCubit>()
@@ -201,20 +203,21 @@ class _AppState extends State<App> {
                 const SizedBox(height: 16),
                 const Divider(color: Colors.yellow),
                 const SectionTitle(title: Strings.settings),
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text('Surowe dane'),
-                    onPressed: () =>
-                        Navigation.instance.push(SharedRoutes.machineLearning),
+                if (kDebugMode)
+                  ListTile(
+                    title: ElevatedButton(
+                      child: const Text('Surowe dane'),
+                      onPressed: () => Navigation.instance
+                          .push(SharedRoutes.machineLearning),
+                    ),
                   ),
-                ),
-                ListTile(
-                  title: ElevatedButton(
-                    child: const Text('Uczenie maszynowe'),
-                    onPressed: () =>
-                        Navigation.instance.push(SharedRoutes.learning),
-                  ),
-                ),
+                // ListTile(
+                //   title: ElevatedButton(
+                //     child: const Text('Uczenie maszynowe'),
+                //     onPressed: () =>
+                //         Navigation.instance.push(SharedRoutes.learning),
+                //   ),
+                // ),
                 ListTile(
                   title: ElevatedButton(
                     child: const Text(Strings.settings),
@@ -222,24 +225,24 @@ class _AppState extends State<App> {
                         Navigation.instance.push(SharedRoutes.settings),
                   ),
                 ),
-                if (files.isNotEmpty)
-                  ListTile(
-                    title: ElevatedButton(
-                      child: Text(Strings.sendSavedTrips(files.length)),
-                      onPressed: () async {
-                        await sendTripsToMail(files);
-                      },
-                    ),
-                  ),
-                if (canFiles.isNotEmpty)
-                  ListTile(
-                    title: ElevatedButton(
-                      child: Text(Strings.sendSavedTrips(files.length)),
-                      onPressed: () async {
-                        await sendTripsToMail(canFiles);
-                      },
-                    ),
-                  ),
+                // if (files.isNotEmpty)
+                //   ListTile(
+                //     title: ElevatedButton(
+                //       child: Text(Strings.sendSavedTrips(files.length)),
+                //       onPressed: () async {
+                //         await sendTripsToMail(files);
+                //       },
+                //     ),
+                //   ),
+                // if (canFiles.isNotEmpty)
+                //   ListTile(
+                //     title: ElevatedButton(
+                //       child: Text(Strings.sendSavedTrips(files.length)),
+                //       onPressed: () async {
+                //         await sendTripsToMail(canFiles);
+                //       },
+                //     ),
+                //   ),
               ],
             ),
           ),
@@ -249,6 +252,19 @@ class _AppState extends State<App> {
   }
 
   void _showLiveData(BuildContext context, bool isLocalMode) {
+    final address = isLocalMode
+        ? null
+        : context.read<SettingsCubit>().state.settings.deviceAddress;
+    final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
+    final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
+    final tankSize = context.read<SettingsCubit>().state.settings.tankSize;
+    GlobalBlocs.liveData.createConnection(
+      newAddress: address,
+      fuelPrice: fuelPrice,
+      tankSize: tankSize,
+      localFile: localFile,
+      isLocalMode: isLocalMode,
+    );
     Navigation.instance.push(
       SharedRoutes.liveData,
       arguments: LiveDataPageArguments(isLocalMode: isLocalMode),

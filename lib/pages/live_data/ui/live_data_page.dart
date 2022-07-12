@@ -6,8 +6,8 @@ import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/ui/live_stats_section.dart';
+import 'package:smart_car/pages/live_data/ui/other_trip_stats_section.dart';
 import 'package:smart_car/pages/live_data/ui/trip_stats_section.dart';
-import 'package:smart_car/pages/settings/bloc/settings_cubit.dart';
 import 'package:smart_car/utils/route_argument.dart';
 
 class LiveDataPageArguments {
@@ -23,28 +23,15 @@ class LiveDataPage extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final isLocalMode = getArgument(context).isLocalMode;
-    final address = isLocalMode
-        ? null
-        : context.read<SettingsCubit>().state.settings.deviceAddress;
-    final fuelPrice = context.read<SettingsCubit>().state.settings.fuelPrice;
-    final localFile = context.read<SettingsCubit>().state.settings.selectedJson;
-    final tankSize = context.read<SettingsCubit>().state.settings.tankSize;
     return WillPopScope(
       onWillPop: () async {
-        if (isLocalMode) {
+        if (isLocalMode || GlobalBlocs.liveData.state.isConnnectingError) {
           GlobalBlocs.liveData.close();
         }
         return true;
       },
       child: BlocBuilder<LiveDataCubit, LiveDataState>(
-        bloc: GlobalBlocs.liveData
-          ..createConnection(
-            newAddress: address,
-            fuelPrice: fuelPrice,
-            tankSize: tankSize,
-            localFile: localFile,
-            isLocalMode: isLocalMode,
-          ),
+        bloc: GlobalBlocs.liveData,
         builder: (context, state) {
           return state.isConnnectingError
               ? Scaffold(
@@ -77,13 +64,14 @@ class LiveDataPage extends StatelessWidget
                   ),
                   body: SafeArea(
                     child: DefaultTabController(
-                      length: 2,
+                      length: 3,
                       child: Column(
                         children: [
                           const TabBar(
                             tabs: [
                               Tab(text: Strings.liveData),
                               Tab(text: Strings.tripStats),
+                              Tab(text: 'Inne dane'),
                             ],
                           ),
                           const SizedBox(height: 20.0),
@@ -95,6 +83,10 @@ class LiveDataPage extends StatelessWidget
                                   cubit: GlobalBlocs.liveData,
                                 ),
                                 TripStatsSection(
+                                  state: state,
+                                  cubit: GlobalBlocs.liveData,
+                                ),
+                                OtherTripStatsSection(
                                   state: state,
                                   cubit: GlobalBlocs.liveData,
                                 ),

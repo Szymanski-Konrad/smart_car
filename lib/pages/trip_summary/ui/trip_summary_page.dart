@@ -3,6 +3,7 @@ import 'package:smart_car/models/trip_summary/trip_summary.dart';
 import 'package:smart_car/pages/trip_summary/bloc/trip_summary_cubit.dart';
 import 'package:smart_car/pages/trip_summary/bloc/trip_summary_state.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
+import 'package:smart_car/utils/ui/loading_view.dart';
 
 class TripSummaryPage extends StatelessWidget {
   const TripSummaryPage({Key? key}) : super(key: key);
@@ -16,7 +17,9 @@ class TripSummaryPage extends StatelessWidget {
           appBar: AppBar(
             title: const Text('Zapisane przejazdy'),
           ),
-          body: _buildContent(context, state, cubit),
+          body: state.isLoading
+              ? const LoadingView()
+              : _buildContent(context, state, cubit),
         );
       },
     );

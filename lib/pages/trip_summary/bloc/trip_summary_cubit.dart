@@ -12,9 +12,13 @@ class TripSummaryCubit extends Cubit<TripSummaryState> {
   }
 
   Future<void> init() async {
+    emit(state.copyWith(isLoading: true));
     final trips = await FirestoreHandler.fetchTripSummaries();
     if (isClosed) return;
     trips.sort((a, b) => a.startTripTime.compareTo(b.startTripTime));
-    emit(state.copyWith(trips: trips));
+    emit(state.copyWith(
+      trips: trips,
+      isLoading: false,
+    ));
   }
 }

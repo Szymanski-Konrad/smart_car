@@ -5,8 +5,6 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:ml_algo/ml_algo.dart';
-// ignore: implementation_imports
-import 'package:ml_algo/src/model_selection/assessable.dart';
 import 'package:ml_dataframe/ml_dataframe.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
@@ -141,10 +139,15 @@ class DatasetCubit extends Cubit<DatasetState> {
     final testSplits = splitData(testData, [0.8]);
     final _classifier = classifierFunc(testSplits[0], target);
     final finalScore = _classifier.assess(testSplits[1], metricType);
-    messages.add('Cost per iteration: ${_classifier}');
+    messages.add('Cost per iteration: $_classifier');
     messages.add('Final score: ${finalScore.toStringAsFixed(4)}');
     messages.add('');
     emit(state.copyWith(messages: messages));
+  }
+
+  String frameToString(DataFrame frame) {
+    final rows = frame.rows.map((e) => e.join(','));
+    return rows.join('\n');
   }
 
   Future<void> learn() async {
@@ -155,11 +158,13 @@ class DatasetCubit extends Cubit<DatasetState> {
       headerExists: false,
       header: TripDatasetModelExtension.ecoRowHeaders,
     );
+
     final smoothFrame = DataFrame(
       state.smoothRows,
       headerExists: false,
       header: TripDatasetModelExtension.smoothRowHeaders,
     );
+
     final smoothTarget = TripDatasetModelExtension.smoothRowHeaders.last;
     final ecoTarget = TripDatasetModelExtension.ecoRowHeaders.last;
     final _frame = getPimaIndiansDiabetesDataFrame();
@@ -247,5 +252,16 @@ class DatasetCubit extends Cubit<DatasetState> {
       final file = File(path);
       file.delete();
     }
+  }
+
+  Future<void> sendDataToMail(String body, String dataType) async {
+    final mailOptions = MailOptions(
+      body: body,
+      subject: 'Dane: $dataType',
+      recipients: ['hunteelar.programowanie@gmail.com'],
+      isHTML: true,
+    );
+
+    await FlutterMailer.send(mailOptions);
   }
 }
