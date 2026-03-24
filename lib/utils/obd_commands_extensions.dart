@@ -2,6 +2,9 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.da
 import 'package:smart_car/pages/live_data/model/commaned_air_fuel_ratio_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
+import 'package:smart_car/pages/live_data/model/intake_air_temp_command.dart';
+import 'package:smart_car/pages/live_data/model/map_command.dart';
+import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/term_fuel_trim_command.dart';
 import 'package:smart_car/utils/list_extension.dart';
@@ -27,4 +30,13 @@ extension ObdCommandsExtensions on List<ObdCommand> {
 
   double get ltft2 =>
       safeFirst<LongTermFuelTrimBank2>()?.result.toDouble() ?? 0.0;
+
+  double get rpm => safeFirst<RpmCommand>()?.result.toDouble() ?? 0.0;
+
+  double? get mapPressure => safeFirst<MapCommand>()?.result.toDouble();
+
+  MapCommand? get mapCommand => safeFirst<MapCommand>();
+
+  double get intakeAirTemp =>
+      safeFirst<IntakeAirTempCommand>()?.result.toDouble() ?? 25.0;
 }

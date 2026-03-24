@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class StandardTextField extends StatefulWidget {
   const StandardTextField({
-    Key? key,
+    super.key,
     required this.initialValue,
     this.iconData = Icons.clear,
     required this.hintText,
@@ -13,8 +13,7 @@ class StandardTextField extends StatefulWidget {
     this.maxLines = 1,
     this.minLines = 1,
   })  : assert(
-            maxLines >= minLines, 'Max lines cannot be lower than min lines'),
-        super(key: key);
+            maxLines >= minLines, 'Max lines cannot be lower than min lines');
 
   final String initialValue;
   final IconData iconData;

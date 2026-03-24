@@ -3,13 +3,12 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_co
 
 abstract class TempObdCommand extends VisibleObdCommand {
   TempObdCommand(
-    String command, {
-    required int prio,
-    double min = -40,
-    double max = 215,
-    bool enableHistory = false,
-  }) : super(command,
-            min: min, max: max, prio: prio, enableHistory: enableHistory);
+    super.command, {
+    required super.prio,
+    double super.min = -40,
+    double super.max = 215,
+    super.enableHistory = false,
+  });
 
   @override
   IconData get icon => Icons.thermostat;

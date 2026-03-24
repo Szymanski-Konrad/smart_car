@@ -37,7 +37,7 @@ class ReceivedData {
 }
 
 @freezed
-class LiveDataState with _$LiveDataState {
+abstract class LiveDataState with _$LiveDataState {
   factory LiveDataState({
     // Live data
     required TripRecord tripRecord,
@@ -166,8 +166,10 @@ extension LiveDataStateExtension on LiveDataState {
 
   LiveDataState clear() {
     return LiveDataState(
-      tripRecord:
-          TripRecord(fuelPrice: fuelPrice, startTripDate: DateTime.now()),
+      tripRecord: TripRecord(
+        fuelPrice: fuelPrice,
+        startTripDate: DateTime.now(),
+      ),
       datasets: DatasetsDocument(
         id: const Uuid().v1(),
         createDate: DateTime.now(),
@@ -252,69 +254,69 @@ extension LiveDataStateExtension on LiveDataState {
   }
 
   OtherTileData get ecoScoreData => OtherTileData(
-        value: ecoScore,
-        digits: 1,
-        title: 'Eco score',
-        unit: 'pts',
-      );
+    value: ecoScore,
+    digits: 1,
+    title: 'Eco score',
+    unit: 'pts',
+  );
 
   OtherTileData get smoothScoreData => OtherTileData(
-        value: smoothScore,
-        digits: 1,
-        title: 'Smooth score',
-        unit: 'pts',
-      );
+    value: smoothScore,
+    digits: 1,
+    title: 'Smooth score',
+    unit: 'pts',
+  );
 
   OtherTileData get directionData => OtherTileData(
-        digits: 1,
-        unit: '',
-        title: 'Kierunek ($directionString)',
-        value: direction,
-      );
+    digits: 1,
+    unit: '',
+    title: 'Kierunek ($directionString)',
+    value: direction,
+  );
 
   OtherTileData get locationHeightData => OtherTileData(
-        digits: 2,
-        unit: 'm',
-        title: 'Wysokość',
-        value: locationHeight,
-      );
+    digits: 2,
+    unit: 'm',
+    title: 'Wysokość',
+    value: locationHeight,
+  );
 
   OtherTileData get locationSlopeData => OtherTileData(
-        digits: 1,
-        unit: '%',
-        title: 'Nachylenie',
-        value: locationSlope.abs(),
-      );
+    digits: 1,
+    unit: '%',
+    title: 'Nachylenie',
+    value: locationSlope.abs(),
+  );
 
   OtherTileData get gForceData => OtherTileData(
-        digits: 1,
-        unit: 'g',
-        title: Strings.gForce,
-        value: gForce,
-        color: gForceColor,
-      );
+    digits: 1,
+    unit: 'g',
+    title: Strings.gForce,
+    value: gForce,
+    color: gForceColor,
+  );
 
   OtherTileData get indoorTempData => OtherTileData(
-        digits: 1,
-        unit: '°C',
-        title: Strings.indoorTemp,
-        value: temperature,
-      );
+    digits: 1,
+    unit: '°C',
+    title: Strings.indoorTemp,
+    value: temperature,
+  );
 
   OtherTileData get barometerData => OtherTileData(
-        digits: 3,
-        unit: 'mmHg',
-        title: 'Ciśnienie',
-        value: barometer,
-      );
+    digits: 3,
+    unit: 'mmHg',
+    title: 'Ciśnienie',
+    value: barometer,
+  );
 
   OtherTileData get fuelStatusData => OtherTileData(
-        digits: 0,
-        unit: '',
-        title: Strings.fuelSystemStatus,
-        value: fuelSystemStatus.description,
-        iconData: fuelSystemStatus.icon,
-      );
+    digits: 0,
+    unit: '',
+    title: Strings.fuelSystemStatus,
+    value: fuelSystemStatus.description,
+    iconData: fuelSystemStatus.icon,
+  );
 
   String get getTemperature => temperature.toStringAsFixed(1);
   double get driveDirection => -yGyroData * Constants.radToDegree;

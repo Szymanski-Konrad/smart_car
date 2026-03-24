@@ -6,7 +6,7 @@ import 'package:smart_car/app/resources/pids.dart';
 part 'pids_checker.freezed.dart';
 
 @freezed
-class PidsChecker with _$PidsChecker {
+abstract class PidsChecker with _$PidsChecker {
   factory PidsChecker({
     @Default(true) bool pidsSupported1_20,
     @Default(false) bool pidsSupported21_40,

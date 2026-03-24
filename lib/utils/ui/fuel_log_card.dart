@@ -8,9 +8,9 @@ import 'package:smart_car/utils/ui/fuel_type_helpers.dart';
 
 class FuelLogCard extends StatelessWidget {
   const FuelLogCard({
-    Key? key,
+    super.key,
     required this.fuelLog,
-  }) : super(key: key);
+  });
 
   final FuelLog fuelLog;
 

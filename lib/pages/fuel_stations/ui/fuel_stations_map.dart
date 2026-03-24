@@ -10,11 +10,11 @@ import 'package:smart_car/utils/ui/fuel_price_card.dart';
 
 class FuelStationsMap extends StatefulWidget {
   const FuelStationsMap({
-    Key? key,
+    super.key,
     required this.onLocationChanged,
     required this.gasStations,
     required this.fuelType,
-  }) : super(key: key);
+  });
 
   final Function(QueryLocation) onLocationChanged;
   final List<GasStation> gasStations;
@@ -25,22 +25,19 @@ class FuelStationsMap extends StatefulWidget {
 }
 
 class _FuelStationsMapState extends State<FuelStationsMap> {
-  MapController mapController = MapController();
-
-  List<ResponseLocation> locations = [];
+  static const LatLng _initialCenter = LatLng(52.43, 20.7);
+  final MapController mapController = MapController();
 
   @override
   void initState() {
     super.initState();
     mapController.mapEventStream.listen(onMapEventStream);
-    mapController.onReady.then((value) {
-      widget.onLocationChanged(QueryLocation.fromLatLng(mapController.center));
-    });
+    widget.onLocationChanged(QueryLocation.fromLatLng(_initialCenter));
   }
 
   Future<void> onMapEventStream(MapEvent event) async {
     if (event.source == MapEventSource.dragEnd) {
-      widget.onLocationChanged(QueryLocation.fromLatLng(event.center));
+      widget.onLocationChanged(QueryLocation.fromLatLng(event.camera.center));
     }
   }
 
@@ -48,19 +45,19 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        center: LatLng(52.43, 20.7),
-        zoom: 13.0,
-        interactiveFlags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+        initialCenter: _initialCenter,
+        initialZoom: 13.0,
+        interactionOptions: const InteractionOptions(
+          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+        ),
       ),
       mapController: mapController,
-      layers: [
-        TileLayerOptions(
+      children: [
+        TileLayer(
           urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-          subdomains: ['a', 'b', 'c'],
+          subdomains: const ['a', 'b', 'c'],
         ),
-        MarkerLayerOptions(
-          markers: widget.gasStations.map(_buildMarker).toList(),
-        ),
+        MarkerLayer(markers: widget.gasStations.map(_buildMarker).toList()),
       ],
     );
   }
@@ -70,14 +67,10 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
       width: 50,
       height: 30,
       point: station.coordinates,
-      builder: (ctx) => Stack(
+      child: Stack(
         clipBehavior: Clip.none,
         children: [
-          const Icon(
-            Icons.local_gas_station,
-            color: Colors.blue,
-            size: 24,
-          ),
+          const Icon(Icons.local_gas_station, color: Colors.blue, size: 24),
           Positioned(
             left: -15,
             bottom: -20,
@@ -150,10 +143,7 @@ class _FuelStationsMapState extends State<FuelStationsMap> {
               ...station.fuelPrices.entries.map(
                 (entry) => Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: FuelPriceCard(
-                    fuelInfo: entry.value,
-                    type: entry.key,
-                  ),
+                  child: FuelPriceCard(fuelInfo: entry.value, type: entry.key),
                 ),
               ),
             ],

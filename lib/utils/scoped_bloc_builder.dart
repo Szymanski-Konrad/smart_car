@@ -9,10 +9,10 @@ typedef ListenWhen<S> = bool Function(S previous, S current);
 
 class ScopedBlocBuilder<C extends Cubit<S>, S> extends StatelessWidget {
   const ScopedBlocBuilder({
-    Key? key,
+    super.key,
     required this.create,
     required this.builder,
-  }) : super(key: key);
+  });
 
   final Create<C> create;
   final ScopedBlocWidgetBuilder<S, C> builder;
@@ -33,12 +33,12 @@ class ScopedBlocBuilder<C extends Cubit<S>, S> extends StatelessWidget {
 
 class ScopedListenerBlocBuilder<C extends Cubit<S>, S> extends StatelessWidget {
   const ScopedListenerBlocBuilder({
-    Key? key,
+    super.key,
     required this.create,
     required this.builder,
     required this.listener,
     required this.listenWhen,
-  }) : super(key: key);
+  });
 
   final Create<C> create;
   final ScopedBlocWidgetBuilder<S, C> builder;

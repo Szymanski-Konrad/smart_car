@@ -11,7 +11,7 @@ part 'create_fuel_log_state.freezed.dart';
 enum OdometerInputType { total, diff }
 
 @freezed
-class CreateFuelLogState with _$CreateFuelLogState {
+abstract class CreateFuelLogState with _$CreateFuelLogState {
   const factory CreateFuelLogState({
     required String fuelLogId,
     @Default(OdometerInputType.diff) OdometerInputType odometerInputType,
@@ -38,33 +38,32 @@ class CreateFuelLogState with _$CreateFuelLogState {
 
 extension CreateFuelLogStateExtension on CreateFuelLogState {
   static CreateFuelLogState toEdit(FuelLog fuelLog) => CreateFuelLogState(
-        fuelLogId: fuelLog.id,
-        currentOdometer: fuelLog.odometer,
-        distance: fuelLog.distance,
-        fuelPrice: fuelLog.fuelPrice,
-        date: fuelLog.logDate,
-        time: TimeOfDay.fromDateTime(fuelLog.logDate),
-        coordinates: fuelLog.location,
-        fuelAmount: fuelLog.fuelAmount,
-        isFullTank: fuelLog.isFull,
-        odometer: fuelLog.distance,
-        odometerInputType: OdometerInputType.diff,
-        fuelType: fuelLog.fuelType,
-        isEditMode: true,
-        isRemainingFuelKnown: fuelLog.isRemainingFuelKnown,
-      );
+    fuelLogId: fuelLog.id,
+    currentOdometer: fuelLog.odometer,
+    distance: fuelLog.distance,
+    fuelPrice: fuelLog.fuelPrice,
+    date: fuelLog.logDate,
+    time: TimeOfDay.fromDateTime(fuelLog.logDate),
+    coordinates: fuelLog.location,
+    fuelAmount: fuelLog.fuelAmount,
+    isFullTank: fuelLog.isFull,
+    odometer: fuelLog.distance,
+    odometerInputType: OdometerInputType.diff,
+    fuelType: fuelLog.fuelType,
+    isEditMode: true,
+    isRemainingFuelKnown: fuelLog.isRemainingFuelKnown,
+  );
 
   static CreateFuelLogState initial({
     required double fuelPrice,
     required double odometer,
-  }) =>
-      CreateFuelLogState(
-        fuelLogId: const Uuid().v1(),
-        currentOdometer: odometer,
-        fuelPrice: fuelPrice,
-        date: DateTime.now(),
-        time: TimeOfDay.now(),
-      );
+  }) => CreateFuelLogState(
+    fuelLogId: const Uuid().v1(),
+    currentOdometer: odometer,
+    fuelPrice: fuelPrice,
+    date: DateTime.now(),
+    time: TimeOfDay.now(),
+  );
 
   double get newDistance => odometerInputType == OdometerInputType.total
       ? odometer - currentOdometer

@@ -8,7 +8,7 @@ part 'trip_dataset_model.freezed.dart';
 part 'trip_dataset_model.g.dart';
 
 @freezed
-class DatasetsDocument with _$DatasetsDocument {
+abstract class DatasetsDocument with _$DatasetsDocument {
   factory DatasetsDocument({
     required String id,
     String? vin,
@@ -21,7 +21,7 @@ class DatasetsDocument with _$DatasetsDocument {
 }
 
 @freezed
-class TripDatasetModel with _$TripDatasetModel {
+abstract class TripDatasetModel with _$TripDatasetModel {
   factory TripDatasetModel({
     required String id,
     @Default(0) double fuelConsumption,
@@ -51,38 +51,38 @@ extension TripDatasetModelExtension on TripDatasetModel {
   bool get isReadyToLearn => ecoScore >= 0 && smoothScore >= 0;
 
   List<dynamic> get toEcoRow => [
-        toValidValue(idleTimeShare),
-        toValidValue(driveTimeShare),
-        toValidValue(startsPerKm),
-        toValidValue(idleFuelShare),
-        toValidValue(savedFuelShare),
-      ];
+    toValidValue(idleTimeShare),
+    toValidValue(driveTimeShare),
+    toValidValue(startsPerKm),
+    toValidValue(idleFuelShare),
+    toValidValue(savedFuelShare),
+  ];
 
   static List<String> get ecoRowHeaders => [
-        'idle_time_share',
-        'drive_time_share',
-        'starts_per_km',
-        'idle_fuel_share',
-        'saved_fuel_share',
-        'eco_score',
-      ];
+    'idle_time_share',
+    'drive_time_share',
+    'starts_per_km',
+    'idle_fuel_share',
+    'saved_fuel_share',
+    'eco_score',
+  ];
 
   List<dynamic> get toSmoothRow => [
-        toValidValue(overRPMTimeShare),
-        toValidValue(underRPMTimeShare),
-        toValidValue(accelerationsPerKm),
-        toValidValue(highGforcePerKm),
-        toValidValue(accDeccPerKm),
-      ];
+    toValidValue(overRPMTimeShare),
+    toValidValue(underRPMTimeShare),
+    toValidValue(accelerationsPerKm),
+    toValidValue(highGforcePerKm),
+    toValidValue(accDeccPerKm),
+  ];
 
   static List<String> get smoothRowHeaders => [
-        'over_rpm_time_share',
-        'under_rpm_time_share',
-        'accelerations_per_km',
-        'high_gforce_per_km',
-        'acc_decc_per_km',
-        'smooth_score',
-      ];
+    'over_rpm_time_share',
+    'under_rpm_time_share',
+    'accelerations_per_km',
+    'high_gforce_per_km',
+    'acc_decc_per_km',
+    'smooth_score',
+  ];
 
   double toValidValue(double value) {
     return (value.isInfinite || value.isNaN) ? 0.0 : value;

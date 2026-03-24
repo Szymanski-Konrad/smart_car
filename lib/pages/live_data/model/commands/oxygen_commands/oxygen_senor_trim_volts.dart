@@ -4,8 +4,8 @@ import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_
 
 abstract class OxygenSensorTrimVoltsCommand extends VisibleObdCommand
     implements OxygenMixin {
-  OxygenSensorTrimVoltsCommand(String command)
-      : super(command, prio: 1, max: 1.275, min: 0, enableHistory: false);
+  OxygenSensorTrimVoltsCommand(super.command)
+      : super(prio: 1, max: 1.275, min: 0, enableHistory: false);
 
   @override
   double A = 0.0;

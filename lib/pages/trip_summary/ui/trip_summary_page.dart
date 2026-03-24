@@ -6,7 +6,7 @@ import 'package:smart_car/utils/scoped_bloc_builder.dart';
 import 'package:smart_car/utils/ui/loading_view.dart';
 
 class TripSummaryPage extends StatelessWidget {
-  const TripSummaryPage({Key? key}) : super(key: key);
+  const TripSummaryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +44,9 @@ class TripSummaryPage extends StatelessWidget {
 
 class TripCard extends StatelessWidget {
   const TripCard({
-    Key? key,
+    super.key,
     required this.trip,
-  }) : super(key: key);
+  });
 
   final TripSummary trip;
 
@@ -141,9 +141,9 @@ class TripCard extends StatelessWidget {
 
 class TripSummaryCard extends StatelessWidget {
   const TripSummaryCard({
-    Key? key,
+    super.key,
     required this.trips,
-  }) : super(key: key);
+  });
 
   final List<TripSummary> trips;
 

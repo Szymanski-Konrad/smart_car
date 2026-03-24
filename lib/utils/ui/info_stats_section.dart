@@ -4,9 +4,9 @@ import 'package:smart_car/utils/ui/info_tile.dart';
 
 class InfoStatsSection extends StatelessWidget {
   const InfoStatsSection({
-    Key? key,
+    super.key,
     required this.records,
-  }) : super(key: key);
+  });
 
   final List<OtherTileData> records;
 

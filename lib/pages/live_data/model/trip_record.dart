@@ -20,7 +20,7 @@ enum TripDataType {
 }
 
 @freezed
-class TripRecord with _$TripRecord {
+abstract class TripRecord with _$TripRecord {
   factory TripRecord({
     // Fuel info
     @Default(-1.0) double startFuelLvl,
@@ -91,10 +91,7 @@ extension TripRecordExtension on TripRecord {
   }
 
   TripRecord updateDistance(double value, int speed) {
-    return copyWith(
-      distance: distance + value,
-      currentSpeed: speed,
-    );
+    return copyWith(distance: distance + value, currentSpeed: speed);
   }
 
   bool _isSameStatus(TripStatus? status) {
@@ -134,14 +131,10 @@ extension TripRecordExtension on TripRecord {
       if (fuelStatus == FuelSystemStatus.fuelCut) {
         return copyWith(savedFuel: savedFuel + value);
       } else {
-        return copyWith(
-          usedFuel: usedFuel + value,
-        );
+        return copyWith(usedFuel: usedFuel + value);
       }
     } else {
-      return copyWith(
-        idleUsedFuel: idleUsedFuel + value,
-      );
+      return copyWith(idleUsedFuel: idleUsedFuel + value);
     }
   }
 
@@ -155,16 +148,10 @@ extension TripRecordExtension on TripRecord {
     final lastTime = Map<TripDataType, int>.from(updateTime);
     if (isLeft) {
       lastTime[TripDataType.leftTurns] = DateTime.now().secondsSinceEpoch;
-      return copyWith(
-        leftTurns: leftTurns + 1,
-        updateTime: lastTime,
-      );
+      return copyWith(leftTurns: leftTurns + 1, updateTime: lastTime);
     }
     lastTime[TripDataType.rightTurns] = DateTime.now().secondsSinceEpoch;
-    return copyWith(
-      rightTurns: rightTurns + 1,
-      updateTime: lastTime,
-    );
+    return copyWith(rightTurns: rightTurns + 1, updateTime: lastTime);
   }
 
   TripRecord updateRapidAcceleration({required double acceleration}) {
@@ -183,7 +170,8 @@ extension TripRecordExtension on TripRecord {
     }
     if (acceleration < Constants.rapidBreaking) {
       final lastAccTime = lastTime[TripDataType.rapidAcceleration];
-      final _accDecc = lastAccTime != null &&
+      final _accDecc =
+          lastAccTime != null &&
               DateTime.now().secondsSinceEpoch - lastAccTime >
                   Constants.minAccDeccTimeThreshold
           ? accDecc + 1
@@ -201,240 +189,233 @@ extension TripRecordExtension on TripRecord {
   }
 
   List<FuelTileData> get fuelUsedSection => [
-        usedFuelDetails,
-        idleUsedFuelDetails,
-        savedFuelDetails,
-      ];
+    usedFuelDetails,
+    idleUsedFuelDetails,
+    savedFuelDetails,
+  ];
 
   List<TimeTileData> get timeSection => [
-        totalTripTimeDetails,
-        driveTimeDetails,
-        idleTripTimeDetails,
-        overRPMTimeDetails,
-        underRPMTimeDetails,
-      ];
+    totalTripTimeDetails,
+    driveTimeDetails,
+    idleTripTimeDetails,
+    overRPMTimeDetails,
+    underRPMTimeDetails,
+  ];
 
   List<OtherTileData> get otherInfoSection => [
-        avgFuelDetails,
-        avgFuelAdjustDetails,
-        instFuelDetails,
-        rangeDetails,
-        avgSpeedDetails,
-        currSpeedDetails,
-        gpsSpeedDetails,
-        gpsDistanceDetails,
-        altitudeCumulativeDetails,
-        distanceDetails,
-        fuelCostsDetails,
-      ];
+    avgFuelDetails,
+    avgFuelAdjustDetails,
+    instFuelDetails,
+    rangeDetails,
+    avgSpeedDetails,
+    currSpeedDetails,
+    gpsSpeedDetails,
+    gpsDistanceDetails,
+    altitudeCumulativeDetails,
+    distanceDetails,
+    fuelCostsDetails,
+  ];
 
   List<OtherTileData> get otherSection => [
-        tankDifferenceDetails,
-        carboPerKmDetails,
-        producedCarboDetails,
-        savedCarboDetails,
-      ];
+    tankDifferenceDetails,
+    carboPerKmDetails,
+    producedCarboDetails,
+    savedCarboDetails,
+  ];
 
   List<OtherTileData> get countersSection => [
-        highGForceDetails,
-        turnsDetails,
-        rapidSpeedDetails,
-      ];
+    highGForceDetails,
+    turnsDetails,
+    rapidSpeedDetails,
+  ];
 
   OtherTileData get fuelCostsDetails => OtherTileData(
-        value: fuelCosts,
-        title: Strings.fuelCosts,
-        unit: 'PLN',
-        digits: 1,
-      );
+    value: fuelCosts,
+    title: Strings.fuelCosts,
+    unit: 'PLN',
+    digits: 1,
+  );
 
   FuelTileData get savedFuelDetails => FuelTileData(
-        value: savedFuel,
-        title: Strings.savedFuel,
-        unit: 'l',
-        digits: 3,
-        tripStatus: TripStatus.savingFuel,
-      );
+    value: savedFuel,
+    title: Strings.savedFuel,
+    unit: 'l',
+    digits: 3,
+    tripStatus: TripStatus.savingFuel,
+  );
 
   FuelTileData get usedFuelDetails => FuelTileData(
-        value: usedFuel,
-        title: Strings.usedFuel,
-        unit: 'l',
-        digits: 2,
-        tripStatus: TripStatus.driving,
-      );
+    value: usedFuel,
+    title: Strings.usedFuel,
+    unit: 'l',
+    digits: 2,
+    tripStatus: TripStatus.driving,
+  );
 
   FuelTileData get idleUsedFuelDetails => FuelTileData(
-        value: idleUsedFuel,
-        title: Strings.idleUsedFuel,
-        unit: 'l',
-        digits: 3,
-        tripStatus: TripStatus.idle,
-      );
+    value: idleUsedFuel,
+    title: Strings.idleUsedFuel,
+    unit: 'l',
+    digits: 3,
+    tripStatus: TripStatus.idle,
+  );
 
   OtherTileData get tankDifferenceDetails => OtherTileData(
-        value: (startFuelLvl - currentFuelLvl) * tankSize / 100,
-        digits: 3,
-        title: 'Różnica baku',
-        unit: 'l',
-      );
+    value: (startFuelLvl - currentFuelLvl) * tankSize / 100,
+    digits: 3,
+    title: 'Różnica baku',
+    unit: 'l',
+  );
 
   OtherTileData get distanceDetails => OtherTileData(
-        value: distance,
-        title: Strings.distance,
-        unit: 'km',
-        digits: 1,
-      );
+    value: distance,
+    title: Strings.distance,
+    unit: 'km',
+    digits: 1,
+  );
 
   OtherTileData get instFuelDetails => OtherTileData(
-        value: tripStatus == TripStatus.savingFuel ? 0.0 : instFuelConsumption,
-        title: Strings.instantFuelConsumption,
-        unit: currentSpeed > 0 ? 'l/100km' : 'l/h',
-        digits: 1,
-      );
+    value: tripStatus == TripStatus.savingFuel ? 0.0 : instFuelConsumption,
+    title: Strings.instantFuelConsumption,
+    unit: currentSpeed > 0 ? 'l/100km' : 'l/h',
+    digits: 1,
+  );
 
   OtherTileData get avgFuelDetails => OtherTileData(
-        value: avgFuelConsumption,
-        title: Strings.averageFuelConsumption,
-        unit: distance > 0 ? 'l/100km' : 'l/h',
-        digits: 1,
-      );
+    value: avgFuelConsumption,
+    title: Strings.averageFuelConsumption,
+    unit: distance > 0 ? 'l/100km' : 'l/h',
+    digits: 1,
+  );
 
   OtherTileData get avgFuelAdjustDetails => OtherTileData(
-        value: avgFuelConsumption *
-            GlobalBlocs.settings.state.stats.consumptionScale,
-        title: 'Korekta spalania',
-        unit: distance > 0 ? 'l/100km' : 'l/h',
-        digits: 2,
-      );
+    value:
+        avgFuelConsumption * GlobalBlocs.settings.state.stats.consumptionScale,
+    title: 'Korekta spalania',
+    unit: distance > 0 ? 'l/100km' : 'l/h',
+    digits: 2,
+  );
 
-  OtherTileData get rangeDetails => OtherTileData(
-        value: range,
-        title: Strings.range,
-        unit: 'km',
-        digits: 0,
-      );
+  OtherTileData get rangeDetails =>
+      OtherTileData(value: range, title: Strings.range, unit: 'km', digits: 0);
 
   OtherTileData get gpsSpeedDetails => OtherTileData(
-        value: gpsSpeed,
-        title: Strings.gpsSpeed,
-        unit: 'km/h',
-        digits: 1,
-      );
+    value: gpsSpeed,
+    title: Strings.gpsSpeed,
+    unit: 'km/h',
+    digits: 1,
+  );
 
   OtherTileData get gpsDistanceDetails => OtherTileData(
-        value: gpsDistance,
-        title: Strings.gpsDistance,
-        unit: 'km',
-        digits: 1,
-      );
+    value: gpsDistance,
+    title: Strings.gpsDistance,
+    unit: 'km',
+    digits: 1,
+  );
 
   TimeTileData get totalTripTimeDetails => TimeTileData(
-        value: Duration(seconds: totalTripSeconds),
-        digits: 0,
-        title: Strings.totalDuration,
-        unit: '',
-        isCurrent: false,
-      );
+    value: Duration(seconds: totalTripSeconds),
+    digits: 0,
+    title: Strings.totalDuration,
+    unit: '',
+    isCurrent: false,
+  );
 
   TimeTileData get driveTimeDetails => TimeTileData(
-        value: Duration(seconds: tripSeconds),
-        digits: 0,
-        title: Strings.driveDuration,
-        unit: '',
-        isCurrent: tripStatus != TripStatus.idle,
-      );
+    value: Duration(seconds: tripSeconds),
+    digits: 0,
+    title: Strings.driveDuration,
+    unit: '',
+    isCurrent: tripStatus != TripStatus.idle,
+  );
 
   TimeTileData get idleTripTimeDetails => TimeTileData(
-        value: Duration(seconds: idleTripSeconds),
-        digits: 0,
-        title: Strings.idleDuration,
-        unit: '',
-        isCurrent: tripStatus == TripStatus.idle,
-      );
+    value: Duration(seconds: idleTripSeconds),
+    digits: 0,
+    title: Strings.idleDuration,
+    unit: '',
+    isCurrent: tripStatus == TripStatus.idle,
+  );
 
   TimeTileData get overRPMTimeDetails => TimeTileData(
-        value: Duration(seconds: overRPMDriveTime),
-        digits: 0,
-        title: Strings.overRPMDuration,
-        unit: '',
-        isCurrent: false,
-      );
+    value: Duration(seconds: overRPMDriveTime),
+    digits: 0,
+    title: Strings.overRPMDuration,
+    unit: '',
+    isCurrent: false,
+  );
 
   TimeTileData get underRPMTimeDetails => TimeTileData(
-        value: Duration(seconds: underRPMDriveTime),
-        digits: 0,
-        title: Strings.underRPMDuration,
-        unit: '',
-        isCurrent: false,
-      );
+    value: Duration(seconds: underRPMDriveTime),
+    digits: 0,
+    title: Strings.underRPMDuration,
+    unit: '',
+    isCurrent: false,
+  );
 
   OtherTileData get avgSpeedDetails => OtherTileData(
-        value: averageSpeed,
-        title: Strings.averageSpeed,
-        unit: 'km/h',
-        digits: 1,
-      );
+    value: averageSpeed,
+    title: Strings.averageSpeed,
+    unit: 'km/h',
+    digits: 1,
+  );
 
   OtherTileData get currSpeedDetails => OtherTileData(
-        value: currentSpeed,
-        title: 'Prędkość',
-        unit: 'km/h',
-        digits: 1,
-      );
+    value: currentSpeed,
+    title: 'Prędkość',
+    unit: 'km/h',
+    digits: 1,
+  );
 
   OtherTileData get rapidSpeedDetails => OtherTileData(
-        value: '$rapidAccelerations/$rapidBreakings',
-        digits: 0,
-        title: Strings.rapidSpeed,
-        unit: '',
-        tripDataType: [
-          TripDataType.rapidAcceleration,
-          TripDataType.rapidBraking
-        ],
-      );
+    value: '$rapidAccelerations/$rapidBreakings',
+    digits: 0,
+    title: Strings.rapidSpeed,
+    unit: '',
+    tripDataType: [TripDataType.rapidAcceleration, TripDataType.rapidBraking],
+  );
 
   OtherTileData get turnsDetails => OtherTileData(
-        value: '$leftTurns/$rightTurns',
-        digits: 0,
-        title: Strings.turns,
-        unit: '',
-        tripDataType: [TripDataType.leftTurns, TripDataType.rightTurns],
-      );
+    value: '$leftTurns/$rightTurns',
+    digits: 0,
+    title: Strings.turns,
+    unit: '',
+    tripDataType: [TripDataType.leftTurns, TripDataType.rightTurns],
+  );
 
   OtherTileData get highGForceDetails => OtherTileData(
-        value: highGforce,
-        digits: 0,
-        title: Strings.gForce,
-        unit: '',
-        tripDataType: [TripDataType.highGForce],
-      );
+    value: highGforce,
+    digits: 0,
+    title: Strings.gForce,
+    unit: '',
+    tripDataType: [TripDataType.highGForce],
+  );
 
   OtherTileData get producedCarboDetails => OtherTileData(
-        value: FuelHelper.co2EmissionInKg(totalFuelUsed),
-        digits: 2,
-        title: Strings.burntCO2,
-        unit: 'kg',
-      );
+    value: FuelHelper.co2EmissionInKg(totalFuelUsed),
+    digits: 2,
+    title: Strings.burntCO2,
+    unit: 'kg',
+  );
 
   OtherTileData get savedCarboDetails => OtherTileData(
-        value: FuelHelper.co2EmissionInKg(savedFuel),
-        digits: 2,
-        title: Strings.savedCO2,
-        unit: 'kg',
-      );
+    value: FuelHelper.co2EmissionInKg(savedFuel),
+    digits: 2,
+    title: Strings.savedCO2,
+    unit: 'kg',
+  );
 
   OtherTileData get carboPerKmDetails => OtherTileData(
-        value: FuelHelper.co2EmissionInGrams(avgFuelConsumption) / 100,
-        digits: 0,
-        title: Strings.averageCO2,
-        unit: 'g/km',
-      );
+    value: FuelHelper.co2EmissionInGrams(avgFuelConsumption) / 100,
+    digits: 0,
+    title: Strings.averageCO2,
+    unit: 'g/km',
+  );
 
   OtherTileData get altitudeCumulativeDetails => OtherTileData(
-        value: altitudeCumulative,
-        digits: 1,
-        title: 'Całk. wysokość',
-        unit: 'm',
-      );
+    value: altitudeCumulative,
+    digits: 1,
+    title: 'Całk. wysokość',
+    unit: 'm',
+  );
 }

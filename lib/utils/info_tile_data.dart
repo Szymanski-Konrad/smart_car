@@ -41,17 +41,13 @@ abstract class InfoTileData<T> {
 
 class FuelTileData<T> extends InfoTileData<T> {
   FuelTileData({
-    required T value,
-    required int digits,
-    required String title,
-    required String unit,
+    required super.value,
+    required super.digits,
+    required super.title,
+    required super.unit,
     required this.tripStatus,
     Color? color,
   }) : super(
-          value: value,
-          digits: digits,
-          title: title,
-          unit: unit,
           fontColor: color,
         );
 
@@ -60,17 +56,13 @@ class FuelTileData<T> extends InfoTileData<T> {
 
 class TimeTileData<T> extends InfoTileData<T> {
   TimeTileData({
-    required T value,
-    required int digits,
-    required String title,
-    required String unit,
+    required super.value,
+    required super.digits,
+    required super.title,
+    required super.unit,
     required this.isCurrent,
     Color? color,
   }) : super(
-          value: value,
-          digits: digits,
-          title: title,
-          unit: unit,
           fontColor: color,
         );
 
@@ -79,20 +71,14 @@ class TimeTileData<T> extends InfoTileData<T> {
 
 class OtherTileData<T> extends InfoTileData<T> {
   OtherTileData({
-    required T value,
-    required int digits,
-    required String title,
-    required String unit,
-    IconData? iconData,
+    required super.value,
+    required super.digits,
+    required super.title,
+    required super.unit,
+    super.iconData,
     Color? color,
-    List<TripDataType>? tripDataType,
+    super.tripDataType,
   }) : super(
-          value: value,
-          digits: digits,
-          title: title,
-          unit: unit,
-          iconData: iconData,
           fontColor: color,
-          tripDataType: tripDataType,
         );
 }

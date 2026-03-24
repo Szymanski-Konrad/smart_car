@@ -6,12 +6,12 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class FuelPriceCard extends StatelessWidget {
   const FuelPriceCard({
-    Key? key,
+    super.key,
     required this.type,
     required this.fuelInfo,
     this.changeDate,
     this.onTap,
-  }) : super(key: key);
+  });
 
   final FuelStationType type;
   final FuelInfo fuelInfo;

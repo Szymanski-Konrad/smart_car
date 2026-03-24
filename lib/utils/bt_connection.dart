@@ -1,9 +1,9 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_background/flutter_background.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_classic_serial/flutter_bluetooth_classic.dart';
 import 'package:smart_car/app/resources/configs.dart';
 
 class BTConnection {
@@ -14,7 +14,8 @@ class BTConnection {
     return _instance;
   }
 
-  BluetoothConnection? _connection;
+  final FlutterBluetoothClassic _bluetooth = FlutterBluetoothClassic();
+  StreamSubscription<BluetoothData>? _dataSubscription;
 
   Future<void> connect({
     required String? address,
@@ -22,29 +23,36 @@ class BTConnection {
     VoidCallback? onError,
     Function(Uint8List)? onData,
   }) async {
-    await BluetoothConnection.toAddress(address).then((connection) {
-      _connection = connection;
-      _connection?.input?.listen(onData).onDone(() {
-        print('Connection is done');
-      });
-      _initBackgroundWorking();
-      onSuccess?.call();
-    }).catchError((error) {
-      print('Cannot connect, exception occured');
-      print(error);
+    if (address == null || address.isEmpty) {
       onError?.call();
-    });
+      return;
+    }
+
+    try {
+      final connected = await _bluetooth.connect(address);
+      if (!connected) {
+        onError?.call();
+        return;
+      }
+
+      _dataSubscription?.cancel();
+      _dataSubscription = _bluetooth.onDataReceived.listen((data) {
+        onData?.call(Uint8List.fromList(data.data));
+      });
+
+      await _initBackgroundWorking();
+      onSuccess?.call();
+    } catch (e) {
+      print('Cannot connect, exception occurred');
+      print(e);
+      onError?.call();
+    }
   }
 
-  Future<void> sendCommand(
-    String command, {
-    Function(String)? onError,
-  }) async {
+  Future<void> sendCommand(String command, {Function(String)? onError}) async {
     if (command.isNotEmpty) {
       try {
-        final uft = Uint8List.fromList(utf8.encode('$command\r\n'));
-        _connection?.output.add(uft);
-        await _connection?.output.allSent;
+        await _bluetooth.sendString('$command\r\n');
       } catch (e) {
         onError?.call(e.toString());
       }
@@ -55,14 +63,15 @@ class BTConnection {
     if (FlutterBackground.isBackgroundExecutionEnabled) {
       await FlutterBackground.disableBackgroundExecution();
     }
-    await _connection?.finish();
-    await _connection?.close();
-    _connection?.dispose();
+
+    await _dataSubscription?.cancel();
+    await _bluetooth.disconnect();
   }
 
   Future<void> _initBackgroundWorking() async {
     final hasPermissions = await FlutterBackground.initialize(
-        androidConfig: Configs.backgroundConfig);
+      androidConfig: Configs.backgroundConfig,
+    );
     if (hasPermissions) {
       await FlutterBackground.enableBackgroundExecution();
     }

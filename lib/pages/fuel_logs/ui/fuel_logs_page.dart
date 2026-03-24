@@ -9,7 +9,7 @@ import 'package:smart_car/utils/ui/fuel_stats_card.dart';
 import 'package:smart_car/utils/ui/loading_view.dart';
 
 class FuelLogsPage extends StatelessWidget {
-  const FuelLogsPage({Key? key}) : super(key: key);
+  const FuelLogsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

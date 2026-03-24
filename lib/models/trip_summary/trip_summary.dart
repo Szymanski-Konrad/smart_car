@@ -10,7 +10,7 @@ part 'trip_summary.freezed.dart';
 part 'trip_summary.g.dart';
 
 @freezed
-class TripSummary with _$TripSummary {
+abstract class TripSummary with _$TripSummary {
   factory TripSummary({
     required String id,
     @Default(0) double distance,

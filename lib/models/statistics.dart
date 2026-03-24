@@ -4,7 +4,7 @@ part 'statistics.freezed.dart';
 part 'statistics.g.dart';
 
 @freezed
-class Statistics with _$Statistics {
+abstract class Statistics with _$Statistics {
   factory Statistics({
     @Default(0) double fuelUsed,
     @Default(0) double distance,

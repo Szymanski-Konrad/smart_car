@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
-import 'package:fl_toast/fl_toast.dart';
-import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
 import 'package:ml_algo/ml_algo.dart';
 import 'package:ml_dataframe/ml_dataframe.dart';
@@ -17,10 +16,7 @@ class DatasetCubit extends Cubit<DatasetState> {
   Future<void> loadDataset() async {
     emit(state.copyWith(isLoading: true));
     final dataset = await FirestoreHandler.fetchDatasets();
-    emit(state.copyWith(
-      isLoading: false,
-      dataset: dataset,
-    ));
+    emit(state.copyWith(isLoading: false, dataset: dataset));
 
     changeModelToModify();
   }
@@ -33,16 +29,14 @@ class DatasetCubit extends Cubit<DatasetState> {
         smoothScore: state.smoothScore.toDouble(),
       );
 
-      final list = List<TripDatasetModel>.from(state.documentToModify.datasets)
-          .toSet()
-          .toList();
+      final list = List<TripDatasetModel>.from(
+        state.documentToModify.datasets,
+      ).toSet().toList();
       final items = list.where((element) => element.isSame(_model)).toList();
       if (items.length > 1) {
-        await showAndroidToast(
-          child: Text('Podobne elementy: ${items.length}'),
-          context: ToastProvider.context,
-          duration: const Duration(seconds: 2),
-          alignment: Alignment.center,
+        await Fluttertoast.showToast(
+          msg: 'Podobne elementy: ${items.length}',
+          toastLength: Toast.LENGTH_SHORT,
         );
       }
       for (final item in items) {
@@ -65,10 +59,7 @@ class DatasetCubit extends Cubit<DatasetState> {
   }
 
   void resetScores() {
-    emit(state.copyWith(
-      ecoScore: -1,
-      smoothScore: -1,
-    ));
+    emit(state.copyWith(ecoScore: -1, smoothScore: -1));
   }
 
   void changeEcoScore(String value) {
@@ -120,21 +111,16 @@ class DatasetCubit extends Cubit<DatasetState> {
     final validationData = splits[0];
     final testData = splits[1];
 
-    final validator = CrossValidator.kFold(
-      validationData,
-      numberOfFolds: 5,
-    );
+    final validator = CrossValidator.kFold(validationData, numberOfFolds: 5);
 
     final score = await validator.evaluate(
-      (frame) => classifierFunc(
-        frame,
-        target,
-      ),
+      (frame) => classifierFunc(frame, target),
       metricType,
     );
     final accuracy = score.mean();
     messages.add(
-        'accuracy on k fold validation $target : ${accuracy.toStringAsFixed(4)}');
+      'accuracy on k fold validation $target : ${accuracy.toStringAsFixed(4)}',
+    );
     emit(state.copyWith(messages: messages));
     final testSplits = splitData(testData, [0.8]);
     final _classifier = classifierFunc(testSplits[0], target);
@@ -173,10 +159,7 @@ class DatasetCubit extends Cubit<DatasetState> {
     await _learn(smoothFrame, smoothTarget);
     await _learn(_frame, _targetColumnName);
 
-    emit(state.copyWith(
-      learningStep: 9,
-      isLearning: false,
-    ));
+    emit(state.copyWith(learningStep: 9, isLearning: false));
   }
 
   Future<void> learnTrees() async {

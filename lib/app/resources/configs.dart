@@ -5,7 +5,7 @@ abstract class Configs {
     notificationTitle: 'Jestem połączony :)',
     notificationText: 'Jedź, a ja się wszystkim zajmę :)',
     notificationIcon: AndroidResource(name: 'background_icon'),
-    notificationImportance: AndroidNotificationImportance.Default,
+    notificationImportance: AndroidNotificationImportance.normal,
     enableWifiLock: false,
   );
 }

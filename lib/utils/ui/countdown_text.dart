@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 class CountDownText extends StatefulWidget {
-  const CountDownText({Key? key, required this.duration}) : super(key: key);
+  const CountDownText({super.key, required this.duration});
 
   final Duration duration;
 

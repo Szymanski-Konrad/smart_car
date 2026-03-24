@@ -16,7 +16,7 @@ class StationDetailsPageArguments {
 
 class StationDetailsPage extends StatelessWidget
     with RouteArgument<StationDetailsPageArguments> {
-  const StationDetailsPage({Key? key}) : super(key: key);
+  const StationDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,14 +92,14 @@ class StationDetailsPage extends StatelessWidget
 
 class FuelPriceRow extends StatefulWidget {
   const FuelPriceRow({
-    Key? key,
+    super.key,
     required this.cubit,
     required this.fuelType,
     required this.fuelInfo,
     required this.isEditable,
     required this.isEnabled,
     this.changeDate,
-  }) : super(key: key);
+  });
 
   final StationDetailsCubit cubit;
   final FuelStationType fuelType;

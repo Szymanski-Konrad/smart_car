@@ -4,8 +4,8 @@ import 'package:smart_car/pages/live_data/model/commands/oxygen_commands/oxygen_
 
 abstract class OxygenSensorLambdaVoltsCommand extends VisibleObdCommand
     implements OxygenMixin {
-  OxygenSensorLambdaVoltsCommand(String command)
-      : super(command, prio: 1, max: 0, min: 2);
+  OxygenSensorLambdaVoltsCommand(super.command)
+      : super(prio: 1, max: 0, min: 2);
 
   static const a = 2 / 65536;
   static const b = 8 / 65536;

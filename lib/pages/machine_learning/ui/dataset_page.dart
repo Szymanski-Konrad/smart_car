@@ -6,7 +6,7 @@ import 'package:smart_car/pages/machine_learning/bloc/dataset_cubit.dart';
 import 'package:smart_car/pages/machine_learning/bloc/dataset_state.dart';
 
 class DatasetPage extends StatelessWidget {
-  const DatasetPage({Key? key}) : super(key: key);
+  const DatasetPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class DatasetPage extends StatelessWidget {
                             style: const TextStyle(fontSize: 16),
                           ),
                         )))
-                    .toList(),
+                    ,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [

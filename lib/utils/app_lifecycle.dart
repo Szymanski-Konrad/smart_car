@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class AppLifecycle extends StatefulWidget {
   const AppLifecycle({
-    Key? key,
+    super.key,
     required this.child,
     this.didResume,
     this.didBecomeInactive,
     this.didPause,
     this.didDetach,
-  }) : super(key: key);
+  });
 
   final Widget child;
 
@@ -43,6 +43,9 @@ class _AppLifecycleState extends State<AppLifecycle>
         break;
       case AppLifecycleState.inactive:
         widget.didBecomeInactive?.call();
+        break;
+      case AppLifecycleState.hidden:
+        widget.didPause?.call();
         break;
       case AppLifecycleState.paused:
         widget.didPause?.call();

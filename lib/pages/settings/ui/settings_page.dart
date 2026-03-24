@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_classic_serial/flutter_bluetooth_classic.dart';
 import 'package:smart_car/app/navigation/navigation.dart';
 import 'package:smart_car/app/navigation/routes.dart';
 import 'package:smart_car/app/resources/constants.dart';
@@ -12,15 +12,15 @@ import 'package:smart_car/pages/settings/bloc/settings_state.dart';
 import 'package:smart_car/utils/validators.dart';
 
 class SettingsPage extends StatelessWidget {
-  const SettingsPage({Key? key}) : super(key: key);
+  const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SettingsCubit, SettingsState>(
       listener: (context, state) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(Strings.settingsSaved),
-        ));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text(Strings.settingsSaved)));
         context.read<SettingsCubit>().changeSaved(false);
       },
       listenWhen: (prev, current) {
@@ -28,9 +28,7 @@ class SettingsPage extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(
-            title: const Text(Strings.settings),
-          ),
+          appBar: AppBar(title: const Text(Strings.settings)),
           body: _buildBody(context, state),
         );
       },
@@ -45,8 +43,9 @@ class SettingsPage extends StatelessWidget {
           title: ElevatedButton(
             child: const Text(Strings.selectDefaultDevice),
             onPressed: () async {
-              final BluetoothDevice device = await Navigation.instance
-                  .push(SharedRoutes.selectBoundedDevice);
+              final BluetoothDevice device = await Navigation.instance.push(
+                SharedRoutes.selectBoundedDevice,
+              );
               cubit.updateDevice(device);
             },
           ),
@@ -61,10 +60,7 @@ class SettingsPage extends StatelessWidget {
             value: state.settings.selectedJson,
             onChanged: cubit.updateJson,
             items: Constants.localFiles
-                .map((e) => DropdownMenuItem(
-                      value: e,
-                      child: Text(e),
-                    ))
+                .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                 .toList(),
           ),
         ),
@@ -80,13 +76,16 @@ class SettingsPage extends StatelessWidget {
           suffix: 'zł',
           onEdit: cubit.updateFuelPrice,
           keyboardType: const TextInputType.numberWithOptions(
-              decimal: true, signed: true),
+            decimal: true,
+            signed: true,
+          ),
         ),
         _buildSettingsTile(
-            value: state.settings.horsepower.toString(),
-            leading: Strings.enginePower,
-            suffix: 'KM',
-            onEdit: cubit.updateHorsepower),
+          value: state.settings.horsepower.toString(),
+          leading: Strings.enginePower,
+          suffix: 'KM',
+          onEdit: cubit.updateHorsepower,
+        ),
         _buildSettingsTile(
           value: state.settings.tankSize.toString(),
           leading: Strings.tankCapacity,
@@ -121,10 +120,12 @@ class SettingsPage extends StatelessWidget {
                   isExpanded: true,
                   itemHeight: 60,
                   items: FuelType.values
-                      .map((e) => DropdownMenuItem<FuelType>(
-                            value: e,
-                            child: Text(e.name),
-                          ))
+                      .map(
+                        (e) => DropdownMenuItem<FuelType>(
+                          value: e,
+                          child: Text(e.name),
+                        ),
+                      )
                       .toList(),
                   onChanged: cubit.updateFuelType,
                 ),
@@ -145,10 +146,7 @@ class SettingsPage extends StatelessWidget {
     TextInputType keyboardType = TextInputType.number,
   }) {
     return ListTile(
-      leading: SizedBox(
-        width: 120,
-        child: Text(leading),
-      ),
+      leading: SizedBox(width: 120, child: Text(leading)),
       title: onEdit == null
           ? Text(value)
           : SettingsTextField(
@@ -164,12 +162,12 @@ class SettingsPage extends StatelessWidget {
 
 class SettingsTextField extends StatefulWidget {
   const SettingsTextField({
-    Key? key,
+    super.key,
     required this.initalValue,
     required this.onEdit,
     this.validator,
     this.keyboardType = TextInputType.number,
-  }) : super(key: key);
+  });
 
   final String initalValue;
   final Function(String) onEdit;
@@ -190,8 +188,10 @@ class _SettingsTextFieldState extends State<SettingsTextField> {
         if (widget.keyboardType == TextInputType.number)
           FilteringTextInputFormatter.digitsOnly,
         if (widget.keyboardType.index == 2)
-          FilteringTextInputFormatter.deny(RegExp(r','),
-              replacementString: '.'),
+          FilteringTextInputFormatter.deny(
+            RegExp(r','),
+            replacementString: '.',
+          ),
       ],
       validator: widget.validator ?? Validators.positiveNumberValidator,
       onChanged: widget.onEdit,

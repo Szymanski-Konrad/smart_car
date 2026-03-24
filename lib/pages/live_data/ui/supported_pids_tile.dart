@@ -4,9 +4,9 @@ import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 
 class SupportedPidsTile extends StatelessWidget {
   const SupportedPidsTile({
-    Key? key,
+    super.key,
     required this.checker,
-  }) : super(key: key);
+  });
 
   final PidsChecker checker;
 

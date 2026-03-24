@@ -4,7 +4,7 @@ import 'package:smart_car/feautures/trip_score/trip_dataset_model.dart';
 part 'dataset_state.freezed.dart';
 
 @freezed
-class DatasetState with _$DatasetState {
+abstract class DatasetState with _$DatasetState {
   factory DatasetState({
     // Learning
     @Default(false) bool isLearning,
@@ -24,8 +24,7 @@ class DatasetState with _$DatasetState {
 
 extension DatasetStateExtenision on DatasetState {
   DatasetsDocument get documentToModify => dataset[documentIndex];
-  List<TripDatasetModel> get modelsToModify => dataset[documentIndex]
-      .datasets
+  List<TripDatasetModel> get modelsToModify => dataset[documentIndex].datasets
       .where((element) => !element.isReadyToLearn)
       .toList();
 
@@ -35,8 +34,9 @@ extension DatasetStateExtenision on DatasetState {
   int get notReadyToLearnCount {
     int count = 0;
     for (final document in dataset) {
-      count +=
-          document.datasets.where((element) => !element.isReadyToLearn).length;
+      count += document.datasets
+          .where((element) => !element.isReadyToLearn)
+          .length;
     }
     return count;
   }
@@ -44,8 +44,9 @@ extension DatasetStateExtenision on DatasetState {
   int get readyToLearnCount {
     int count = 0;
     for (final document in dataset) {
-      count +=
-          document.datasets.where((element) => element.isReadyToLearn).length;
+      count += document.datasets
+          .where((element) => element.isReadyToLearn)
+          .length;
     }
     return count;
   }

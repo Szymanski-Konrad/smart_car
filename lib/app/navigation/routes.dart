@@ -5,6 +5,7 @@ abstract class SharedRoutes {
   static const settings = '/settings';
   static const selectBoundedDevice = '/selectBoundedDevice';
   static const liveData = '/liveData';
+  static const allPids = '/allPids';
   static const fuelLogs = '/fuelLogs';
   static const fuelStations = '/fuelStations';
   static const createFuelLog = '/createFuelLog';
@@ -12,4 +13,6 @@ abstract class SharedRoutes {
   static const tripSummary = '/tripSummary';
   static const machineLearning = '/machineLearning';
   static const learning = '/learning';
+  static const dataLogs = '/dataLogs';
+  static const savedTrips = '/savedTrips';
 }

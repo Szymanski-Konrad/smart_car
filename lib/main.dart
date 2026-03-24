@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_logs/flutter_logs.dart';
@@ -11,22 +10,20 @@ import 'package:smart_car/app/navigation/navigator.dart';
 import 'package:smart_car/feautures/alert_center/alert_center.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp();
-
-  final appKey = GlobalKey();
-  AlertCenter.initialize(globalKey: appKey);
-
   runZonedGuarded<Future<void>>(
     () async {
-      await SentryFlutter.init(
-        (options) {
-          options.dsn =
-              'https://7264306b4e064a84ad91d9889c9ed294@o1307209.ingest.sentry.io/6551194';
-          options.tracesSampleRate = 1.0;
-        },
-      );
+      WidgetsFlutterBinding.ensureInitialized();
+
+      await Firebase.initializeApp();
+
+      final appKey = GlobalKey();
+      AlertCenter.initialize(globalKey: appKey);
+
+      await SentryFlutter.init((options) {
+        options.dsn =
+            'https://7264306b4e064a84ad91d9889c9ed294@o1307209.ingest.sentry.io/6551194';
+        options.tracesSampleRate = 1.0;
+      });
 
       await FlutterLogs.initLogs(
         logLevelsEnabled: LogLevel.values,
@@ -53,7 +50,7 @@ Future<void> main() async {
 }
 
 class _App extends StatelessWidget {
-  const _App({Key? key, required this.appKey}) : super(key: key);
+  const _App({super.key, required this.appKey});
 
   final GlobalKey appKey;
 
@@ -67,13 +64,13 @@ class _App extends StatelessWidget {
 }
 
 class FlutterBlueApp extends StatelessWidget {
-  const FlutterBlueApp({Key? key}) : super(key: key);
+  const FlutterBlueApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: GlobalBlocs.blocs,
-      child: const ToastProvider(child: PageNavigator()),
+      child: const PageNavigator(),
     );
   }
 }

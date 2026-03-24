@@ -4,7 +4,7 @@ import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 part 'fuel_logs_state.freezed.dart';
 
 @freezed
-class FuelLogsState with _$FuelLogsState {
+abstract class FuelLogsState with _$FuelLogsState {
   factory FuelLogsState({
     @Default([]) List<FuelLog> logs,
     @Default(false) bool isLoading,

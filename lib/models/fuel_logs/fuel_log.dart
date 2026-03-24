@@ -7,7 +7,7 @@ part 'fuel_log.freezed.dart';
 part 'fuel_log.g.dart';
 
 @freezed
-class FuelLog with _$FuelLog {
+abstract class FuelLog with _$FuelLog {
   factory FuelLog({
     required String id,
     required double odometer,

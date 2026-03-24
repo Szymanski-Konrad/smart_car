@@ -1,13 +1,11 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
 
 abstract class PercentObdCommand extends VisibleObdCommand {
-  PercentObdCommand(String command,
-      {required int prio,
-      double min = 0,
-      double max = 100,
-      bool enableHistory = true})
-      : super(command,
-            min: min, max: max, prio: prio, enableHistory: enableHistory);
+  PercentObdCommand(super.command,
+      {required super.prio,
+      double super.min = 0,
+      double super.max = 100,
+      super.enableHistory});
 
   @override
   String get formattedResult =>

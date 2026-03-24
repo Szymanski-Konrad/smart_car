@@ -3,10 +3,9 @@ import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:csv/csv.dart';
-import 'package:fl_toast/fl_toast.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:flutter_bluetooth_classic_serial/flutter_bluetooth_classic.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/repositories/storage.dart';
 import 'package:smart_car/app/resources/constants.dart';
@@ -32,10 +31,7 @@ class SettingsCubit extends Cubit<SettingsState> {
     }
     final statsJson = await Storage.getStatisticsJson();
     final stats = Statistics.fromJson(jsonDecode(statsJson ?? ''));
-    emit(state.copyWith(
-      settings: settings,
-      stats: stats,
-    ));
+    emit(state.copyWith(settings: settings, stats: stats));
   }
 
   Future<void> saveSettings() async {
@@ -54,12 +50,14 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void updateDevice(BluetoothDevice device) {
-    emit(state.copyWith(
-      settings: state.settings.copyWith(
-        deviceAddress: device.address,
-        deviceName: device.name,
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          deviceAddress: device.address,
+          deviceName: device.name,
+        ),
       ),
-    ));
+    );
     startTimer();
   }
 
@@ -75,8 +73,11 @@ class SettingsCubit extends Cubit<SettingsState> {
   void updateEngineCapacity(String input) {
     final value = int.tryParse(input);
     if (value != null) {
-      emit(state.copyWith(
-          settings: state.settings.copyWith(engineCapacity: value)));
+      emit(
+        state.copyWith(
+          settings: state.settings.copyWith(engineCapacity: value),
+        ),
+      );
       startTimer();
     }
   }
@@ -93,15 +94,17 @@ class SettingsCubit extends Cubit<SettingsState> {
     final value = int.tryParse(input);
     if (value != null) {
       emit(
-          state.copyWith(settings: state.settings.copyWith(horsepower: value)));
+        state.copyWith(settings: state.settings.copyWith(horsepower: value)),
+      );
       startTimer();
     }
   }
 
   Future<void> convertCSV() async {
     final data = await rootBundle.loadString('assets/csv/vehicle-1-sync.csv');
-    final csv =
-        const CsvToListConverter(eol: '\n').convert(data).reversed.toList();
+    final csv = const CsvToListConverter(
+      eol: '\n',
+    ).convert(data).reversed.toList();
     final fuelLogs = <FuelLog>[];
     for (final row in csv) {
       final fuelLog = FuelLog(
@@ -150,33 +153,38 @@ class SettingsCubit extends Cubit<SettingsState> {
     final range = 100 * leftFuel / state.stats.refuelingConsumption;
     final totalDistance = state.stats.distance + distance;
     final totalFuelUsed = state.stats.fuelUsed + fuelUsed;
-    showAndroidToast(
-      child: Text('Pozostałe paliwo: $fuelLeft %,  Nowy zasięg: $range km'),
-      context: ToastProvider.context,
-      duration: const Duration(seconds: 10),
+    await Fluttertoast.showToast(
+      msg:
+          'Pozostałe paliwo: $fuelLeft %,  Nowy zasięg: ${range.toStringAsFixed(0)} km',
+      toastLength: Toast.LENGTH_LONG,
     );
-    emit(state.copyWith(
-      stats: state.stats.copyWith(
-        range: range,
-        distance: totalDistance,
-        fuelUsed: totalFuelUsed,
+    emit(
+      state.copyWith(
+        stats: state.stats.copyWith(
+          range: range,
+          distance: totalDistance,
+          fuelUsed: totalFuelUsed,
+        ),
       ),
-    ));
+    );
     await saveStats();
   }
 
   void updateRefuelingConsumption(double consumption) async {
-    emit(state.copyWith(
-      stats: state.stats.copyWith(refuelingConsumption: consumption),
-    ));
+    emit(
+      state.copyWith(
+        stats: state.stats.copyWith(refuelingConsumption: consumption),
+      ),
+    );
 
     await saveStats();
   }
 
   void updateFuelType(FuelType? fuelType) {
     if (fuelType != null) {
-      emit(state.copyWith(
-          settings: state.settings.copyWith(fuelType: fuelType)));
+      emit(
+        state.copyWith(settings: state.settings.copyWith(fuelType: fuelType)),
+      );
       startTimer();
     }
   }

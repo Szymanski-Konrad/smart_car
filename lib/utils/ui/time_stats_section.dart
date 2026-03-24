@@ -4,26 +4,23 @@ import 'package:smart_car/utils/ui/info_tile.dart';
 
 class TimeStatsSection extends StatelessWidget {
   const TimeStatsSection({
-    Key? key,
+    super.key,
     required this.records,
     required this.currentInterval,
-  }) : super(key: key);
+    this.totalTripSeconds,
+  });
 
   final List<TimeTileData> records;
   final int currentInterval;
+  final int? totalTripSeconds;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // width: MediaQuery.of(context).size.width * 0.31,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.blueGrey,
-          width: 3,
-        ),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(8.0),
-        ),
+        border: Border.all(color: Colors.blueGrey, width: 3),
+        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       ),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -31,13 +28,16 @@ class TimeStatsSection extends StatelessWidget {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: records
-              .map((data) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TimeInfoTile(
-                      data: data,
-                      currentInterval: currentInterval,
-                    ),
-                  ))
+              .map(
+                (data) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TimeInfoTile(
+                    data: data,
+                    currentInterval: currentInterval,
+                    totalTripSeconds: totalTripSeconds,
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),

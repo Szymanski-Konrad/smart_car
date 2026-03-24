@@ -3,7 +3,7 @@ import 'package:smart_car/app/resources/strings.dart';
 import 'package:smart_car/models/fuel_logs/fuel_log.dart';
 
 class FuelStatsCard extends StatelessWidget {
-  const FuelStatsCard({Key? key, required this.logs}) : super(key: key);
+  const FuelStatsCard({super.key, required this.logs});
 
   final List<FuelLog> logs;
 

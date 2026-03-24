@@ -4,8 +4,16 @@ import 'package:smart_car/models/commands/absolute_barometric_pressure_command.d
 import 'package:smart_car/models/commands/absolute_load_value_command.dart';
 import 'package:smart_car/models/commands/absolute_throttle_position_command.dart';
 import 'package:smart_car/models/commands/accelerator_pedal_position_command.dart';
+import 'package:smart_car/models/commands/actual_engine_torque_command.dart';
 import 'package:smart_car/models/commands/ambient_air_temperature_command.dart';
 import 'package:smart_car/models/commands/auxiliary_input_status_command.dart';
+import 'package:smart_car/models/commands/driver_demand_torque_command.dart';
+import 'package:smart_car/models/commands/engine_percent_torque_data_command.dart';
+import 'package:smart_car/models/commands/ethanol_fuel_percent_command.dart';
+import 'package:smart_car/models/commands/fuel_rail_absolute_pressure_command.dart';
+import 'package:smart_car/models/commands/relative_accelerator_pedal_position_command.dart';
+import 'package:smart_car/models/commands/transmission_actual_gear_command.dart';
+import 'package:smart_car/models/commands/turbocharger_rpm_command.dart';
 import 'package:smart_car/models/commands/catalyst_temperature_bank_command.dart';
 import 'package:smart_car/models/commands/commanded_egr_command.dart';
 import 'package:smart_car/models/commands/commanded_secondary_air_status_command.dart';
@@ -59,25 +67,17 @@ abstract class Pids {
   static const String monitorStatusDriveCycle = '41';
   static const String maxValuesP1 = '4F';
   static const String maxMAFValue = '50';
-  static const String ethanolFuelRemaining = '52';
   static const String absoluteEvapSystemVaporPressure = '53';
   static const String evapSystemVaporPressureV2 = '54';
   static const String secondaryOxygenSensor1 = '55';
   static const String secondaryOxygenSensor2 = '56';
   static const String secondaryOxygenSensor3 = '57';
   static const String secondaryOxygenSensor4 = '58';
-  static const String fuelRailAbsolutePressure = '59';
-  static const String relativeAcceleratorPedalPosition = '5A';
   static const String emissionRequirements = '5F';
-  static const String driversDemandEnginePercentTorque = '61';
-  static const String actualEnginePercentTorque = '62';
-  static const String enginePercentTorqueData = '64';
   static const String auxiliarySupported = '65';
   static const String mafSensor = '66';
   static const String engineCoolantTemp = '67';
   static const String intakeAirTempSensor = '68';
-
-  static const String transmissionActualGear = 'A4';
 
   // Supported pids
   static const String fuelSystemStatus = '03';
@@ -152,12 +152,20 @@ abstract class Pids {
   static const String timeRunWithMIL = '4D';
   static const String timeSinceTroubleCodesCleared = '4E';
   static const String fuelType = '51';
+  static const String ethanolFuelPercent = '52';
+  static const String fuelRailAbsolutePressure = '59';
+  static const String relativeAcceleratorPedalPosition = '5A';
   static const String hybridBatteryPackRemainingLife = '5B';
   static const String oilTemp = '5C';
   static const String fuelInjectionTiming = '5D';
   static const String engineFuelRate = '5E';
+  static const String driversDemandTorque = '61';
+  static const String actualEngineTorque = '62';
   static const String engineReferenceTorque = '63';
+  static const String enginePercentTorqueData = '64';
+  static const String turbochargerRpm = '74';
   static const String cylinderFuelRate = 'A2';
+  static const String transmissionActualGear = 'A4';
   static const String odometer = 'A6';
 
   /// Special commands
@@ -283,6 +291,14 @@ enum PID {
   timeSinceTroubleCodesCleared,
   hybridBatteryPackRemainingLife,
   fuelType,
+  ethanolFuelPercent,
+  fuelRailAbsolutePressure,
+  relativeAcceleratorPedalPosition,
+  driversDemandTorque,
+  actualEngineTorque,
+  enginePercentTorqueData,
+  turbochargerRpm,
+  transmissionActualGear,
   cylinderFuelRate,
   unknown,
 }
@@ -370,6 +386,22 @@ extension PIDExtension on PID {
         return PID.hybridBatteryPackRemainingLife;
       case Pids.fuelType:
         return PID.fuelType;
+      case Pids.ethanolFuelPercent:
+        return PID.ethanolFuelPercent;
+      case Pids.fuelRailAbsolutePressure:
+        return PID.fuelRailAbsolutePressure;
+      case Pids.relativeAcceleratorPedalPosition:
+        return PID.relativeAcceleratorPedalPosition;
+      case Pids.driversDemandTorque:
+        return PID.driversDemandTorque;
+      case Pids.actualEngineTorque:
+        return PID.actualEngineTorque;
+      case Pids.enginePercentTorqueData:
+        return PID.enginePercentTorqueData;
+      case Pids.turbochargerRpm:
+        return PID.turbochargerRpm;
+      case Pids.transmissionActualGear:
+        return PID.transmissionActualGear;
       case Pids.odometer:
         return PID.odometer;
       case Pids.engineReferenceTorque:
@@ -617,6 +649,22 @@ extension PIDExtension on PID {
         return HybridBatteryPackRemainingLife();
       case PID.fuelType:
         return FuelTypeCommand();
+      case PID.ethanolFuelPercent:
+        return EthanolFuelPercentCommand();
+      case PID.fuelRailAbsolutePressure:
+        return FuelRailAbsolutePressureCommand();
+      case PID.relativeAcceleratorPedalPosition:
+        return RelativeAcceleratorPedalPositionCommand();
+      case PID.driversDemandTorque:
+        return DriverDemandTorqueCommand();
+      case PID.actualEngineTorque:
+        return ActualEngineTorqueCommand();
+      case PID.enginePercentTorqueData:
+        return EnginePercentTorqueDataCommand();
+      case PID.turbochargerRpm:
+        return TurbochargerRpmCommand();
+      case PID.transmissionActualGear:
+        return TransmissionActualGearCommand();
       case PID.cylinderFuelRate:
         return CylinderFuelRateCommand();
     }

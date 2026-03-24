@@ -99,11 +99,11 @@ class ResponseLocation {
     this.hasElectricity = false,
   });
 
-  static fromJson(Map<dynamic, dynamic> json) {
+  static ResponseLocation? fromJson(Map<dynamic, dynamic> json) {
     final tags = json['tags'];
 
     if (tags == null) {
-      return;
+      return null;
     }
 
     return ResponseLocation(
@@ -132,10 +132,7 @@ class QueryLocation {
   final double longitude;
   final double latitude;
 
-  QueryLocation({
-    required this.longitude,
-    required this.latitude,
-  });
+  QueryLocation({required this.longitude, required this.latitude});
 
   factory QueryLocation.fromLatLng(LatLng latLng) {
     return QueryLocation(

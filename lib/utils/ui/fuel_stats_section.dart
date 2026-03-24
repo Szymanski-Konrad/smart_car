@@ -5,26 +5,23 @@ import 'package:smart_car/utils/ui/info_tile.dart';
 
 class FuelStatsSection extends StatelessWidget {
   const FuelStatsSection({
-    Key? key,
+    super.key,
     required this.records,
     required this.tripStatus,
-  }) : super(key: key);
+    this.totalFuel,
+  });
 
   final List<FuelTileData> records;
   final TripStatus tripStatus;
+  final double? totalFuel;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       // width: MediaQuery.of(context).size.width * 0.31,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.blueGrey,
-          width: 3,
-        ),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(8.0),
-        ),
+        border: Border.all(color: Colors.blueGrey, width: 3),
+        borderRadius: const BorderRadius.all(Radius.circular(8.0)),
       ),
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -32,13 +29,16 @@ class FuelStatsSection extends StatelessWidget {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: records
-              .map((data) => Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: FuelInfoTile(
-                      data: data,
-                      status: tripStatus,
-                    ),
-                  ))
+              .map(
+                (data) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: FuelInfoTile(
+                    data: data,
+                    status: tripStatus,
+                    totalFuel: totalFuel,
+                  ),
+                ),
+              )
               .toList(),
         ),
       ),

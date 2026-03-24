@@ -5,7 +5,7 @@ import 'package:smart_car/pages/machine_learning/bloc/dataset_cubit.dart';
 import 'package:smart_car/pages/machine_learning/bloc/dataset_state.dart';
 
 class LearningPage extends StatelessWidget {
-  const LearningPage({Key? key}) : super(key: key);
+  const LearningPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +33,7 @@ class LearningPage extends StatelessWidget {
               ),
               if (state.isLearning) const Text('Learning...'),
               if (state.isLearning) Text('Step ${state.learningStep} of 9'),
-              ...state.messages.map((e) => Text(e)).toList(),
+              ...state.messages.map((e) => Text(e)),
             ],
           );
         },

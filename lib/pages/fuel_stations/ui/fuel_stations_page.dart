@@ -6,7 +6,7 @@ import 'package:smart_car/pages/fuel_stations/ui/fuel_stations_map.dart';
 import 'package:smart_car/utils/scoped_bloc_builder.dart';
 
 class FuelStationsPage extends StatelessWidget {
-  const FuelStationsPage({Key? key}) : super(key: key);
+  const FuelStationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class FuelStationsPage extends StatelessWidget {
               children: [
                 ...FuelStationType.values
                     .map((type) => _buildStationType(type, cubit, state))
-                    .toList(),
+                    ,
               ],
             ),
           ),

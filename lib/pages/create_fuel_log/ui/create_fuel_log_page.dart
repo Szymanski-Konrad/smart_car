@@ -24,7 +24,7 @@ class CreateFuelLogPageArgument {
 
 class CreateFuelLogPage extends StatelessWidget
     with RouteArgument<CreateFuelLogPageArgument> {
-  const CreateFuelLogPage({Key? key}) : super(key: key);
+  const CreateFuelLogPage({super.key});
 
   static const double _labelWidth = 150.0;
 
@@ -286,7 +286,7 @@ class CreateFuelLogPage extends StatelessWidget
 
 class FuelLogTextField extends StatefulWidget {
   const FuelLogTextField({
-    Key? key,
+    super.key,
     required this.initalValue,
     required this.onEdit,
     this.validator,
@@ -295,7 +295,7 @@ class FuelLogTextField extends StatefulWidget {
     this.keyboardType = TextInputType.number,
     this.onInitialChange,
     this.controller,
-  }) : super(key: key);
+  });
 
   final String? initalValue;
   final TextEditingController? controller;

@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:fl_toast/fl_toast.dart';
-import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:smart_car/models/gas_stations/gas_station.dart';
 import 'package:smart_car/models/overpass/overpass_query.dart';
 import 'package:smart_car/pages/fuel_stations/bloc/fuel_stations_state.dart';
@@ -30,20 +29,14 @@ class FuelStationsCubit extends Cubit<FuelStationsState> {
       onTimeout: onTimeout,
     );
 
-    emit(state.copyWith(
-      gasStations: gasStations,
-      isLoading: false,
-    ));
+    emit(state.copyWith(gasStations: gasStations, isLoading: false));
   }
 
   Future<void> onTimeout() async {
     emit(state.copyWith(isLoading: false));
-    await showAndroidToast(
-      backgroundColor: Colors.green,
-      alignment: Alignment.center,
-      child: const Text('Nie można pobrać stacji, spróbuj ponownie'),
-      duration: const Duration(seconds: 2),
-      context: ToastProvider.context,
+    await Fluttertoast.showToast(
+      msg: 'Nie można pobrać stacji, spróbuj ponownie',
+      toastLength: Toast.LENGTH_SHORT,
     );
   }
 }

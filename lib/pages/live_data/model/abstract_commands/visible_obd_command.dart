@@ -4,14 +4,13 @@ import 'package:smart_car/pages/live_data/model/abstract_commands/obd_command.da
 
 abstract class VisibleObdCommand extends ObdCommand {
   VisibleObdCommand(
-    String command, {
-    required num min,
-    required num max,
-    required int prio,
+    super.command, {
+    required super.min,
+    required super.max,
+    required super.prio,
     this.range = 0.0,
     bool enableHistory = true,
-  }) : super(command,
-            min: min, max: max, prio: prio, enableHistorical: enableHistory);
+  }) : super(enableHistorical: enableHistory);
 
   String get name;
   String get description;

@@ -5,10 +5,10 @@ import 'package:smart_car/utils/list_extension.dart';
 
 class AccDataTile extends StatelessWidget {
   const AccDataTile({
-    Key? key,
+    super.key,
     required this.values,
     required this.title,
-  }) : super(key: key);
+  });
 
   final List<double> values;
   final String title;

@@ -11,7 +11,7 @@ part 'gas_station.freezed.dart';
 part 'gas_station.g.dart';
 
 @freezed
-class GasStation with _$GasStation {
+abstract class GasStation with _$GasStation {
   factory GasStation({
     required int id,
     @JsonKey(toJson: LocationHelper.coordsToJson) required LatLng coordinates,
@@ -33,24 +33,24 @@ class GasStation with _$GasStation {
   }) = _GasStation;
 
   factory GasStation.fromLocation(ResponseLocation location) => GasStation(
-        id: location.id,
-        coordinates: LatLng(location.latitude, location.longitude),
-        brand: location.brand,
-        city: location.city,
-        fuelPrices: {},
-        hasDiesel: location.hasDiesel,
-        hasElectricity: location.hasElectricity,
-        hasLpg: location.hasLpg,
-        hasPb95: location.hasPb95,
-        hasPb98: location.hasPb98,
-        hasShop: location.hasShop,
-        houseNumber: location.houseNumber,
-        name: location.name ?? Strings.gasStation,
-        openingHours: location.openingHours,
-        postcode: location.postcode,
-        stationOperator: location.stationOperator,
-        street: location.street,
-      );
+    id: location.id,
+    coordinates: LatLng(location.latitude, location.longitude),
+    brand: location.brand,
+    city: location.city,
+    fuelPrices: {},
+    hasDiesel: location.hasDiesel,
+    hasElectricity: location.hasElectricity,
+    hasLpg: location.hasLpg,
+    hasPb95: location.hasPb95,
+    hasPb98: location.hasPb98,
+    hasShop: location.hasShop,
+    houseNumber: location.houseNumber,
+    name: location.name ?? Strings.gasStation,
+    openingHours: location.openingHours,
+    postcode: location.postcode,
+    stationOperator: location.stationOperator,
+    street: location.street,
+  );
 
   factory GasStation.fromJson(Map<String, dynamic> json) =>
       _$GasStationFromJson(json);

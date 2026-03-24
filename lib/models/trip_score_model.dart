@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart';
 part 'trip_score_model.freezed.dart';
 
 @freezed
-class TripScoreModel with _$TripScoreModel {
+abstract class TripScoreModel with _$TripScoreModel {
   factory TripScoreModel({
     @Default(0) double distance,
     @Default(0) double gpsDistance,

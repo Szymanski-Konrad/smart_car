@@ -1,8 +1,8 @@
 import 'package:smart_car/pages/live_data/model/abstract_commands/temp_obd_command.dart';
 
 abstract class CatalystTemperatureBankCommand extends TempObdCommand {
-  CatalystTemperatureBankCommand(String command)
-      : super(command, prio: 1, min: -40, max: 6513.5);
+  CatalystTemperatureBankCommand(super.command)
+      : super(prio: 1, min: -40, max: 6513.5);
 
   @override
   void performCalculations(List<int> data) {

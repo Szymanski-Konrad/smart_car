@@ -27,8 +27,9 @@ class OverpassApi {
     String? responseText;
 
     try {
-      final response =
-          await Client().send(request).timeout(const Duration(seconds: 5));
+      final response = await Client()
+          .send(request)
+          .timeout(const Duration(seconds: 5));
 
       responseText = await response.stream.bytesToString();
     } on TimeoutException catch (e) {
@@ -65,7 +66,10 @@ class OverpassApi {
     List<ResponseLocation> resultList = [];
 
     for (var location in responseJson['elements']) {
-      resultList.add(ResponseLocation.fromJson(location));
+      final item = ResponseLocation.fromJson(location);
+      if (item != null) {
+        resultList.add(item);
+      }
     }
 
     final stations = await _mapResultsToGasStations(resultList);
@@ -74,7 +78,10 @@ class OverpassApi {
   }
 
   static Map<String, String> _buildRequestBody(
-      QueryLocation center, Map<String, String> filter, double radius) {
+    QueryLocation center,
+    Map<String, String> filter,
+    double radius,
+  ) {
     final query = OverpassQuery(
       output: 'json',
       timeout: 25,
@@ -122,8 +129,9 @@ class OverpassApi {
       return remoteStations;
     }
     for (final location in locations) {
-      final index =
-          remoteStations.indexWhere((element) => element.id == location.id);
+      final index = remoteStations.indexWhere(
+        (element) => element.id == location.id,
+      );
       if (index >= 0) {
         gasStations.add(remoteStations[index]);
       } else {

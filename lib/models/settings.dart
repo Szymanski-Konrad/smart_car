@@ -47,7 +47,7 @@ extension FuelTypeExtension on FuelType {
 }
 
 @freezed
-class Settings with _$Settings {
+abstract class Settings with _$Settings {
   factory Settings({
     @Default(0) int engineCapacity,
     @Default(0) int horsepower,
