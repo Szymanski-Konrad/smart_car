@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_car/app/blocs/global_bloc.dart';
 import 'package:smart_car/app/resources/pids.dart';
+import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
+import 'package:smart_car/models/commands/transmission_actual_gear_command.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_cubit.dart';
 import 'package:smart_car/pages/live_data/bloc/live_data_state.dart';
 import 'package:smart_car/pages/live_data/model/abstract_commands/visible_obd_command.dart';
@@ -35,8 +37,12 @@ class LiveTripPreviewTab extends StatelessWidget {
         final rpmCmd = _pid(cubit, Pids.rpm);
         final fuelLevelCmd = _pid(cubit, Pids.fuelLevel);
         final loadCmd = _pid(cubit, Pids.engineLoad);
-        final coolantCmd = _pid(cubit, Pids.engineCoolant);
-        final intakeTempCmd = _pid(cubit, Pids.intakeAirTemp);
+        final coolantCmd =
+            _pid(cubit, Pids.engineCoolant) ??
+            _pid(cubit, Pids.engineCoolantTempExtended);
+        final intakeTempCmd =
+            _pid(cubit, Pids.intakeAirTemp) ??
+            _pid(cubit, Pids.intakeAirTempSensor);
         final oilTempCmd = _pid(cubit, Pids.oilTemp);
         final ambientTempCmd = _pid(cubit, Pids.ambientAirTemperature);
         final throttleCmd = _pid(cubit, Pids.throttlePosition);
@@ -44,6 +50,34 @@ class LiveTripPreviewTab extends StatelessWidget {
         final mafCmd = _pid(cubit, Pids.maf);
         final mapCmd = _pid(cubit, Pids.intakeManifoldAbsolutePressure);
         final timingCmd = _pid(cubit, Pids.timingAdvance);
+
+        // New: gear, fuel rate, power
+        TransmissionActualGearCommand? gearCmd;
+        for (final c in cubit.commands) {
+          if (c is TransmissionActualGearCommand) {
+            gearCmd = c;
+            break;
+          }
+        }
+        EngineFuelRateCommand? fuelRateCmd;
+        for (final c in cubit.commands) {
+          if (c is EngineFuelRateCommand) {
+            fuelRateCmd = c;
+            break;
+          }
+        }
+        final actualTorqueCmd = _pid(cubit, Pids.actualEngineTorque);
+        final refTorqueCmd = _pid(cubit, Pids.engineReferenceTorque);
+        double? instantPowerKw;
+        if (actualTorqueCmd != null && refTorqueCmd != null && rpmCmd != null) {
+          final pct = actualTorqueCmd.result;
+          final ref = refTorqueCmd.result;
+          final rpm = rpmCmd.result;
+          if (pct.isFinite && ref.isFinite && rpm.isFinite && rpm > 0) {
+            final torqueNm = (pct / 100.0) * ref;
+            instantPowerKw = torqueNm * (rpm * 2 * math.pi / 60) / 1000;
+          }
+        }
 
         final m = _LiveMetrics(
           state: state,
@@ -61,31 +95,31 @@ class LiveTripPreviewTab extends StatelessWidget {
           mafCmd: mafCmd,
           mapCmd: mapCmd,
           timingCmd: timingCmd,
+          gearCmd: gearCmd,
+          fuelRateCmd: fuelRateCmd,
+          instantPowerKw: instantPowerKw,
+          fuelConsumptionSource: state.fuelConsumptionSource,
         );
 
         return SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final isWide = constraints.maxWidth >= constraints.maxHeight;
                 final cols = isWide ? 3 : 2;
-                final maxRowsPerPage = isWide ? 2 : 3;
-                const gap = 12.0;
+                final maxRowsPerPage = isWide ? 3 : 4;
+                const gap = 8.0;
 
                 final specs = _buildTileSpecs(m);
                 final pages = _packIntoPages(
                   specs,
                   cols: cols,
                   maxRows: maxRowsPerPage,
+                  isWide: isWide,
                 );
 
-                return PageView.builder(
-                  itemCount: pages.length,
-                  itemBuilder: (context, index) {
-                    return _TilesPage(rows: pages[index], cols: cols, gap: gap);
-                  },
-                );
+                return _DashboardLayout(pages: pages, cols: cols, gap: gap);
               },
             ),
           ),
@@ -112,6 +146,10 @@ class _LiveMetrics {
     required this.mafCmd,
     required this.mapCmd,
     required this.timingCmd,
+    this.gearCmd,
+    this.fuelRateCmd,
+    this.instantPowerKw,
+    required this.fuelConsumptionSource,
   });
 
   final LiveDataState state;
@@ -131,6 +169,10 @@ class _LiveMetrics {
   final VisibleObdCommand? mafCmd;
   final VisibleObdCommand? mapCmd;
   final VisibleObdCommand? timingCmd;
+  final TransmissionActualGearCommand? gearCmd;
+  final EngineFuelRateCommand? fuelRateCmd;
+  final double? instantPowerKw;
+  final FuelConsumptionSource fuelConsumptionSource;
 }
 
 class _TileSpec {
@@ -190,8 +232,10 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
   final timing = numFrom(m.timingCmd);
 
   final tiles = <_TileSpec>[
+    // ── STRONA 1: essentials jazdy ───────────────────────────────────────────
+    // Prędkość – pełny wiersz (2 en portrait, 3 en landscape = full)
     _TileSpec(
-      spanPortrait: 2,
+      spanPortrait: 1,
       spanLandscape: 3,
       builder: (context) => _GaugeTile(
         title: 'Prędkość',
@@ -205,6 +249,7 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
             : 'Śr. ${avgSpeed.toStringAsFixed(0)} km/h',
       ),
     ),
+    // RPM + Poziom paliwa
     _TileSpec(
       spanPortrait: 1,
       spanLandscape: 1,
@@ -228,16 +273,14 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
         suffix: '%',
       ),
     ),
+    // Status systemu paliwowego – ostatni kafelek (diagnostyczny)
     _TileSpec(
       spanPortrait: 1,
       spanLandscape: 1,
-      builder: (context) => _PercentFillTile(
-        title: 'Obciążenie',
-        icon: Icons.auto_graph,
-        percent: loadPct,
-        suffix: '%',
-      ),
+      builder: (context) =>
+          _FuelSystemStatusTile(status: m.state.fuelSystemStatus),
     ),
+    // Spalanie – pełny wiersz
     _TileSpec(
       spanPortrait: 2,
       spanLandscape: 2,
@@ -247,35 +290,13 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
         used: m.trip.usedFuelDetails,
         idleUsed: m.trip.idleUsedFuelDetails,
         saved: m.trip.savedFuelDetails,
+        currentStatus: m.trip.tripStatus,
+        fuelSource: m.fuelConsumptionSource,
       ),
     ),
+    // Temp. cieczy + Ocena jazdy (kończą stronę 1)
     _TileSpec(
       spanPortrait: 1,
-      spanLandscape: 1,
-      builder: (context) =>
-          _DualScoreTile(eco: m.state.ecoScore, smooth: m.state.smoothScore),
-    ),
-    _TileSpec(
-      spanPortrait: 1,
-      spanLandscape: 1,
-      builder: (context) => _TripMetricCard.fromInfoTileData(
-        m.trip.distanceDetails,
-        icon: Icons.route,
-      ),
-    ),
-    _TileSpec(
-      spanPortrait: 2,
-      spanLandscape: 1,
-      builder: (context) => _TimeSummaryTile(
-        totalSeconds: m.trip.totalTripSeconds,
-        idleSeconds: m.trip.idleTripSeconds,
-        continuousDriveSeconds: m.trip.currentDriveInterval,
-        overRpmSeconds: m.trip.overRPMDriveTime,
-        underRpmSeconds: m.trip.underRPMDriveTime,
-      ),
-    ),
-    _TileSpec(
-      spanPortrait: 2,
       spanLandscape: 1,
       builder: (context) => _TemperatureTile(
         title: 'Temp. cieczy',
@@ -289,6 +310,89 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
         coldAt: 70,
       ),
     ),
+    _TileSpec(
+      spanPortrait: 1,
+      spanLandscape: 1,
+      builder: (context) =>
+          _DualScoreTile(eco: m.state.ecoScore, smooth: m.state.smoothScore),
+    ),
+
+    // ── STRONA 2: statystyki trasy ───────────────────────────────────────────
+    _TileSpec(
+      spanPortrait: 1,
+      spanLandscape: 1,
+      builder: (context) => _TripMetricCard.fromInfoTileData(
+        m.trip.distanceDetails,
+        icon: Icons.route,
+      ),
+    ),
+    _TileSpec(
+      spanPortrait: 1,
+      spanLandscape: 1,
+      builder: (context) => _PercentFillTile(
+        title: 'Obciążenie',
+        icon: Icons.auto_graph,
+        percent: loadPct,
+        suffix: '%',
+      ),
+    ),
+    if (m.gearCmd != null)
+      _TileSpec(
+        spanPortrait: 1,
+        spanLandscape: 1,
+        builder: (context) => _TripMetricCard(
+          title: 'Bieg',
+          valueText: m.gearCmd!.formattedResult,
+          unit: '',
+          icon: Icons.settings,
+        ),
+      ),
+    if (m.instantPowerKw != null)
+      _TileSpec(
+        spanPortrait: 1,
+        spanLandscape: 1,
+        builder: (context) => _TripMetricCard(
+          title: 'Moc chwilowa',
+          valueText: m.instantPowerKw!.toStringAsFixed(0),
+          unit: 'kW',
+          icon: Icons.electric_bolt,
+        ),
+      ),
+    _TileSpec(
+      spanPortrait: 2,
+      spanLandscape: 1,
+      builder: (context) => _TimeSummaryTile(
+        totalSeconds: m.trip.totalTripSeconds,
+        idleSeconds: m.trip.idleTripSeconds,
+        continuousDriveSeconds: m.trip.currentDriveInterval,
+        overRpmSeconds: m.trip.overRPMDriveTime,
+        underRpmSeconds: m.trip.underRPMDriveTime,
+      ),
+    ),
+    if (m.throttleCmd != null)
+      _TileSpec(
+        spanPortrait: 1,
+        spanLandscape: 1,
+        builder: (context) => _PercentFillTile(
+          title: 'Przepustnica',
+          icon: Icons.sports_motorsports,
+          percent: throttlePct,
+          suffix: '%',
+        ),
+      ),
+    if (m.voltageCmd != null)
+      _TileSpec(
+        spanPortrait: 1,
+        spanLandscape: 1,
+        builder: (context) => _TripMetricCard(
+          title: 'Napięcie',
+          valueText: voltage == null ? '--' : voltage.toStringAsFixed(1),
+          unit: m.voltageCmd!.unit,
+          icon: Icons.bolt,
+        ),
+      ),
+
+    // ── STRONA 3: dane techniczne i temperatury ──────────────────────────────
     if (m.intakeTempCmd != null)
       _TileSpec(
         spanPortrait: 1,
@@ -337,28 +441,6 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
           coldAt: 0,
         ),
       ),
-    if (m.throttleCmd != null)
-      _TileSpec(
-        spanPortrait: 1,
-        spanLandscape: 1,
-        builder: (context) => _PercentFillTile(
-          title: 'Przepustnica',
-          icon: Icons.sports_motorsports,
-          percent: throttlePct,
-          suffix: '%',
-        ),
-      ),
-    if (m.voltageCmd != null)
-      _TileSpec(
-        spanPortrait: 1,
-        spanLandscape: 1,
-        builder: (context) => _TripMetricCard(
-          title: 'Napięcie',
-          valueText: voltage == null ? '--' : voltage.toStringAsFixed(1),
-          unit: m.voltageCmd!.unit,
-          icon: Icons.bolt,
-        ),
-      ),
     if (m.mafCmd != null)
       _TileSpec(
         spanPortrait: 1,
@@ -392,13 +474,20 @@ List<_TileSpec> _buildTileSpecs(_LiveMetrics m) {
           icon: Icons.bolt,
         ),
       ),
-    // Kafelek ze statusem systemu paliwowego
-    _TileSpec(
-      spanPortrait: 2,
-      spanLandscape: 1,
-      builder: (context) =>
-          _FuelSystemStatusTile(status: m.state.fuelSystemStatus),
-    ),
+    if (m.fuelRateCmd != null)
+      _TileSpec(
+        spanPortrait: 1,
+        spanLandscape: 1,
+        builder: (context) {
+          final rate = m.fuelRateCmd!.result;
+          return _TripMetricCard(
+            title: 'Zużycie paliwa',
+            valueText: rate.isFinite ? rate.toStringAsFixed(1) : '--',
+            unit: m.fuelRateCmd!.unit,
+            icon: Icons.local_gas_station,
+          );
+        },
+      ),
   ];
 
   return tiles;
@@ -408,6 +497,7 @@ List<List<List<_PackedTile>>> _packIntoPages(
   List<_TileSpec> specs, {
   required int cols,
   required int maxRows,
+  required bool isWide,
 }) {
   final pages = <List<List<_PackedTile>>>[];
   var currentPage = <List<_PackedTile>>[];
@@ -425,11 +515,13 @@ List<List<List<_PackedTile>>> _packIntoPages(
     }
   }
 
-  // We pack using a conservative rule: portrait uses cols=2, landscape cols=3.
-  // The span itself is stored later per layout; here we pack by max span for the page.
+  // Use portrait spans in portrait mode and landscape spans in landscape mode,
+  // both clamped to the available column count.
   for (final spec in specs) {
-    // Pack assuming the tile wants to be wide if possible.
-    final span = spec.spanLandscape.clamp(1, cols);
+    final span = (isWide ? spec.spanLandscape : spec.spanPortrait).clamp(
+      1,
+      cols,
+    );
     final spanInRow = span;
 
     if (spanInRow > cols) {
@@ -482,6 +574,112 @@ List<List<List<_PackedTile>>> _packIntoPages(
   return pages;
 }
 
+class _DashboardLayout extends StatefulWidget {
+  const _DashboardLayout({
+    required this.pages,
+    required this.cols,
+    required this.gap,
+  });
+
+  final List<List<List<_PackedTile>>> pages;
+  final int cols;
+  final double gap;
+
+  @override
+  State<_DashboardLayout> createState() => _DashboardLayoutState();
+}
+
+class _DashboardLayoutState extends State<_DashboardLayout> {
+  late final PageController _ctrl = PageController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: PageView.builder(
+            controller: _ctrl,
+            itemCount: widget.pages.length,
+            itemBuilder: (context, index) => _TilesPage(
+              rows: widget.pages[index],
+              cols: widget.cols,
+              gap: widget.gap,
+            ),
+          ),
+        ),
+        if (widget.pages.length > 1) ...[
+          const SizedBox(height: 6),
+          _PageDots(controller: _ctrl, count: widget.pages.length),
+          const SizedBox(height: 2),
+        ],
+      ],
+    );
+  }
+}
+
+class _PageDots extends StatefulWidget {
+  const _PageDots({required this.controller, required this.count});
+
+  final PageController controller;
+  final int count;
+
+  @override
+  State<_PageDots> createState() => _PageDotsState();
+}
+
+class _PageDotsState extends State<_PageDots> {
+  double _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onPage);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onPage);
+    super.dispose();
+  }
+
+  void _onPage() {
+    if (mounted) {
+      setState(() => _page = widget.controller.page ?? 0);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (int i = 0; i < widget.count; i++) ...[
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutCubic,
+            width: (_page.round() == i) ? 20 : 7,
+            height: 7,
+            decoration: BoxDecoration(
+              color: (_page.round() == i)
+                  ? cs.primary
+                  : cs.onSurfaceVariant.withValues(alpha: 0.25),
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          if (i < widget.count - 1) const SizedBox(width: 5),
+        ],
+      ],
+    );
+  }
+}
+
 class _TilesPage extends StatelessWidget {
   const _TilesPage({required this.rows, required this.cols, required this.gap});
 
@@ -496,6 +694,7 @@ class _TilesPage extends StatelessWidget {
         for (int r = 0; r < rows.length; r++) ...[
           Expanded(
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (int i = 0; i < rows[r].length; i++) ...[
                   Expanded(flex: rows[r][i].span, child: rows[r][i].child),
@@ -514,7 +713,7 @@ class _TilesPage extends StatelessWidget {
 class _CardShell extends StatelessWidget {
   const _CardShell({
     required this.child,
-    this.padding = const EdgeInsets.all(14),
+    this.padding = const EdgeInsets.all(10),
   });
   final Widget child;
   final EdgeInsets padding;
@@ -583,20 +782,20 @@ class _GaugeTile extends StatelessWidget {
     }
 
     return _CardShell(
-      padding: carStyle ? const EdgeInsets.all(10) : const EdgeInsets.all(14),
+      padding: carStyle ? const EdgeInsets.all(8) : const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: cs.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, color: cs.primary, size: 20),
+                child: Icon(icon, color: cs.primary, size: 16),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -1121,21 +1320,21 @@ class _PercentFillTile extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
                       color: cs.primary.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(icon, color: cs.primary, size: 20),
+                    child: Icon(icon, color: cs.primary, size: 16),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: tt.labelLarge?.copyWith(
+                      style: tt.labelMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: cs.onSurfaceVariant,
                       ),
@@ -1244,21 +1443,21 @@ class _TemperatureTile extends StatelessWidget {
               Row(
                 children: [
                   Container(
-                    width: 36,
-                    height: 36,
+                    width: 28,
+                    height: 28,
                     decoration: BoxDecoration(
                       color: a.withValues(alpha: 0.14),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Icon(icon, color: a, size: 20),
+                    child: Icon(icon, color: a, size: 16),
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: tt.labelLarge?.copyWith(
+                      style: tt.labelMedium?.copyWith(
                         fontWeight: FontWeight.w800,
                         color: cs.onSurfaceVariant,
                       ),
@@ -1304,6 +1503,8 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
     required this.used,
     required this.idleUsed,
     required this.saved,
+    required this.currentStatus,
+    required this.fuelSource,
   });
 
   final OtherTileData instant;
@@ -1311,11 +1512,26 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
   final FuelTileData used;
   final FuelTileData idleUsed;
   final FuelTileData saved;
+  final TripStatus currentStatus;
+  final FuelConsumptionSource fuelSource;
 
   String _cleanValue(InfoTileData data) {
     final v = data.formattedValue;
     if (v == '-.-') return '--';
     return v;
+  }
+
+  // Color per status — driving=primary, idle=tertiary, saving=green
+  Color _accentFor(BuildContext context, TripStatus status) {
+    final cs = Theme.of(context).colorScheme;
+    switch (status) {
+      case TripStatus.driving:
+        return cs.primary;
+      case TripStatus.idle:
+        return cs.tertiary;
+      case TripStatus.savingFuel:
+        return Colors.green;
+    }
   }
 
   Widget _consumptionBlock(
@@ -1363,31 +1579,49 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
     );
   }
 
-  Widget _stat(BuildContext context, {required InfoTileData data}) {
+  Widget _stat(BuildContext context, {required FuelTileData data}) {
     final cs = Theme.of(context).colorScheme;
     final tt = Theme.of(context).textTheme;
+
+    final isActive = data.tripStatus == currentStatus;
+    final accent = _accentFor(context, data.tripStatus);
 
     final valueText = _cleanValue(data);
     final full = data.unit.isEmpty ? valueText : '$valueText ${data.unit}';
 
     return Expanded(
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: cs.surfaceContainerHighest,
+          color: isActive
+              ? accent.withValues(alpha: 0.13)
+              : cs.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
+          border: isActive
+              ? Border.all(color: accent.withValues(alpha: 0.75), width: 1.5)
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              data.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: tt.labelMedium?.copyWith(
-                fontWeight: FontWeight.w800,
-                color: cs.onSurfaceVariant,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    data.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: tt.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: isActive ? accent : cs.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+                if (isActive)
+                  Icon(Icons.arrow_upward_rounded, size: 12, color: accent),
+              ],
             ),
             const SizedBox(height: 4),
             FittedBox(
@@ -1397,7 +1631,7 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
                 full,
                 style: tt.titleMedium?.copyWith(
                   fontWeight: FontWeight.w900,
-                  color: cs.onSurface,
+                  color: isActive ? accent : cs.onSurface,
                 ),
               ),
             ),
@@ -1419,19 +1653,19 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: cs.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.local_gas_station,
                   color: cs.primary,
-                  size: 20,
+                  size: 16,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Spalanie',
@@ -1443,6 +1677,24 @@ class _FuelConsumptionSummaryTile extends StatelessWidget {
                   ),
                 ),
               ),
+              if (fuelSource != FuelConsumptionSource.none)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cs.primary.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    fuelSource.label,
+                    style: tt.labelSmall?.copyWith(
+                      color: cs.primary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: 12),
@@ -1565,15 +1817,15 @@ class _TimeSummaryTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: cs.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.timer, color: cs.primary, size: 20),
+                child: Icon(Icons.timer, color: cs.primary, size: 16),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Czas',
@@ -1755,15 +2007,15 @@ class _DualScoreTile extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 36,
-                height: 36,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: cs.primary.withValues(alpha: 0.14),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(Icons.insights, color: cs.primary, size: 20),
+                child: Icon(Icons.insights, color: cs.primary, size: 16),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Ocena jazdy',
@@ -1784,9 +2036,9 @@ class _DualScoreTile extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           _row(context, label: 'Eco', icon: Icons.eco, score: ecoScore),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           _row(context, label: 'Smooth', icon: Icons.waves, score: smoothScore),
         ],
       ),
@@ -1840,21 +2092,21 @@ class _TripMetricCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: cs.primary.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(icon, color: cs.primary, size: 20),
+                  child: Icon(icon, color: cs.primary, size: 16),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: tt.labelLarge?.copyWith(
+                    style: tt.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: cs.onSurfaceVariant,
                     ),
@@ -1863,14 +2115,18 @@ class _TripMetricCard extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            Text(
-              unit.isEmpty ? valueText : '$valueText $unit',
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: tt.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w900,
-                color: cs.onSurface,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.center,
+              child: Text(
+                unit.isEmpty ? valueText : '$valueText $unit',
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: tt.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: cs.onSurface,
+                ),
               ),
             ),
           ],
@@ -1923,21 +2179,21 @@ class _FuelSystemStatusTile extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  width: 36,
-                  height: 36,
+                  width: 28,
+                  height: 28,
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(status.icon, color: statusColor, size: 20),
+                  child: Icon(status.icon, color: statusColor, size: 16),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Status paliwa',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: tt.labelLarge?.copyWith(
+                    style: tt.labelMedium?.copyWith(
                       fontWeight: FontWeight.w800,
                       color: cs.onSurfaceVariant,
                     ),

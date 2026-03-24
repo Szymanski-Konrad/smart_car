@@ -50,7 +50,7 @@ Future<void> main() async {
 }
 
 class _App extends StatelessWidget {
-  const _App({super.key, required this.appKey});
+  const _App({required this.appKey});
 
   final GlobalKey appKey;
 

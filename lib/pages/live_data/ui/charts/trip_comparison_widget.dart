@@ -152,7 +152,7 @@ class TripComparisonWidget extends StatelessWidget {
           horizontalInterval: maxFuel / 4,
           drawVerticalLine: false,
           getDrawingHorizontalLine: (value) =>
-              FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1),
+              FlLine(color: Colors.grey.withValues(alpha: 0.2), strokeWidth: 1),
         ),
         barGroups: List.generate(allTrips.length, (index) {
           final trip = allTrips[index];
@@ -204,7 +204,7 @@ class TripComparisonWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: (isBetter ? Colors.green : Colors.red).withOpacity(0.1),
+        color: (isBetter ? Colors.green : Colors.red).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -344,7 +344,7 @@ class FuelTrendChart extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: (isTrendPositive ? Colors.green : Colors.red)
-                        .withOpacity(0.2),
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -383,7 +383,7 @@ class FuelTrendChart extends StatelessWidget {
                     drawVerticalLine: false,
                     horizontalInterval: (maxFuel - minFuel) / 4,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       strokeWidth: 1,
                     ),
                   ),
@@ -456,8 +456,8 @@ class FuelTrendChart extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            Colors.blue.withOpacity(0.2),
-                            Colors.blue.withOpacity(0.05),
+                            Colors.blue.withValues(alpha: 0.2),
+                            Colors.blue.withValues(alpha: 0.05),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

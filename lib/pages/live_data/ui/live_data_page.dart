@@ -26,7 +26,7 @@ class LiveDataPage extends StatelessWidget
     return PopScope(
       canPop: true,
 
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         if (!didPop) return;
         if (isLocalMode || GlobalBlocs.liveData.state.isConnnectingError) {
           GlobalBlocs.liveData.closeConnection();

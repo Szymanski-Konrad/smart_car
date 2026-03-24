@@ -1,6 +1,22 @@
 // ignore_for_file: constant_identifier_names
 
 import 'package:smart_car/models/commands/absolute_barometric_pressure_command.dart';
+import 'package:smart_car/models/commands/absolute_evap_vapor_pressure_command.dart';
+import 'package:smart_car/models/commands/auxiliary_io_supported_command.dart';
+import 'package:smart_car/models/commands/emission_requirements_command.dart';
+import 'package:smart_car/models/commands/engine_coolant_temp_extended_command.dart';
+import 'package:smart_car/models/commands/evap_vapor_pressure_v2_command.dart';
+import 'package:smart_car/models/commands/intake_air_temp_extended_command.dart';
+import 'package:smart_car/models/commands/maf_sensor_extended_command.dart';
+import 'package:smart_car/models/commands/max_maf_value_command.dart';
+import 'package:smart_car/models/commands/max_values_command.dart';
+import 'package:smart_car/models/commands/monitor_status_drive_cycle_command.dart';
+import 'package:smart_car/models/commands/oxygen_sensors_present_command.dart';
+import 'package:smart_car/models/commands/oxygen_sensors_present_four_banks_command.dart';
+import 'package:smart_car/models/commands/secondary_o2_trim_long_b1b3_command.dart';
+import 'package:smart_car/models/commands/secondary_o2_trim_long_b2b4_command.dart';
+import 'package:smart_car/models/commands/secondary_o2_trim_short_b1b3_command.dart';
+import 'package:smart_car/models/commands/secondary_o2_trim_short_b2b4_command.dart';
 import 'package:smart_car/models/commands/absolute_load_value_command.dart';
 import 'package:smart_car/models/commands/absolute_throttle_position_command.dart';
 import 'package:smart_car/models/commands/accelerator_pedal_position_command.dart';
@@ -61,7 +77,7 @@ import 'package:smart_car/pages/live_data/model/throttle_position_command.dart';
 import 'package:smart_car/pages/live_data/model/timing_advance_command.dart';
 
 abstract class Pids {
-  // Unsupported pids
+  // Previously unsupported PIDs – now implemented
   static const String oxygenSensorsPresents2B = '13';
   static const String oxygenSensorsPresents4B = '1D';
   static const String monitorStatusDriveCycle = '41';
@@ -76,7 +92,7 @@ abstract class Pids {
   static const String emissionRequirements = '5F';
   static const String auxiliarySupported = '65';
   static const String mafSensor = '66';
-  static const String engineCoolantTemp = '67';
+  static const String engineCoolantTempExtended = '67';
   static const String intakeAirTempSensor = '68';
 
   // Supported pids
@@ -300,6 +316,22 @@ enum PID {
   turbochargerRpm,
   transmissionActualGear,
   cylinderFuelRate,
+  oxygenSensorsPresent2B,
+  oxygenSensorsPresent4B,
+  monitorStatusDriveCycle,
+  maxValues,
+  maxMafValue,
+  absoluteEvapVaporPressure,
+  evapVaporPressureV2,
+  secondaryO2TrimShortB1B3,
+  secondaryO2TrimLongB1B3,
+  secondaryO2TrimShortB2B4,
+  secondaryO2TrimLongB2B4,
+  emissionRequirements,
+  auxiliaryIOSupported,
+  mafSensorExtended,
+  engineCoolantTempExtended,
+  intakeAirTempExtended,
   unknown,
 }
 
@@ -308,6 +340,38 @@ extension PIDExtension on PID {
     switch (value) {
       case Pids.cylinderFuelRate:
         return PID.cylinderFuelRate;
+      case Pids.oxygenSensorsPresents2B:
+        return PID.oxygenSensorsPresent2B;
+      case Pids.oxygenSensorsPresents4B:
+        return PID.oxygenSensorsPresent4B;
+      case Pids.monitorStatusDriveCycle:
+        return PID.monitorStatusDriveCycle;
+      case Pids.maxValuesP1:
+        return PID.maxValues;
+      case Pids.maxMAFValue:
+        return PID.maxMafValue;
+      case Pids.absoluteEvapSystemVaporPressure:
+        return PID.absoluteEvapVaporPressure;
+      case Pids.evapSystemVaporPressureV2:
+        return PID.evapVaporPressureV2;
+      case Pids.secondaryOxygenSensor1:
+        return PID.secondaryO2TrimShortB1B3;
+      case Pids.secondaryOxygenSensor2:
+        return PID.secondaryO2TrimLongB1B3;
+      case Pids.secondaryOxygenSensor3:
+        return PID.secondaryO2TrimShortB2B4;
+      case Pids.secondaryOxygenSensor4:
+        return PID.secondaryO2TrimLongB2B4;
+      case Pids.emissionRequirements:
+        return PID.emissionRequirements;
+      case Pids.auxiliarySupported:
+        return PID.auxiliaryIOSupported;
+      case Pids.mafSensor:
+        return PID.mafSensorExtended;
+      case Pids.engineCoolantTempExtended:
+        return PID.engineCoolantTempExtended;
+      case Pids.intakeAirTempSensor:
+        return PID.intakeAirTempExtended;
       case Pids.commandedSecondaryAirStatus:
         return PID.commandedSecondaryAirStatus;
       case Pids.auxiliaryInputStatus:
@@ -667,6 +731,38 @@ extension PIDExtension on PID {
         return TransmissionActualGearCommand();
       case PID.cylinderFuelRate:
         return CylinderFuelRateCommand();
+      case PID.oxygenSensorsPresent2B:
+        return OxygenSensorsPresentCommand();
+      case PID.oxygenSensorsPresent4B:
+        return OxygenSensorsPresentFourBanksCommand();
+      case PID.monitorStatusDriveCycle:
+        return MonitorStatusDriveCycleCommand();
+      case PID.maxValues:
+        return MaxValuesCommand();
+      case PID.maxMafValue:
+        return MaxMafValueCommand();
+      case PID.absoluteEvapVaporPressure:
+        return AbsoluteEvapVaporPressureCommand();
+      case PID.evapVaporPressureV2:
+        return EvapVaporPressureV2Command();
+      case PID.secondaryO2TrimShortB1B3:
+        return SecondaryO2TrimShortB1B3Command();
+      case PID.secondaryO2TrimLongB1B3:
+        return SecondaryO2TrimLongB1B3Command();
+      case PID.secondaryO2TrimShortB2B4:
+        return SecondaryO2TrimShortB2B4Command();
+      case PID.secondaryO2TrimLongB2B4:
+        return SecondaryO2TrimLongB2B4Command();
+      case PID.emissionRequirements:
+        return EmissionRequirementsCommand();
+      case PID.auxiliaryIOSupported:
+        return AuxiliaryIOSupportedCommand();
+      case PID.mafSensorExtended:
+        return MafSensorExtendedCommand();
+      case PID.engineCoolantTempExtended:
+        return EngineCoolantTempExtendedCommand();
+      case PID.intakeAirTempExtended:
+        return IntakeAirTempExtendedCommand();
     }
   }
 }

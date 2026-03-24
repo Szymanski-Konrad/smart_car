@@ -328,7 +328,9 @@ class DataLogger {
 
   /// Udostępnij plik sesji
   Future<void> shareSession(String path) async {
-    await Share.shareXFiles([XFile(path)], text: 'OBD Data Log');
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(path)], text: 'OBD Data Log'),
+    );
   }
 
   /// Usuń sesję
@@ -390,8 +392,7 @@ class LogSessionInfo {
   final DateTime? endTime;
   final int readingsCount;
 
-  Duration? get duration =>
-      endTime?.difference(startTime);
+  Duration? get duration => endTime?.difference(startTime);
 
   String get durationFormatted {
     final d = duration;

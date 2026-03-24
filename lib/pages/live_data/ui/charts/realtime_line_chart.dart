@@ -84,7 +84,7 @@ class RealtimeLineChart extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.2),
+                    color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -112,7 +112,7 @@ class RealtimeLineChart extends StatelessWidget {
                     drawVerticalLine: false,
                     horizontalInterval: (effectiveMaxY - effectiveMinY) / 4,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withOpacity(0.2),
+                      color: Colors.grey.withValues(alpha: 0.2),
                       strokeWidth: 1,
                     ),
                   ),
@@ -190,8 +190,8 @@ class RealtimeLineChart extends StatelessWidget {
                         show: true,
                         gradient: LinearGradient(
                           colors: [
-                            color.withOpacity(0.3),
-                            color.withOpacity(0.05),
+                            color.withValues(alpha: 0.3),
+                            color.withValues(alpha: 0.05),
                           ],
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,

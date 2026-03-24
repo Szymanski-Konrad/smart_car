@@ -393,13 +393,17 @@ class TripStorage {
 
   /// Udostępnij przejazd (JSON)
   Future<void> shareTrip(String path, {String? message}) async {
-    await Share.shareXFiles([XFile(path)], text: message ?? 'Dane przejazdu');
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(path)], text: message ?? 'Dane przejazdu'),
+    );
   }
 
   /// Udostępnij przejazd jako CSV
   Future<void> shareTripAsCsv(String path) async {
     final csvPath = await exportToCsv(path);
-    await Share.shareXFiles([XFile(csvPath)], text: 'Dane przejazdu (CSV)');
+    await SharePlus.instance.share(
+      ShareParams(files: [XFile(csvPath)], text: 'Dane przejazdu (CSV)'),
+    );
   }
 
   /// Usuń przejazd

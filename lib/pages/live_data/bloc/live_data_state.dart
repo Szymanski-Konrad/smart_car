@@ -24,6 +24,24 @@ extension TripStatusExtension on TripStatus {
       [TripStatus.driving, TripStatus.savingFuel].contains(this);
 }
 
+/// Which OBD source is currently used for fuel consumption calculation.
+enum FuelConsumptionSource { maf, map, fuelRate, none }
+
+extension FuelConsumptionSourceExtension on FuelConsumptionSource {
+  String get label {
+    switch (this) {
+      case FuelConsumptionSource.maf:
+        return 'MAF';
+      case FuelConsumptionSource.map:
+        return 'MAP';
+      case FuelConsumptionSource.fuelRate:
+        return 'FuelRate';
+      case FuelConsumptionSource.none:
+        return '';
+    }
+  }
+}
+
 class ReceivedData {
   ReceivedData({
     required this.data,
@@ -80,6 +98,8 @@ abstract class LiveDataState with _$LiveDataState {
     @Default(FuelSystemStatus.motorOff) FuelSystemStatus fuelSystemStatus,
     @Default(0) int averageResponseTime,
     @Default(0) int totalResponseTime,
+    @Default(FuelConsumptionSource.none)
+    FuelConsumptionSource fuelConsumptionSource,
 
     // Sensors
     @Default(0) double xAccData,

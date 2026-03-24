@@ -28,6 +28,7 @@ import 'package:smart_car/pages/live_data/model/commands/check_commands/vin_comm
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
+import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
 import 'package:smart_car/pages/live_data/model/maf_command.dart';
 import 'package:smart_car/pages/live_data/model/map_command.dart';
 import 'package:smart_car/pages/live_data/model/rpm_command.dart';
@@ -70,6 +71,19 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   Queue<String> pidsQueue = Queue<String>();
   DateTime lastReciveCommandTime = DateTime.now();
   DateTime lastTestCommandTime = DateTime.now();
+
+  // Alert debounce timestamps — one alert per category per 2 minutes max
+  static const _alertCooldown = Duration(minutes: 2);
+  DateTime? _lastVoltageAlertTime;
+  DateTime? _lastCoolantAlertTime;
+  DateTime? _lastHighRpmAlertTime;
+
+  // Continuous high-RPM counter (seconds above upperRPMLimit)
+  int _highRpmSeconds = 0;
+  static const _highRpmAlertThresholdSeconds = 60;
+
+  // PID polling priority — injects extra speed/RPM poll every N full cycles
+  int _pollCycleCounter = 0;
 
   StreamSubscription<LocationData>? locationSub;
   StreamSubscription<UserAccelerometerEvent>? _accSubscription;
@@ -121,6 +135,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
   // Reset variables
   void reset() {
     _commandIndex = 0;
+    _pollCycleCounter = 0;
+    _highRpmSeconds = 0;
+    _lastVoltageAlertTime = null;
+    _lastCoolantAlertTime = null;
+    _lastHighRpmAlertTime = null;
     testCommands.clear();
     commands.clear();
     specialCommands.clear();
@@ -496,6 +515,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>();
       final tripStatus = fuelStatus?.tripStatus(speed);
 
+      // --- Driving alerts ---
+      if (state.isRunning && !state.isTripClosing && !state.isLocalMode) {
+        _checkDrivingAlerts(now, rpm.toDouble());
+      }
+
       // Log periodic state snapshot (sensors, calculated values)
       final snapshotData = {
         'speed': speed,
@@ -527,6 +551,44 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         ),
       );
     });
+  }
+
+  /// Check driving-condition alerts with per-category cooldown debounce.
+  void _checkDrivingAlerts(DateTime now, double rpm) {
+    bool _canAlert(DateTime? last) =>
+        last == null || now.difference(last) >= _alertCooldown;
+
+    // 1. Low alternator voltage
+    final voltage = commands
+        .safeFirst<BatteryVoltageCommand>()
+        ?.result
+        .toDouble();
+    if (voltage != null &&
+        voltage > 0 &&
+        voltage < Constants.minModuleVoltage &&
+        _canAlert(_lastVoltageAlertTime)) {
+      _lastVoltageAlertTime = now;
+      AlertCenter.show(Alerts.lowVoltage(voltage));
+    }
+
+    // 2. Coolant overheating (>110 °C)
+    final coolant = commands.engineCoolantTemp;
+    if (coolant != null && coolant > 110 && _canAlert(_lastCoolantAlertTime)) {
+      _lastCoolantAlertTime = now;
+      AlertCenter.show(Alerts.coolantOverheat(coolant));
+    }
+
+    // 3. Prolonged high RPM driving
+    if (rpm > Constants.upperRPMLimit) {
+      _highRpmSeconds++;
+    } else {
+      _highRpmSeconds = 0;
+    }
+    if (_highRpmSeconds >= _highRpmAlertThresholdSeconds &&
+        _canAlert(_lastHighRpmAlertTime)) {
+      _lastHighRpmAlertTime = now;
+      AlertCenter.show(Alerts.highRpmTooLong(_highRpmSeconds));
+    }
   }
 
   void _startScoreTimer() {
@@ -609,11 +671,27 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     } else if (specialCommands.isNotEmpty) {
       _command = specialCommands.removeFirst();
     } else {
-      while (_command == null) {
-        if (commands.isNotEmpty) {
-          _commandIndex++;
-          _commandIndex %= commands.length;
-          _command = commands[_commandIndex].sendCommand();
+      // On every other cycle inject a priority speed/RPM poll so they are
+      // queried ~2× as often as the rest of the PID list.
+      _pollCycleCounter++;
+      if (_pollCycleCounter % 2 == 1) {
+        // Alternate between speed and RPM on odd cycles.
+        final isSpeedCycle = (_pollCycleCounter ~/ 2) % 2 == 0;
+        final priorityCmd = isSpeedCycle
+            ? commands.safeFirst<SpeedCommand>()
+            : commands.safeFirst<RpmCommand>();
+        if (priorityCmd != null) {
+          _command = priorityCmd.command; // bypass waitTimes
+        }
+      }
+      // Fall through to normal round-robin if no priority command produced.
+      if (_command == null) {
+        while (_command == null) {
+          if (commands.isNotEmpty) {
+            _commandIndex++;
+            _commandIndex %= commands.length;
+            _command = commands[_commandIndex].sendCommand();
+          }
         }
       }
     }
@@ -876,6 +954,7 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
                 emit(
                   state.copyWith(
+                    fuelConsumptionSource: FuelConsumptionSource.maf,
                     tripRecord: tripRecord
                         .updateUsedFuel(
                           command.fuelUsed(),
@@ -920,9 +999,40 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
                   emit(
                     state.copyWith(
+                      fuelConsumptionSource: FuelConsumptionSource.map,
                       tripRecord: tripRecord
                           .updateUsedFuel(
                             command.fuelUsed(),
+                            commands.speed,
+                            commands.fuelSystemStatus,
+                            state.fuelPrice,
+                          )
+                          .copyWith(instFuelConsumption: instFuelConsumption),
+                    ),
+                  );
+                }
+              }
+              break;
+            case PID.engineFuelRate:
+              if (command is EngineFuelRateCommand) {
+                // Tertiary fuel source: use when neither MAF nor MAP are active
+                final hasMafActive = commands.any((c) => c is MafCommand);
+                final hasMapActive = commands.any((c) => c is MapCommand);
+                if (!hasMafActive && !hasMapActive) {
+                  final rateL_h = command.result.toDouble();
+                  final deltaSeconds = command.differenceMiliseconds / 1000.0;
+                  final fuelUsed = rateL_h * deltaSeconds / 3600.0;
+                  final speed = tripRecord.currentSpeed;
+                  // Instantaneous consumption in L/100km; fallback to L/h when idle
+                  final instFuelConsumption = speed > 0
+                      ? (rateL_h / speed) * 100.0
+                      : rateL_h;
+                  emit(
+                    state.copyWith(
+                      fuelConsumptionSource: FuelConsumptionSource.fuelRate,
+                      tripRecord: tripRecord
+                          .updateUsedFuel(
+                            fuelUsed,
                             commands.speed,
                             commands.fuelSystemStatus,
                             state.fuelPrice,

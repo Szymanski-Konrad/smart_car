@@ -9,15 +9,15 @@ class PageNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
         final key = Navigation.instance.key;
-        final canPop = key.currentState?.canPop();
-        if (canPop != null && canPop) {
+        final canPopNav = key.currentState?.canPop();
+        if (canPopNav != null && canPopNav) {
           key.currentState?.maybePop();
-          return false;
         }
-        return true;
       },
       child: Navigator(
         key: Navigation.instance.key,

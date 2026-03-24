@@ -51,8 +51,8 @@ class OverpassApi {
       final paragraphs = document.findAllElements("p");
 
       for (var element in paragraphs) {
-        if (element.text.trim() != '') {
-          error += element.text.trim();
+        if (element.value != null && element.value!.trim() != '') {
+          error += element.value!.trim();
         }
       }
 

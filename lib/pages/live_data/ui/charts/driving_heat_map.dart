@@ -216,7 +216,7 @@ class _StatBox extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -276,7 +276,10 @@ class _HeatMapPainter extends CustomPainter {
     );
 
     // Tło
-    canvas.drawRect(chartRect, Paint()..color = Colors.grey.withOpacity(0.1));
+    canvas.drawRect(
+      chartRect,
+      Paint()..color = Colors.grey.withValues(alpha: 0.1),
+    );
 
     // Siatka
     _drawGrid(canvas, chartRect);
@@ -295,7 +298,7 @@ class _HeatMapPainter extends CustomPainter {
 
   void _drawGrid(Canvas canvas, Rect rect) {
     final paint = Paint()
-      ..color = Colors.grey.withOpacity(0.3)
+      ..color = Colors.grey.withValues(alpha: 0.3)
       ..strokeWidth = 0.5;
 
     // Linie poziome
@@ -331,7 +334,7 @@ class _HeatMapPainter extends CustomPainter {
     canvas.drawRRect(
       sweetSpotRect,
       Paint()
-        ..color = Colors.green.withOpacity(0.2)
+        ..color = Colors.green.withValues(alpha: 0.2)
         ..style = PaintingStyle.fill,
     );
 
@@ -381,7 +384,7 @@ class _HeatMapPainter extends CustomPainter {
         Offset(x, y),
         4,
         Paint()
-          ..color = color.withOpacity(0.7)
+          ..color = color.withValues(alpha: 0.7)
           ..style = PaintingStyle.fill,
       );
     }
