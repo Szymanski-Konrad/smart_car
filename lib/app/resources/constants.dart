@@ -9,7 +9,7 @@ abstract class Constants {
   static const rapidAcceleration = 7; // acceleration in km/h
   static const minRapidSpeedTimeThreshold = 30; // seconds
   static const minAccDeccTimeThreshold = 10; // seconds
-  static const minModuleVoltage = 13.3;
+  static const minModuleVoltage = 10.0;
   static const idleSpeedLimit = 0;
   static const defaultLocalFile = 'work';
   static const largeScreenWidth = 400.0;
@@ -39,6 +39,6 @@ abstract class Constants {
 }
 
 abstract class AppDurations {
-  static const maxNoDataReciveSeconds = 1;
+  static const maxNoDataReciveSeconds = 15;
   static const closingTripDuration = Duration(seconds: 5);
 }

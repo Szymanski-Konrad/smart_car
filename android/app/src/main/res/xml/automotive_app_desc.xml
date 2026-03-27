@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Automotive descriptor used by Android Auto / DHU for discovery.
+  Only declare capabilities the app actually implements.
+  navigation/map/media require additional permissions and certification.
+-->
+<automotiveApp>
+    <uses name="template" />
+</automotiveApp>

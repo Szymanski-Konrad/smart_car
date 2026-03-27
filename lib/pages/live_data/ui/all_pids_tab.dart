@@ -14,6 +14,7 @@ class AllPidsTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LiveDataCubit, LiveDataState>(
       bloc: GlobalBlocs.liveData,
+      buildWhen: (p, n) => p.supportedPids.length != n.supportedPids.length,
       builder: (context, state) {
         final cubit = GlobalBlocs.liveData;
         final pids = List<String>.from(state.supportedPids)..sort();

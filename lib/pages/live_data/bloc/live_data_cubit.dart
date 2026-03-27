@@ -26,6 +26,7 @@ import 'package:smart_car/pages/live_data/model/battery_voltage_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/check_pids_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/check_commands/vin_command.dart';
 import 'package:smart_car/pages/live_data/model/commands/pids_checker.dart';
+import 'package:smart_car/pages/live_data/model/engine_load_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_level_command.dart';
 import 'package:smart_car/pages/live_data/model/fuel_system_status_command.dart';
 import 'package:smart_car/models/commands/engine_fuel_rate_command.dart';
@@ -35,6 +36,7 @@ import 'package:smart_car/pages/live_data/model/rpm_command.dart';
 import 'package:smart_car/pages/live_data/model/speed_command.dart';
 import 'package:smart_car/pages/live_data/model/test_data/test_command.dart';
 import 'package:smart_car/pages/live_data/model/trip_record.dart';
+import 'package:smart_car/services/android_auto_service.dart';
 import 'package:smart_car/services/data_logger.dart';
 import 'package:smart_car/services/firestore_handler.dart';
 import 'package:smart_car/services/trip_storage.dart';
@@ -84,6 +86,14 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   // PID polling priority — injects extra speed/RPM poll every N full cycles
   int _pollCycleCounter = 0;
+
+  // Buffered sensor values — updated at sensor frequency, flushed to state once/sec
+  double _sXAcc = 0, _sYAcc = 0, _sZAcc = 0, _sGForce = 0;
+  double _sXGyro = 0, _sYGyro = 0, _sZGyro = 0;
+  double _sBarometer = 0;
+
+  // Idle OBD throttle: incremented each second speed == 0, reset when moving
+  int _idleSeconds = 0;
 
   StreamSubscription<LocationData>? locationSub;
   StreamSubscription<UserAccelerometerEvent>? _accSubscription;
@@ -169,72 +179,97 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   /// Called when occured some connection error
   void _onConnectionError() {
+    // Guard against repeated calls (e.g. burst of NOT_CONNECTED send errors)
+    if (state.isConnnectingError || state.isTripClosing) return;
     emit(state.copyWith(isConnnectingError: true));
+    if (state.isRunning && !state.isLocalMode) {
+      try {
+        AlertCenter.show(Alerts.tripEndedDisconnected());
+      } catch (_) {}
+      motorOff();
+    }
   }
 
+  // Uses buffered sensor values — only emits on threshold crossing, not on every reading
   void checkGforce() {
     if (!state.isHighGforce) {
-      if (state.gForce > 1.3) {
+      if (_sGForce > 1.3) {
         emit(
           state.copyWith(
             isHighGforce: true,
+            gForce: _sGForce,
+            xAccData: _sXAcc,
+            yAccData: _sYAcc,
+            zAccData: _sZAcc,
             tripRecord: state.tripRecord.updateHighGForce(),
           ),
         );
       }
-    } else if (state.gForce < 1.1) {
-      emit(state.copyWith(isHighGforce: false));
+    } else if (_sGForce < 1.1) {
+      emit(
+        state.copyWith(
+          isHighGforce: false,
+          gForce: _sGForce,
+          xAccData: _sXAcc,
+          yAccData: _sYAcc,
+          zAccData: _sZAcc,
+        ),
+      );
     }
   }
 
+  // Uses buffered sensor values — only emits on threshold crossing, not on every reading
   void checkTurning() {
-    final rotation = state.yGyroData;
     if (!state.isTurning) {
-      if (rotation.abs() > 0.25) {
+      if (_sYGyro.abs() > 0.25) {
         emit(
           state.copyWith(
             isTurning: true,
-            tripRecord: state.tripRecord.updateTurning(rotation > 0),
+            xGyroData: _sXGyro,
+            yGyroData: _sYGyro,
+            zGyroData: _sZGyro,
+            tripRecord: state.tripRecord.updateTurning(_sYGyro > 0),
           ),
         );
       }
-    } else if (rotation.abs() < 0.1) {
-      emit(state.copyWith(isTurning: false));
+    } else if (_sYGyro.abs() < 0.1) {
+      emit(
+        state.copyWith(
+          isTurning: false,
+          xGyroData: _sXGyro,
+          yGyroData: _sYGyro,
+          zGyroData: _sZGyro,
+        ),
+      );
     }
   }
 
   Future<void> _listenForSensors() async {
     final gyroStream = gyroscopeEventStream(
-      samplingPeriod: SensorInterval.uiInterval,
+      samplingPeriod: SensorInterval.normalInterval,
     );
     final accStream = userAccelerometerEventStream(
-      samplingPeriod: SensorInterval.uiInterval,
+      samplingPeriod: SensorInterval.normalInterval,
     );
 
     try {
       _accSubscription = accStream.listen(
         (event) {
-          final xData = SensorsHelper.filterValue(state.xAccData, event.x);
-          final yData = SensorsHelper.filterValue(state.yAccData, event.y);
-          final zData = SensorsHelper.filterValue(state.zAccData, event.z);
-          final acceleration = SensorsHelper.accelerationSum(
-            xData,
-            yData,
-            zData,
+          _sXAcc = SensorsHelper.filterValue(_sXAcc, event.x);
+          _sYAcc = SensorsHelper.filterValue(_sYAcc, event.y);
+          _sZAcc = SensorsHelper.filterValue(_sZAcc, event.z);
+          _sGForce = SensorsHelper.gForceCalc(
+            SensorsHelper.accelerationSum(_sXAcc, _sYAcc, _sZAcc),
           );
-          final gForce = SensorsHelper.gForceCalc(acceleration);
-          emit(
-            state.copyWith(
-              xAccData: xData,
-              yAccData: yData,
-              zAccData: zData,
-              gForce: gForce,
-            ),
-          );
+          // Only emit on g-force threshold crossing — NOT on every reading
           checkGforce();
         },
         onError: (Object error, StackTrace stackTrace) async {
           _insertError('User accelerometer unavailable: $error');
+          _sXAcc = 0;
+          _sYAcc = 0;
+          _sZAcc = 0;
+          _sGForce = 0;
           emit(
             state.copyWith(
               xAccData: 0,
@@ -276,17 +311,17 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     try {
       _gyroSubsription = gyroStream.listen(
         (event) {
-          emit(
-            state.copyWith(
-              xGyroData: event.x,
-              yGyroData: event.y,
-              zGyroData: event.z,
-            ),
-          );
+          _sXGyro = event.x;
+          _sYGyro = event.y;
+          _sZGyro = event.z;
+          // Only emit on turning threshold crossing
           checkTurning();
         },
         onError: (Object error, StackTrace stackTrace) async {
           _insertError('Gyroscope unavailable: $error');
+          _sXGyro = 0;
+          _sYGyro = 0;
+          _sZGyro = 0;
           emit(
             state.copyWith(
               xGyroData: 0,
@@ -329,10 +364,11 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     try {
       _barometerSubscription =
           barometerEventStream(
-            samplingPeriod: SensorInterval.uiInterval,
+            samplingPeriod: SensorInterval.normalInterval,
           ).listen(
+            // Store to buffer only — flushed to state in secondTimer
             (event) {
-              emit(state.copyWith(barometer: event.pressure));
+              _sBarometer = event.pressure;
             },
             onError: (Object error, StackTrace stackTrace) async {
               _insertError('Barometer unavailable: $error');
@@ -453,7 +489,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
     final gpsEnabled = await LocationHelper.checkLocationService();
 
     if (gpsEnabled) {
-      Location.instance.changeSettings(accuracy: LocationAccuracy.navigation);
+      Location.instance.changeSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 20,
+      );
       locationSub = Location.instance.onLocationChanged.listen(
         _onLocationChanged,
       );
@@ -503,17 +542,33 @@ class LiveDataCubit extends Cubit<LiveDataState> {
       final isMotorOff =
           commands.safeFirst<FuelSystemStatusCommand>()?.status ==
           FuelSystemStatus.motorOff;
-      if ((now.difference(lastReciveCommandTime).inSeconds >=
-                  AppDurations.maxNoDataReciveSeconds ||
-              isMotorOff) &&
-          state.isRunning &&
-          !state.isTripClosing) {
-        motorOff();
+      final noData =
+          now.difference(lastReciveCommandTime).inSeconds >=
+          AppDurations.maxNoDataReciveSeconds;
+      if ((noData || isMotorOff) && state.isRunning && !state.isTripClosing) {
+        if (!state.isLocalMode) {
+          try {
+            if (isMotorOff) {
+              AlertCenter.show(Alerts.tripEndedEngineOff());
+            } else {
+              AlertCenter.show(Alerts.tripEndedNoData());
+            }
+          } catch (_) {}
+        }
+        // If no data received, perform immediate disconnect and close UI.
+        motorOff(immediate: noData);
       }
       final speed = commands.safeFirst<SpeedCommand>()?.result ?? 0;
       final rpm = commands.safeFirst<RpmCommand>()?.result ?? 0;
       final fuelStatus = commands.safeFirst<FuelSystemStatusCommand>();
       final tripStatus = fuelStatus?.tripStatus(speed);
+
+      // Idle OBD throttle tracking
+      if (speed > 0) {
+        _idleSeconds = 0;
+      } else {
+        _idleSeconds++;
+      }
 
       // --- Driving alerts ---
       if (state.isRunning && !state.isTripClosing && !state.isLocalMode) {
@@ -548,7 +603,36 @@ class LiveDataCubit extends Cubit<LiveDataState> {
           averageResponseTime: averageResponseTime,
           totalResponseTime: totalResponseTime,
           tripRecord: state.tripRecord.updateTripStatus(speed, rpm, tripStatus),
+          // Flush buffered sensor values once per second
+          xAccData: _sXAcc,
+          yAccData: _sYAcc,
+          zAccData: _sZAcc,
+          gForce: _sGForce,
+          xGyroData: _sXGyro,
+          yGyroData: _sYGyro,
+          zGyroData: _sZGyro,
+          barometer: _sBarometer,
         ),
+      );
+
+      // Push live data to Android Auto
+      AndroidAutoService.updateCarData(
+        speed: speed.toInt(),
+        rpm: rpm.toInt(),
+        coolantTemp: commands.engineCoolantTemp?.toInt(),
+        fuelLevel: state.tripRecord.currentFuelLvl >= 0
+            ? state.tripRecord.currentFuelLvl
+            : null,
+        engineLoad: commands.safeFirst<EngineLoadCommand>()?.result.toDouble(),
+        instFuel: state.tripRecord.instFuelConsumption > 0
+            ? state.tripRecord.instFuelConsumption
+            : null,
+        avgFuel: state.tripRecord.avgFuelConsumption > 0
+            ? state.tripRecord.avgFuelConsumption
+            : null,
+        voltage: commands.safeFirst<BatteryVoltageCommand>()?.result.toDouble(),
+        tripDistance: state.tripRecord.distance,
+        isConnected: state.isRunning && !state.isTripClosing,
       );
     });
   }
@@ -665,6 +749,10 @@ class LiveDataCubit extends Cubit<LiveDataState> {
 
   /// Find next command to send
   Future<void> _sendNextCommand() async {
+    // Throttle OBD polling when idling >30 s — reduces BT traffic & CPU wake-ups
+    if (_idleSeconds > 30) {
+      await Future.delayed(const Duration(milliseconds: 300));
+    }
     String? _command;
     if (pidsQueue.isNotEmpty) {
       _command = pidsQueue.removeFirst();
@@ -695,11 +783,22 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         }
       }
     }
-    await BTConnection().sendCommand(_command, onError: _insertError);
+    await BTConnection().sendCommand(
+      _command,
+      onError: (error) {
+        // NOT_CONNECTED means the BT link dropped — trigger proper disconnect flow
+        if (error.contains('NOT_CONNECTED') ||
+            error.contains('not connected')) {
+          _onConnectionError();
+        } else {
+          _insertError(error);
+        }
+      },
+    );
   }
 
   /// Process closing trip after detect motor off
-  Future<void> motorOff() async {
+  Future<void> motorOff({bool immediate = false}) async {
     if (state.isLocalMode) return;
     _everySecondTimer?.cancel();
 
@@ -725,15 +824,27 @@ class LiveDataCubit extends Cubit<LiveDataState> {
         fuelUsed: state.tripRecord.totalFuelUsed,
       );
     }
+
     emit(state.copyWith(isTripClosing: true, isTripEnded: true));
-    BTConnection().close();
+
+    // Ensure BT is closed and data subscriptions cancelled
+    await BTConnection().close();
+
     if (state.tripRecord.totalTripSeconds > 30) {
       await FirestoreHandler.saveTripDataset(state.datasets);
-      // saveCommands();
-      // await generateTripSummary();
     }
 
-    await goBackWithDelay();
+    address = null; // Allow auto-reconnect after trip ends
+
+    if (immediate) {
+      // Immediately go back / close live-data UI
+      if (Navigation.instance.canPop()) Navigation.instance.pop();
+    } else {
+      await goBackWithDelay();
+    }
+
+    // Reset active-trip flags so the home screen shows "Nie połączono"
+    emit(state.copyWith(isTripClosing: false, isRunning: false));
   }
 
   /// Wait x seconds before closing with showing info to user

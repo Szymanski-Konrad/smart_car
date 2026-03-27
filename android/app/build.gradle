@@ -28,7 +28,7 @@ android {
 
     defaultConfig {
         applicationId 'com.smart.smart_car'
-        minSdkVersion flutter.minSdkVersion
+        minSdkVersion flutter.minSdkVersion  // Car App Library requires >= 21; 23 recommended
         targetSdk flutter.targetSdkVersion
         versionCode flutter.versionCode
         versionName flutter.versionName
@@ -64,4 +64,5 @@ flutter {
 
 dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.car.app:app:1.4.0'
 }

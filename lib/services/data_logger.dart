@@ -130,6 +130,7 @@ class DataLogger {
       readings: [],
       metadata: metadata ?? {},
     );
+
     _isLogging = true;
     _readingsSinceLastFlush = 0;
 

@@ -1,4 +1,5 @@
 import 'package:smart_car/app/blocs/global_bloc.dart';
+import 'package:smart_car/app/resources/constants.dart';
 import 'package:smart_car/feautures/alert_center/alert.dart';
 
 abstract class Alerts {
@@ -38,5 +39,24 @@ abstract class Alerts {
         'Silnik pracuje na obrotach powyżej limitu przez ponad '
         '${seconds ~/ 60} min ${seconds % 60} s. '
         'Zmień bieg lub zwolnij.',
+  );
+
+  static Alert tripEndedNoData() => Alert.dismissible(
+    title: 'Jazda zakończona automatycznie',
+    description:
+        'Przez ${AppDurations.maxNoDataReciveSeconds} sekund nie odebrano '
+        'danych z OBD. Sprawdź połączenie Bluetooth.',
+  );
+
+  static Alert tripEndedDisconnected() => Alert.dismissible(
+    title: 'Utrata połączenia Bluetooth',
+    description:
+        'Połączenie z adapterem OBD zostało przerwane. '
+        'Jazda została zakończona automatycznie.',
+  );
+
+  static Alert tripEndedEngineOff() => Alert.dismissible(
+    title: 'Wykryto wyłączenie silnika',
+    description: 'Jazda została zakończona automatycznie.',
   );
 }

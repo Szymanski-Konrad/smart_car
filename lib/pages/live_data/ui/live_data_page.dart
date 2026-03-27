@@ -34,6 +34,14 @@ class LiveDataPage extends StatelessWidget
       },
       child: BlocBuilder<LiveDataCubit, LiveDataState>(
         bloc: GlobalBlocs.liveData,
+        buildWhen: (p, n) =>
+            p.isConnnectingError != n.isConnnectingError ||
+            p.isConnecting != n.isConnecting ||
+            p.isLocalMode != n.isLocalMode ||
+            p.isRunning != n.isRunning ||
+            p.isTripClosing != n.isTripClosing ||
+            p.localTripProgress != n.localTripProgress ||
+            p.supportedPids.length != n.supportedPids.length,
         builder: (context, state) {
           return state.isConnnectingError
               ? Scaffold(

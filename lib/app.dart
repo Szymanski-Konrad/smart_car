@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bluetooth_classic_serial/flutter_bluetooth_classic.dart';
 import 'package:flutter_mailer/flutter_mailer.dart';
@@ -34,6 +35,8 @@ class _AppState extends State<App> {
   );
 
   StreamSubscription<BluetoothState>? _btStateSub;
+  Timer? _autoConnectTimer;
+  bool _autoConnectPending = false;
 
   List<String> files = [];
   List<String> canFiles = [];
@@ -64,13 +67,95 @@ class _AppState extends State<App> {
       setState(() {
         _bluetoothState = event;
       });
+      if (event.isEnabled) {
+        _startAutoConnectLoop();
+      } else {
+        _autoConnectTimer?.cancel();
+      }
     });
+
+    // Start auto-connect after settings are loaded
+    Future.delayed(const Duration(seconds: 2), _startAutoConnectLoop);
+
+    // If app was launched by BluetoothAutoStartReceiver, skip the timer
+    // and connect immediately (also works when app was killed).
+    if (Platform.isAndroid) {
+      _checkAutoConnectIntent();
+    }
   }
 
   @override
   void dispose() {
     _btStateSub?.cancel();
+    _autoConnectTimer?.cancel();
     super.dispose();
+  }
+
+  static const _autoConnectChannel = MethodChannel(
+    'com.smart.smart_car/auto_connect',
+  );
+
+  /// Called once at startup to check if the app was launched by
+  /// [BluetoothAutoStartReceiver]. If so, skip the 2-second delay and
+  /// connect immediately.
+  Future<void> _checkAutoConnectIntent() async {
+    try {
+      final shouldConnect = await _autoConnectChannel.invokeMethod<bool>(
+        'shouldAutoConnect',
+      );
+      if (shouldConnect == true) {
+        // Settings may not be loaded yet — wait briefly then connect
+        await Future.delayed(const Duration(milliseconds: 800));
+        _tryAutoConnect();
+      }
+    } on PlatformException catch (_) {
+      // Not on Android or channel unavailable — ignore
+    }
+  }
+
+  void _startAutoConnectLoop() {
+    _autoConnectTimer?.cancel();
+    _tryAutoConnect();
+    _autoConnectTimer = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => _tryAutoConnect(),
+    );
+  }
+
+  void _tryAutoConnect() {
+    if (_autoConnectPending) return;
+    if (!_bluetoothState.isEnabled) return;
+
+    // Already running a trip — stop loop
+    if (GlobalBlocs.liveData.isAlreadyConnected) {
+      _autoConnectTimer?.cancel();
+      return;
+    }
+
+    final settings = GlobalBlocs.settings.state.settings;
+    final address = settings.deviceAddress;
+    if (address == null) return;
+
+    _autoConnectPending = true;
+    _autoConnectTimer?.cancel();
+
+    GlobalBlocs.liveData.createConnection(
+      newAddress: address,
+      fuelPrice: settings.fuelPrice,
+      tankSize: settings.tankSize,
+      localFile: settings.selectedJson,
+      isLocalMode: false,
+    );
+
+    _autoConnectPending = false;
+
+    // Listen for trip end to restart the auto-connect loop
+    GlobalBlocs.liveData.stream
+        .firstWhere((s) => s.isTripEnded || s.isConnnectingError)
+        .then((_) {
+          Future.delayed(const Duration(seconds: 5), _startAutoConnectLoop);
+        })
+        .ignore();
   }
 
   @override
@@ -216,6 +301,11 @@ class _AppState extends State<App> {
                       ),
                       const SizedBox(height: 18),
                       _SectionHeader(title: Strings.obdSection),
+                      _ObdStatusCard(
+                        bluetoothEnabled: _bluetoothState.isEnabled,
+                      ),
+
+                      const SizedBox(height: 10),
                       Card(
                         elevation: 0,
                         margin: EdgeInsets.zero,
@@ -242,23 +332,58 @@ class _AppState extends State<App> {
                                             .settings
                                             .deviceAddress;
 
-                                        if (address != null) {
-                                          _showLiveData(context, false);
+                                        if (address == null) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                Strings.firstlyChooseDevice,
+                                              ),
+                                            ),
+                                          );
                                           return;
                                         }
-                                        ScaffoldMessenger.of(
-                                          context,
-                                        ).showSnackBar(
-                                          const SnackBar(
-                                            content: Text(
-                                              Strings.firstlyChooseDevice,
+
+                                        if (isConnected) {
+                                          // Connection already initiated — open live data
+                                          Navigation.instance.push(
+                                            SharedRoutes.liveData,
+                                            arguments: LiveDataPageArguments(
+                                              isLocalMode: false,
                                             ),
-                                          ),
+                                          );
+                                          return;
+                                        }
+
+                                        // Not yet connected — start OBD connection in background
+                                        final settings = context
+                                            .read<SettingsCubit>()
+                                            .state
+                                            .settings;
+
+                                        GlobalBlocs.liveData.createConnection(
+                                          newAddress: address,
+                                          fuelPrice: settings.fuelPrice,
+                                          tankSize: settings.tankSize,
+                                          localFile: settings.selectedJson,
+                                          isLocalMode: false,
                                         );
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Nawiązywanie połączenia…',
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       },
                                       child: Text(
                                         isConnected
-                                            ? 'Wróć do danych'
+                                            ? 'Pokaż dane na żywo'
                                             : Strings.connectToObd,
                                       ),
                                     )
@@ -453,6 +578,266 @@ class _SectionHeader extends StatelessWidget {
           fontWeight: FontWeight.w900,
           color: cs.onSurfaceVariant,
           letterSpacing: 0.2,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── OBD connection status card ────────────────────────────────────────────
+
+class _ObdStatusCard extends StatelessWidget {
+  const _ObdStatusCard({required this.bluetoothEnabled});
+  final bool bluetoothEnabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<LiveDataCubit, LiveDataState>(
+      bloc: GlobalBlocs.liveData,
+      buildWhen: (p, n) =>
+          p.isConnecting != n.isConnecting ||
+          p.isRunning != n.isRunning ||
+          p.isTripClosing != n.isTripClosing ||
+          p.isConnnectingError != n.isConnnectingError ||
+          p.vin != n.vin ||
+          p.tripRecord.distance != n.tripRecord.distance ||
+          p.tripRecord.gpsSpeed != n.tripRecord.gpsSpeed ||
+          p.tripRecord.instFuelConsumption != n.tripRecord.instFuelConsumption,
+      builder: (context, s) {
+        final cubit = GlobalBlocs.liveData;
+        final cs = Theme.of(context).colorScheme;
+        final tt = Theme.of(context).textTheme;
+
+        // ── Determine status ──────────────────────────────────────
+        final _StatusKind kind;
+        final String label;
+
+        if (!bluetoothEnabled) {
+          kind = _StatusKind.off;
+          label = 'Bluetooth wyłączony';
+        } else if (s.isConnnectingError) {
+          kind = _StatusKind.error;
+          label = 'Błąd połączenia';
+        } else if (s.isTripClosing) {
+          kind = _StatusKind.connecting;
+          label = 'Zapisywanie przejazdu…';
+        } else if (s.isRunning) {
+          kind = _StatusKind.connected;
+          label = 'Połączono z OBD2';
+        } else if (s.isConnecting && cubit.isAlreadyConnected) {
+          kind = _StatusKind.connecting;
+          label = 'Łączenie z adapterem…';
+        } else {
+          kind = _StatusKind.idle;
+          label = 'Nie połączono';
+        }
+
+        final dotColor = switch (kind) {
+          _StatusKind.connected => const Color(0xFF34C759),
+          _StatusKind.connecting => const Color(0xFFFF9F0A),
+          _StatusKind.error => cs.error,
+          _StatusKind.idle => cs.outline,
+          _StatusKind.off => cs.outline,
+        };
+
+        final address = cubit.address;
+        final vin = s.vin?.isNotEmpty == true ? s.vin : null;
+        final trip = s.tripRecord;
+        final showLive = s.isRunning && !s.isTripClosing;
+
+        return Card(
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ── Status row ──────────────────────────────────────
+                Row(
+                  children: [
+                    _PulsingDot(
+                      color: dotColor,
+                      pulse: kind == _StatusKind.connecting,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        label,
+                        style: tt.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // ── Device address ──────────────────────────────────
+                if (address != null &&
+                    kind != _StatusKind.idle &&
+                    kind != _StatusKind.off) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    'Adapter: $address',
+                    style: tt.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                  ),
+                ],
+
+                // ── VIN ─────────────────────────────────────────────
+                if (vin != null) ...[
+                  const SizedBox(height: 2),
+                  Text(
+                    'VIN: $vin',
+                    style: tt.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+
+                // ── Live trip stats ──────────────────────────────────
+                if (showLive) ...[
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      _StatChip(
+                        icon: Icons.speed,
+                        label:
+                            '${trip.gpsSpeed > 0 ? trip.gpsSpeed.toStringAsFixed(0) : '0'} km/h',
+                        tooltip: 'Prędkość GPS',
+                      ),
+                      const SizedBox(width: 8),
+                      _StatChip(
+                        icon: Icons.straighten,
+                        label: '${trip.distance.toStringAsFixed(2)} km',
+                        tooltip: 'Dystans',
+                      ),
+                      const SizedBox(width: 8),
+                      if (trip.instFuelConsumption > 0)
+                        _StatChip(
+                          icon: Icons.local_gas_station,
+                          label:
+                              '${trip.instFuelConsumption.toStringAsFixed(1)} L/100',
+                          tooltip: 'Spalanie chwilowe',
+                        ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+enum _StatusKind { connected, connecting, error, idle, off }
+
+class _PulsingDot extends StatefulWidget {
+  const _PulsingDot({required this.color, required this.pulse});
+  final Color color;
+  final bool pulse;
+
+  @override
+  State<_PulsingDot> createState() => _PulsingDotState();
+}
+
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _anim;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    _anim = Tween<double>(
+      begin: 0.4,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
+    if (widget.pulse) _ctrl.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(_PulsingDot old) {
+    super.didUpdateWidget(old);
+    if (widget.pulse && !_ctrl.isAnimating) {
+      _ctrl.repeat(reverse: true);
+    } else if (!widget.pulse && _ctrl.isAnimating) {
+      _ctrl.stop();
+      _ctrl.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _anim,
+      builder: (_, __) => Opacity(
+        opacity: _anim.value,
+        child: Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: widget.color,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatChip extends StatelessWidget {
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.tooltip,
+  });
+  final IconData icon;
+  final String label;
+  final String tooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final tt = Theme.of(context).textTheme;
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: cs.onSurfaceVariant),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: tt.labelSmall?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: cs.onSurface,
+              ),
+            ),
+          ],
         ),
       ),
     );
